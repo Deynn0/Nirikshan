@@ -1,0 +1,172 @@
+version: "2024-2027"
+handbook_title: "AICTE Approval Process Handbook 2024-2027"
+publisher: "All India Council for Technical Education (AICTE)"
+effective_from: "2024-04-01"
+rules:
+  - id: "AICTE-2024-LAND-001"
+    name: "Minimum Contiguous Land Requirement"
+    category: "Land & Title"
+    severity: "CRITICAL"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 4.1"
+      table: "Table 4.1"
+      page: 42
+      edition: "2024-2027"
+      needs_verification: false
+    description: "Technical institution must possess required contiguous land based on location classification."
+    required_document_types:
+      - "LAND_SALE_DEED"
+      - "LAND_LEASE_DEED"
+    thresholds:
+      "Mega City": 1.5
+      "Metro City": 2.0
+      "Urban": 2.5
+      "Rural": 7.5
+    unit: "Acres"
+    parameters:
+      area_field: "land_area_acres"
+      contiguous_field: "is_contiguous"
+
+  - id: "AICTE-2024-LAND-002"
+    name: "Land Title and Minimum Lease Period"
+    category: "Land & Title"
+    severity: "CRITICAL"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 4.2"
+      page: 44
+      edition: "2024-2027"
+      needs_verification: false
+    description: "Land must be owned via Registered Sale Deed or leased from Government for minimum 30 years."
+    required_document_types:
+      - "LAND_SALE_DEED"
+      - "LAND_LEASE_DEED"
+    min_lease_years: 30
+
+  - id: "AICTE-2024-LAND-003"
+    name: "Land Use and Educational Conversion Order"
+    category: "Land & Title"
+    severity: "CRITICAL"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 4.3"
+      page: 45
+      edition: "2024-2027"
+      needs_verification: false
+    description: "Conversion Certificate by Competent Revenue Authority designating land for educational use."
+    required_document_types:
+      - "LAND_USE_CONVERSION_CERT"
+
+  - id: "AICTE-2024-BLD-001"
+    name: "Approved Building Sanction Plan"
+    category: "Infrastructure"
+    severity: "HIGH"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 5.1"
+      page: 51
+      edition: "2024-2027"
+      needs_verification: false
+    description: "Sanctioned Master Plan and Floor Plans approved by Town Planning Authority or Municipal Body."
+    required_document_types:
+      - "BUILDING_PLAN_APPROVED"
+
+  - id: "AICTE-2024-BLD-002"
+    name: "Building Completion and Occupancy Certificate"
+    category: "Infrastructure"
+    severity: "HIGH"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 5.3"
+      page: 53
+      edition: "2024-2027"
+      needs_verification: false
+    description: "Occupancy Certificate certifying structural safety and completion from competent authority."
+    required_document_types:
+      - "BUILDING_COMPLETION_CERT"
+
+  - id: "AICTE-2024-SAFE-001"
+    name: "Fire and Life Safety NOC"
+    category: "Safety & Compliance"
+    severity: "CRITICAL"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 6.1"
+      page: 60
+      edition: "2024-2027"
+      needs_verification: false
+    description: "Valid Fire Safety Certificate issued by State Fire Services with unexpired validity."
+    required_document_types:
+      - "FIRE_SAFETY_NOC"
+
+  - id: "AICTE-2024-SAFE-002"
+    name: "Barrier Free Accessibility for Divyangjan"
+    category: "Safety & Compliance"
+    severity: "MEDIUM"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 6.4"
+      page: 62
+      edition: "2024-2027"
+      needs_verification: false
+    description: "All-weather ramps with slope <= 1:12, disabled-friendly lifts, and accessible restrooms."
+    required_document_types:
+      - "BARRIER_FREE_CERT"
+
+  - id: "AICTE-2024-FAC-001"
+    name: "Faculty to Student Ratio (FSR)"
+    category: "Faculty & Cadre"
+    severity: "HIGH"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 7.1"
+      table: "Table 7.1"
+      page: 74
+      edition: "2024-2027"
+      needs_verification: false
+    description: "FSR of 1:15 for UG Engineering & Technology programs."
+    required_document_types:
+      - "FACULTY_MASTER_LIST"
+    fsr_target: 15
+
+  - id: "AICTE-2024-FAC-002"
+    name: "Faculty Cadre Proportion (1:2:6)"
+    category: "Faculty & Cadre"
+    severity: "MEDIUM"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 7.2"
+      page: 76
+      edition: "2024-2027"
+      needs_verification: false
+    description: "Distribution of Cadre: Professor : Associate Professor : Assistant Professor in 1:2:6 proportion."
+    required_document_types:
+      - "FACULTY_MASTER_LIST"
+
+  - id: "AICTE-2024-FIN-001"
+    name: "Joint FDR Security Deposit"
+    category: "Financial Compliance"
+    severity: "HIGH"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 1.4"
+      page: 18
+      edition: "2024-2027"
+      needs_verification: false
+    description: "Fixed Deposit Receipt jointly held with Regional Officer AICTE for statutory security deposit."
+    required_document_types:
+      - "FDR_RECEIPT"
+
+  - id: "AICTE-2024-EXP-TODO"
+    name: "Multi-Campus Satellite Center Integration"
+    category: "Institutional Expansion"
+    severity: "LOW"
+    citation:
+      handbook: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 8.4 (Draft Policy)"
+      page: "TODO"
+      edition: "2024-2027"
+      needs_verification: true
+    description: "Proposed regulatory guidelines for multi-campus off-site clusters. Awaiting final council notification."
+    required_document_types: []

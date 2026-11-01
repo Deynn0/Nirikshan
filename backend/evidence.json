@@ -1,0 +1,29 @@
+[
+  {
+    "evidence_id": "ev-fire-01",
+    "trust_level": "ISSUER",
+    "source_type": "FIRE_SAFETY_NOC",
+    "description": "State Fire Services NOC Certificate",
+    "source_document_id": "doc-fire-001",
+    "source_document_name": "fire_noc_2025.pdf",
+    "verification_method": "STATE_FIRE_SERVICES_PORTAL_QR"
+  },
+  {
+    "evidence_id": "ev-land-01",
+    "trust_level": "RECORD",
+    "source_type": "LAND_SALE_DEED",
+    "description": "Sub-Registrar Registered Sale Deed",
+    "source_document_id": "doc-land-001",
+    "source_document_name": "registered_sale_deed.pdf",
+    "verification_method": "SUB_REGISTRAR_SEAL_AND_INDEX2"
+  },
+  {
+    "evidence_id": "ev-conv-01",
+    "trust_level": "ISSUER",
+    "source_type": "LAND_USE_CONVERSION_CERT",
+    "description": "District Revenue Officer Conversion Order",
+    "source_document_id": "doc-clu-001",
+    "source_document_name": "clu_certificate.pdf",
+    "verification_method": "REVENUE_PORTAL_DIGITAL_SIG"
+  }
+]

@@ -1,0 +1,167 @@
+accessible_restrooms:
+  en:
+  - Divyangjan Friendly Toilets
+  - Accessible Restrooms
+  - Disabled Friendly Toilets
+  - Special Restrooms for Divyangjan
+assoc_professor_count:
+  en:
+  - Associate Professor Count
+  - Number of Associate Professors
+  - Associate Professors
+asst_professor_count:
+  en:
+  - Assistant Professor Count
+  - Number of Assistant Professors
+  - Assistant Professors
+barrier_free_ramps:
+  en:
+  - Barrier Free Access Ramps
+  - Divyangjan Wheelchair Ramps
+  - Accessible Entrance Ramps
+building_plan_approved:
+  en:
+  - Approved Building Plan
+  - Sanctioned Master Plan
+  - Building Sanction Status
+  - Approved Blueprint
+building_plan_authority:
+  en:
+  - Building Plan Sanctioning Authority
+  - Plan Approving Body
+  - Town Planning Authority
+  - Municipal Approval Body
+fdr_amount_lakhs:
+  en:
+  - FDR Amount in Lakhs
+  - Deposit Amount (INR Lakhs)
+  - Security Deposit Value
+fdr_jointly_held:
+  en:
+  - FDR Jointly Held with AICTE
+  - Joint FDR Status
+  - FDR AICTE Joint Account
+fdr_submitted:
+  en:
+  - Fixed Deposit Receipt Submitted
+  - FDR Submission Status
+  - Security Deposit FDR
+fire_noc_expiry_date:
+  en:
+  - Fire NOC Expiry Date
+  - Fire Certificate Valid Upto
+  - Fire Clearance Expiration
+  - NOC Valid Till
+fire_noc_valid:
+  en:
+  - Fire Safety Certificate Valid
+  - Fire NOC Status
+  - Fire NOC Validity
+  - Fire Safety NOC Approved
+  - Fire Clearance Status
+intake_students:
+  en:
+  - Approved Student Intake
+  - Annual Intake Capacity
+  - Total Approved Intake
+internet_bandwidth_mbps:
+  en:
+  - Internet Bandwidth Mbps
+  - Leased Line Speed Mbps
+  - Campus Internet Bandwidth
+is_contiguous:
+  en:
+  - Is Contiguous
+  - Contiguous Land Piece
+  - Single Piece of Land
+  - Land Contiguity
+lab_equipment_count:
+  en:
+  - Laboratory Equipment Count
+  - Lab Apparatus Total
+  - Number of Lab Instruments
+  - Lab Inventory Total
+lab_inventory_verified:
+  en:
+  - Lab Stock Register Verified
+  - Laboratory Inventory Verified
+  - Lab Audit Verified
+land_area_acres:
+  en:
+  - Total Land Area
+  - Land Area in Acres
+  - Campus Land Area
+  - Plot Size (Acres)
+  - Total Area of Land
+land_conversion_cert_issued:
+  en:
+  - Land Conversion Certificate Issued
+  - CLU Certificate Status
+  - Change of Land Use Approved
+  - Conversion Order Available
+land_ownership_type:
+  en:
+  - Land Ownership Type
+  - Title Type
+  - Deed Nature
+  - Land Holding Type
+  - Ownership / Leasehold
+land_ownership_verified:
+  en:
+  - Land Ownership Verified
+  - Title Clearance Verified
+  - Deed Authenticated
+  - Ownership Verified
+land_use_purpose:
+  en:
+  - Land Use Classification
+  - Permitted Land Use
+  - Land Purpose
+  - Conversion Purpose
+lease_remaining_years:
+  en:
+  - Remaining Lease Period
+  - Lease Term Remaining
+  - Unexpired Lease Duration
+  - Lease Validity Years
+location_type:
+  en:
+  - Location Classification
+  - Location Type
+  - Area Category
+  - Urban/Rural Classification
+  - Campus Location
+occupancy_cert_issued:
+  en:
+  - Occupancy Certificate Issued
+  - Building Completion Certificate
+  - Possession Certificate
+  - Structural Safety Certificate
+professor_count:
+  en:
+  - Professor Count
+  - Number of Professors
+  - Full Professors
+society_registered:
+  en:
+  - Society Registration Status
+  - Trust Registered
+  - Society / Trust Reg Status
+  - Society Registration Certificate
+society_registration_valid:
+  en:
+  - Society Registration Validity
+  - Trust Registration Current
+  - Society Active Status
+total_faculty:
+  en:
+  - Total Teaching Faculty
+  - Total Faculty Count
+  - Number of Faculty Members
+  - Total Staff Count
+total_students:
+  en:
+  - Total Enrolled Students
+  - Total Student Strength
+  - Student Enrollment Count
+  - Total Student Count

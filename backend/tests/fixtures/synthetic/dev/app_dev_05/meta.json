@@ -1,0 +1,51 @@
+{
+  "application_id": "app_dev_05",
+  "split": "dev",
+  "institution_name": "Institution Dev #5",
+  "application_number": "AICTE/2024/DEV/005",
+  "is_clean": false,
+  "planted_frauds": [
+    "font_mismatch"
+  ],
+  "campus_polygon": [
+    [
+      77.2,
+      28.61
+    ],
+    [
+      77.22,
+      28.61
+    ],
+    [
+      77.22,
+      28.625
+    ],
+    [
+      77.2,
+      28.625
+    ]
+  ],
+  "extracted_params": {
+    "land_area_acres": 4.5,
+    "is_contiguous": true,
+    "survey_no_deed": "104/1A",
+    "survey_no_conversion": "104/1A",
+    "survey_no_building_plan": "104/1A",
+    "built_up_area_sqm": 12500.0,
+    "fire_noc_expired": false,
+    "faculty_count": 60,
+    "cadre_professors": 6,
+    "cadre_assoc_professors": 14,
+    "cadre_asst_professors": 40,
+    "fdr_amount_lakhs": 100.0,
+    "faculty": [],
+    "photos": [],
+    "seals": []
+  },
+  "files": {
+    "documents": [
+      "dev\\app_dev_05\\documents\\land_deed.pdf"
+    ],
+    "photos": []
+  }
+}

@@ -1,0 +1,408 @@
+# AICTE Approval Process Handbook — Sample Ruleset
+# 10-15 atomic rules with declarative logic expressions.
+# All citations flagged needs_verification: true are placeholder estimates
+# and MUST be verified against the physical handbook before use in production.
+#
+# logic field uses safe AST evaluator.  Available facts must be provided by
+# the caller.  Boolean result: True = PASS condition met.
+
+version: "2024-2027-sample"
+handbook_title: "AICTE Approval Process Handbook 2024-2027 (Sample Ruleset)"
+publisher: "All India Council for Technical Education (AICTE)"
+effective_from: "2024-04-01"
+
+rules:
+
+  # -----------------------------------------------------------------------
+  # Safety & Compliance
+  # -----------------------------------------------------------------------
+
+  - rule_id: AICTE-SAFE-FIRE-001
+    title: "Fire Safety NOC Validity"
+    category: "Safety & Compliance"
+    severity: CRITICAL
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 6.1"
+      page: 60
+      edition: "2024-2027"
+      needs_verification: false
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: FIRE_SAFETY_NOC
+        min_trust_level: ISSUER
+    parameters:
+      min_validity_days: 0
+    logic: "fire_noc_valid == True and days_until(fire_noc_expiry_date) >= 0"
+    deficiency_template: >
+      Fire Safety NOC is invalid or expired.
+      Expiry date: {fire_noc_expiry_date}.
+      Contact State Fire Services for renewal before submission.
+    description: >
+      The institution must possess a valid Fire Safety NOC issued by the State
+      Fire Services department. The NOC must be unexpired at the date of submission.
+
+  # -----------------------------------------------------------------------
+  # Land & Title
+  # -----------------------------------------------------------------------
+
+  - rule_id: AICTE-LAND-OWN-001
+    title: "Land Ownership — Registered Sale Deed or Government Lease"
+    category: "Land & Title"
+    severity: CRITICAL
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 4.2"
+      page: 44
+      edition: "2024-2027"
+      needs_verification: false
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: LAND_SALE_DEED
+        min_trust_level: RECORD
+    logic: "land_ownership_type in ['REGISTERED_SALE_DEED', 'GOVERNMENT_LEASE'] and land_ownership_verified == True"
+    deficiency_template: >
+      Land ownership verification failed.
+      Provided ownership type: {land_ownership_type}.
+      Required: Registered Sale Deed (Sub-Registrar) or Government Lease of ≥ 30 years.
+    description: >
+      Land must be owned via Registered Sale Deed or leased from Government for ≥ 30 years.
+
+  - rule_id: AICTE-LAND-AREA-002
+    title: "Minimum Contiguous Land Area — Urban"
+    category: "Land & Title"
+    severity: CRITICAL
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 4.1, Table 4.1"
+      page: 42
+      edition: "2024-2027"
+      needs_verification: false
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: LAND_SALE_DEED
+        min_trust_level: RECORD
+    parameters:
+      required_area_urban: 2.5
+    logic: "location_type == 'Urban' and land_area_acres >= required_area_urban and is_contiguous == True"
+    deficiency_template: >
+      Urban institution must possess ≥ {required_area_urban} contiguous acres.
+      Provided: {land_area_acres} acres, contiguous={is_contiguous}.
+    description: >
+      Urban UG Technical institution must possess at least 2.5 contiguous acres.
+
+  - rule_id: AICTE-LAND-LEASE-003
+    title: "Minimum Lease Period — 30 Years"
+    category: "Land & Title"
+    severity: CRITICAL
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 4.2"
+      page: 44
+      edition: "2024-2027"
+      needs_verification: true
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: LAND_LEASE_DEED
+        min_trust_level: RECORD
+    parameters:
+      min_lease_years: 30
+    logic: "land_ownership_type == 'GOVERNMENT_LEASE' and lease_remaining_years >= min_lease_years"
+    deficiency_template: >
+      Government lease must have ≥ {min_lease_years} years remaining.
+      Current remaining: {lease_remaining_years} years.
+    description: >
+      Where land is leased from Government, minimum unexpired lease period is 30 years.
+
+  - rule_id: AICTE-LAND-CONV-004
+    title: "Land Use Conversion Certificate for Educational Purpose"
+    category: "Land & Title"
+    severity: CRITICAL
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 4.3"
+      page: 45
+      edition: "2024-2027"
+      needs_verification: false
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: LAND_USE_CONVERSION_CERT
+        min_trust_level: ISSUER
+    logic: "land_conversion_cert_issued == True and land_use_purpose == 'EDUCATIONAL'"
+    deficiency_template: >
+      Land use conversion certificate missing or purpose is not Educational.
+      Issued: {land_conversion_cert_issued}, Purpose: {land_use_purpose}.
+    description: >
+      Conversion Certificate by Competent Revenue Authority designating land for educational use.
+
+  # -----------------------------------------------------------------------
+  # Infrastructure
+  # -----------------------------------------------------------------------
+
+  - rule_id: AICTE-INFRA-PLAN-001
+    title: "Approved Building Sanction Plan from Municipal Body"
+    category: "Infrastructure"
+    severity: HIGH
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 5.1"
+      page: 51
+      edition: "2024-2027"
+      needs_verification: false
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: BUILDING_PLAN_APPROVED
+        min_trust_level: ISSUER
+    logic: "building_plan_approved == True and building_plan_authority in ['MUNICIPAL_BODY', 'TOWN_PLANNING', 'PANCHAYAT_AUTHORITY']"
+    deficiency_template: >
+      Building Sanction Plan not approved by recognized authority.
+      Approved: {building_plan_approved}, Authority: {building_plan_authority}.
+    description: >
+      Sanctioned Master Plan and Floor Plans approved by Town Planning or Municipal Body.
+
+  - rule_id: AICTE-INFRA-OCC-002
+    title: "Occupancy Certificate from Competent Authority"
+    category: "Infrastructure"
+    severity: HIGH
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 5.3"
+      page: 53
+      edition: "2024-2027"
+      needs_verification: false
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: BUILDING_COMPLETION_CERT
+        min_trust_level: ISSUER
+    logic: "occupancy_cert_issued == True"
+    deficiency_template: >
+      Occupancy Certificate not issued. occupancy_cert_issued={occupancy_cert_issued}.
+    description: >
+      Occupancy Certificate certifying structural safety from competent authority.
+
+  # -----------------------------------------------------------------------
+  # Faculty & Cadre
+  # -----------------------------------------------------------------------
+
+  - rule_id: AICTE-FAC-FSR-001
+    title: "Faculty to Student Ratio (FSR) — 1:15 for UG Engineering"
+    category: "Faculty & Cadre"
+    severity: HIGH
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 7.1, Table 7.1"
+      page: 74
+      edition: "2024-2027"
+      needs_verification: false
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: FACULTY_MASTER_LIST
+        min_trust_level: RECORD
+    parameters:
+      max_fsr: 15
+    logic: "total_students / total_faculty <= max_fsr"
+    deficiency_template: >
+      FSR exceeds mandated 1:{max_fsr}.
+      Current: 1:{actual_fsr} ({total_students} students / {total_faculty} faculty).
+    description: >
+      Faculty to Student Ratio must be ≤ 1:15 for UG Engineering & Technology programs.
+
+  - rule_id: AICTE-FAC-CADRE-002
+    title: "Faculty Cadre Proportion — Prof:AssocProf:AsstProf = 1:2:6"
+    category: "Faculty & Cadre"
+    severity: MEDIUM
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 7.2"
+      page: 76
+      edition: "2024-2027"
+      needs_verification: true
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: FACULTY_MASTER_LIST
+        min_trust_level: RECORD
+    logic: "professor_count >= 1 and assoc_professor_count >= 2 and asst_professor_count >= 6"
+    deficiency_template: >
+      Faculty cadre proportion 1:2:6 not met.
+      Professors: {professor_count}, Associate: {assoc_professor_count},
+      Assistant: {asst_professor_count}.
+    description: >
+      Distribution: Professor:Associate Professor:Assistant Professor must be in 1:2:6 proportion.
+
+  # -----------------------------------------------------------------------
+  # Society & Registration
+  # -----------------------------------------------------------------------
+
+  - rule_id: AICTE-SOC-REG-001
+    title: "Society / Trust Registration — Valid and Current"
+    category: "Institutional Registration"
+    severity: CRITICAL
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 2.1"
+      page: 22
+      edition: "2024-2027"
+      needs_verification: true
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: SOCIETY_REGISTRATION_CERT
+        min_trust_level: ISSUER
+    logic: "society_registered == True and society_registration_valid == True"
+    deficiency_template: >
+      Society/Trust registration is missing or invalid.
+      Registered: {society_registered}, Valid: {society_registration_valid}.
+    description: >
+      The managing society or trust must hold a valid registration certificate from the
+      Registrar of Societies / Registrar of Companies.
+
+  # -----------------------------------------------------------------------
+  # Financial Compliance
+  # -----------------------------------------------------------------------
+
+  - rule_id: AICTE-FIN-FDR-001
+    title: "Joint FDR Security Deposit with AICTE Regional Office"
+    category: "Financial Compliance"
+    severity: HIGH
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 1.4"
+      page: 18
+      edition: "2024-2027"
+      needs_verification: false
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: FDR_RECEIPT
+        min_trust_level: ISSUER
+    parameters:
+      min_fdr_amount_lakhs: 10.0
+    logic: "fdr_submitted == True and fdr_jointly_held == True and fdr_amount_lakhs >= min_fdr_amount_lakhs"
+    deficiency_template: >
+      FDR deposit non-compliant.
+      Submitted: {fdr_submitted}, Jointly held: {fdr_jointly_held},
+      Amount: ₹{fdr_amount_lakhs}L (min ₹{min_fdr_amount_lakhs}L required).
+    description: >
+      Fixed Deposit Receipt jointly held with AICTE Regional Officer for statutory security deposit.
+
+  # -----------------------------------------------------------------------
+  # Labs & Equipment
+  # -----------------------------------------------------------------------
+
+  - rule_id: AICTE-LAB-INV-001
+    title: "Laboratory Inventory — Minimum Equipment Count per Lab"
+    category: "Infrastructure"
+    severity: MEDIUM
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Appendix-B, Table B.3"
+      page: "TODO"
+      edition: "2024-2027"
+      needs_verification: true
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: LAB_INVENTORY_REGISTER
+        min_trust_level: RECORD
+    parameters:
+      min_equipment_per_lab: 20
+    logic: "lab_equipment_count >= min_equipment_per_lab and lab_inventory_verified == True"
+    deficiency_template: >
+      Lab inventory insufficient.
+      Equipment count: {lab_equipment_count} (min {min_equipment_per_lab} required).
+      Inventory verified: {lab_inventory_verified}.
+    description: >
+      Each laboratory must maintain a minimum number of functional equipment items
+      as per AICTE lab appendix norms.
+
+  # -----------------------------------------------------------------------
+  # Accessibility
+  # -----------------------------------------------------------------------
+
+  - rule_id: AICTE-ACC-DIV-001
+    title: "Barrier-Free Accessibility for Divyangjan"
+    category: "Safety & Compliance"
+    severity: MEDIUM
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 6.4"
+      page: 62
+      edition: "2024-2027"
+      needs_verification: false
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: BARRIER_FREE_CERT
+        min_trust_level: ISSUER
+    logic: "barrier_free_ramps == True and accessible_restrooms == True"
+    deficiency_template: >
+      Barrier-free accessibility non-compliant.
+      Ramps: {barrier_free_ramps}, Accessible restrooms: {accessible_restrooms}.
+    description: >
+      All-weather ramps (slope ≤ 1:12), accessible restrooms for persons with disabilities.
+
+  # -----------------------------------------------------------------------
+  # ICT & Connectivity
+  # -----------------------------------------------------------------------
+
+  - rule_id: AICTE-ICT-NET-001
+    title: "Minimum Internet Bandwidth — 1 Mbps per student"
+    category: "ICT Infrastructure"
+    severity: LOW
+    citation:
+      document: "AICTE Approval Process Handbook 2024-2027"
+      clause: "Clause 9.2"
+      page: "TODO"
+      edition: "2024-2027"
+      needs_verification: true
+    applicable_years:
+      - "2024-2025"
+      - "2025-2026"
+      - "2026-2027"
+    evidence_requirements:
+      - type: ISP_BANDWIDTH_CERT
+        min_trust_level: RECORD
+    parameters:
+      mbps_per_student: 1
+    logic: "internet_bandwidth_mbps >= intake_students * mbps_per_student"
+    deficiency_template: >
+      Internet bandwidth insufficient.
+      Available: {internet_bandwidth_mbps} Mbps for {intake_students} students.
+      Required: {intake_students} Mbps (1 Mbps/student).
+    description: >
+      Minimum internet bandwidth of 1 Mbps per enrolled student with dedicated leased line.

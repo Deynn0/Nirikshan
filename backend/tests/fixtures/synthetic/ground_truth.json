@@ -1,0 +1,1448 @@
+{
+  "generated_at": "2026-10-31T19:12:38.382524+00:00",
+  "total_applications": 24,
+  "splits": {
+    "dev": {
+      "seed": 42,
+      "applications": [
+        "app_dev_01",
+        "app_dev_02",
+        "app_dev_03",
+        "app_dev_04",
+        "app_dev_05",
+        "app_dev_06",
+        "app_dev_07",
+        "app_dev_08",
+        "app_dev_09",
+        "app_dev_10",
+        "app_dev_11",
+        "app_dev_12"
+      ]
+    },
+    "blind": {
+      "seed": 1337,
+      "applications": [
+        "app_blind_01",
+        "app_blind_02",
+        "app_blind_03",
+        "app_blind_04",
+        "app_blind_05",
+        "app_blind_06",
+        "app_blind_07",
+        "app_blind_08",
+        "app_blind_09",
+        "app_blind_10",
+        "app_blind_11",
+        "app_blind_12"
+      ]
+    }
+  },
+  "applications": {
+    "app_dev_01": {
+      "application_id": "app_dev_01",
+      "split": "dev",
+      "institution_name": "Institution Dev #1",
+      "application_number": "AICTE/2024/DEV/001",
+      "is_clean": true,
+      "planted_frauds": [],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [
+          {
+            "aadhaar": "5012 4657 3286",
+            "name": "Dr. Sunil Kumar #1",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ]
+          }
+        ],
+        "photos": [
+          {
+            "phash": "af85d03aad2fd0d0",
+            "type": "COMPUTER_LAB"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "ba99ede4309b8364",
+            "issuing_authority": "Delhi Fire Service"
+          }
+        ]
+      },
+      "files": {
+        "documents": [
+          "dev\\app_dev_01\\documents\\approval_letter.pdf",
+          "dev\\app_dev_01\\documents\\fire_noc.pdf",
+          "dev\\app_dev_01\\documents\\land_deed.pdf"
+        ],
+        "photos": [
+          "dev\\app_dev_01\\photos\\approval_qr.png",
+          "dev\\app_dev_01\\photos\\lab_view.jpg",
+          "dev\\app_dev_01\\photos\\seal.png"
+        ]
+      }
+    },
+    "app_dev_02": {
+      "application_id": "app_dev_02",
+      "split": "dev",
+      "institution_name": "Institution Dev #2",
+      "application_number": "AICTE/2024/DEV/002",
+      "is_clean": true,
+      "planted_frauds": [],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [
+          {
+            "aadhaar": "2679 9935 2424",
+            "name": "Dr. Sunil Kumar #2",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ]
+          }
+        ],
+        "photos": [
+          {
+            "phash": "bf94843f953e806a",
+            "type": "CHEMISTRY_LAB"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "9e3f69c03c1fc1e0",
+            "issuing_authority": "Municipal Corporation"
+          }
+        ]
+      },
+      "files": {
+        "documents": [
+          "dev\\app_dev_02\\documents\\approval_letter.pdf",
+          "dev\\app_dev_02\\documents\\fire_noc.pdf",
+          "dev\\app_dev_02\\documents\\land_deed.pdf"
+        ],
+        "photos": [
+          "dev\\app_dev_02\\photos\\approval_qr.png",
+          "dev\\app_dev_02\\photos\\lab_view.jpg",
+          "dev\\app_dev_02\\photos\\seal.png"
+        ]
+      }
+    },
+    "app_dev_03": {
+      "application_id": "app_dev_03",
+      "split": "dev",
+      "institution_name": "Institution Dev #3",
+      "application_number": "AICTE/2024/DEV/003",
+      "is_clean": false,
+      "planted_frauds": [
+        "expired_certificate"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": true,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "dev\\app_dev_03\\documents\\fire_safety_noc.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_dev_04": {
+      "application_id": "app_dev_04",
+      "split": "dev",
+      "institution_name": "Institution Dev #4",
+      "application_number": "AICTE/2024/DEV/004",
+      "is_clean": false,
+      "planted_frauds": [
+        "edited_date_incremental_revision"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "dev\\app_dev_04\\documents\\land_conversion_order.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_dev_05": {
+      "application_id": "app_dev_05",
+      "split": "dev",
+      "institution_name": "Institution Dev #5",
+      "application_number": "AICTE/2024/DEV/005",
+      "is_clean": false,
+      "planted_frauds": [
+        "font_mismatch"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "dev\\app_dev_05\\documents\\land_deed.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_dev_06": {
+      "application_id": "app_dev_06",
+      "split": "dev",
+      "institution_name": "Institution Dev #6",
+      "application_number": "AICTE/2024/DEV/006",
+      "is_clean": false,
+      "planted_frauds": [
+        "whiteout"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "dev\\app_dev_06\\documents\\building_sanction.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_dev_07": {
+      "application_id": "app_dev_07",
+      "split": "dev",
+      "institution_name": "Institution Dev #7",
+      "application_number": "AICTE/2024/DEV/007",
+      "is_clean": false,
+      "planted_frauds": [
+        "invalid_or_applicant_signature"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "dev\\app_dev_07\\documents\\official_sanction.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_dev_08": {
+      "application_id": "app_dev_08",
+      "split": "dev",
+      "institution_name": "Institution Dev #8",
+      "application_number": "AICTE/2024/DEV/008",
+      "is_clean": false,
+      "planted_frauds": [
+        "tampered_qr"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [],
+        "photos": [
+          "dev\\app_dev_08\\photos\\verification_qr.png"
+        ]
+      }
+    },
+    "app_dev_09": {
+      "application_id": "app_dev_09",
+      "split": "dev",
+      "institution_name": "Institution Dev #9",
+      "application_number": "AICTE/2024/DEV/009",
+      "is_clean": false,
+      "planted_frauds": [
+        "duplicate_faculty_ids",
+        "reused_seal_and_lab_photo"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [
+          {
+            "aadhaar": "2824 1409 5506",
+            "name": "Dr. Ramesh Sharma (Shared)",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ],
+            "designation": "Professor & HOD"
+          }
+        ],
+        "photos": [
+          {
+            "phash": "c06b6b806f7f8495",
+            "type": "PHYSICS_LAB",
+            "source_path": "C:\\Users\\Admin\\nirikshan\\backend\\tests\\fixtures\\synthetic\\dev\\shared_assets\\shared_physics_lab.jpg"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "ba33e5c4161bcb64",
+            "issuing_authority": "Delhi State Revenue Dept",
+            "source_path": "C:\\Users\\Admin\\nirikshan\\backend\\tests\\fixtures\\synthetic\\dev\\shared_assets\\shared_circular_seal.png"
+          }
+        ]
+      },
+      "files": {
+        "documents": [],
+        "photos": [
+          "dev\\app_dev_09\\photos\\lab.jpg",
+          "dev\\app_dev_09\\photos\\seal.png"
+        ]
+      }
+    },
+    "app_dev_10": {
+      "application_id": "app_dev_10",
+      "split": "dev",
+      "institution_name": "Institution Dev #10",
+      "application_number": "AICTE/2024/DEV/010",
+      "is_clean": false,
+      "planted_frauds": [
+        "reused_seal_and_lab_photo",
+        "duplicate_faculty_ids"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [
+          {
+            "aadhaar": "2824 1409 5506",
+            "name": "Dr. Ramesh Sharma (Shared)",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ],
+            "designation": "Professor"
+          }
+        ],
+        "photos": [
+          {
+            "phash": "c06b6b806f7f8495",
+            "type": "PHYSICS_LAB",
+            "source_path": "C:\\Users\\Admin\\nirikshan\\backend\\tests\\fixtures\\synthetic\\dev\\shared_assets\\shared_physics_lab.jpg"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "ba33e5c4161bcb64",
+            "issuing_authority": "Pune Municipal Corporation",
+            "source_path": "C:\\Users\\Admin\\nirikshan\\backend\\tests\\fixtures\\synthetic\\dev\\shared_assets\\shared_circular_seal.png"
+          }
+        ]
+      },
+      "files": {
+        "documents": [],
+        "photos": []
+      }
+    },
+    "app_dev_11": {
+      "application_id": "app_dev_11",
+      "split": "dev",
+      "institution_name": "Institution Dev #11",
+      "application_number": "AICTE/2024/DEV/011",
+      "is_clean": false,
+      "planted_frauds": [
+        "geotag_outside_campus"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [],
+        "photos": [
+          "dev\\app_dev_11\\photos\\site_photo.jpg"
+        ]
+      }
+    },
+    "app_dev_12": {
+      "application_id": "app_dev_12",
+      "split": "dev",
+      "institution_name": "Institution Dev #12",
+      "application_number": "AICTE/2024/DEV/012",
+      "is_clean": false,
+      "planted_frauds": [
+        "scanned_hindi_documents"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "dev\\app_dev_12\\documents\\khatauni_revenue_hi.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_blind_01": {
+      "application_id": "app_blind_01",
+      "split": "blind",
+      "institution_name": "Institution Blind #1",
+      "application_number": "AICTE/2024/BLIND/001",
+      "is_clean": true,
+      "planted_frauds": [],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [
+          {
+            "aadhaar": "6452 7286 6895",
+            "name": "Dr. Sunil Kumar #1",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ]
+          }
+        ],
+        "photos": [
+          {
+            "phash": "af85d03aad2fd0d0",
+            "type": "COMPUTER_LAB"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "ba99ede4309b8364",
+            "issuing_authority": "Delhi Fire Service"
+          }
+        ]
+      },
+      "files": {
+        "documents": [
+          "blind\\app_blind_01\\documents\\approval_letter.pdf",
+          "blind\\app_blind_01\\documents\\fire_noc.pdf",
+          "blind\\app_blind_01\\documents\\land_deed.pdf"
+        ],
+        "photos": [
+          "blind\\app_blind_01\\photos\\approval_qr.png",
+          "blind\\app_blind_01\\photos\\lab_view.jpg",
+          "blind\\app_blind_01\\photos\\seal.png"
+        ]
+      }
+    },
+    "app_blind_02": {
+      "application_id": "app_blind_02",
+      "split": "blind",
+      "institution_name": "Institution Blind #2",
+      "application_number": "AICTE/2024/BLIND/002",
+      "is_clean": true,
+      "planted_frauds": [],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [
+          {
+            "aadhaar": "6040 7415 4357",
+            "name": "Dr. Sunil Kumar #2",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ]
+          }
+        ],
+        "photos": [
+          {
+            "phash": "bf94843f953e806a",
+            "type": "CHEMISTRY_LAB"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "9e3f69c03c1fc1e0",
+            "issuing_authority": "Municipal Corporation"
+          }
+        ]
+      },
+      "files": {
+        "documents": [
+          "blind\\app_blind_02\\documents\\approval_letter.pdf",
+          "blind\\app_blind_02\\documents\\fire_noc.pdf",
+          "blind\\app_blind_02\\documents\\land_deed.pdf"
+        ],
+        "photos": [
+          "blind\\app_blind_02\\photos\\approval_qr.png",
+          "blind\\app_blind_02\\photos\\lab_view.jpg",
+          "blind\\app_blind_02\\photos\\seal.png"
+        ]
+      }
+    },
+    "app_blind_03": {
+      "application_id": "app_blind_03",
+      "split": "blind",
+      "institution_name": "Institution Blind #3",
+      "application_number": "AICTE/2024/BLIND/003",
+      "is_clean": false,
+      "planted_frauds": [
+        "expired_certificate"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": true,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "blind\\app_blind_03\\documents\\fire_safety_noc.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_blind_04": {
+      "application_id": "app_blind_04",
+      "split": "blind",
+      "institution_name": "Institution Blind #4",
+      "application_number": "AICTE/2024/BLIND/004",
+      "is_clean": false,
+      "planted_frauds": [
+        "edited_date_incremental_revision"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "blind\\app_blind_04\\documents\\land_conversion_order.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_blind_05": {
+      "application_id": "app_blind_05",
+      "split": "blind",
+      "institution_name": "Institution Blind #5",
+      "application_number": "AICTE/2024/BLIND/005",
+      "is_clean": false,
+      "planted_frauds": [
+        "font_mismatch"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "blind\\app_blind_05\\documents\\land_deed.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_blind_06": {
+      "application_id": "app_blind_06",
+      "split": "blind",
+      "institution_name": "Institution Blind #6",
+      "application_number": "AICTE/2024/BLIND/006",
+      "is_clean": false,
+      "planted_frauds": [
+        "whiteout"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "blind\\app_blind_06\\documents\\building_sanction.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_blind_07": {
+      "application_id": "app_blind_07",
+      "split": "blind",
+      "institution_name": "Institution Blind #7",
+      "application_number": "AICTE/2024/BLIND/007",
+      "is_clean": false,
+      "planted_frauds": [
+        "invalid_or_applicant_signature"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "blind\\app_blind_07\\documents\\official_sanction.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "app_blind_08": {
+      "application_id": "app_blind_08",
+      "split": "blind",
+      "institution_name": "Institution Blind #8",
+      "application_number": "AICTE/2024/BLIND/008",
+      "is_clean": false,
+      "planted_frauds": [
+        "tampered_qr"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [],
+        "photos": [
+          "blind\\app_blind_08\\photos\\verification_qr.png"
+        ]
+      }
+    },
+    "app_blind_09": {
+      "application_id": "app_blind_09",
+      "split": "blind",
+      "institution_name": "Institution Blind #9",
+      "application_number": "AICTE/2024/BLIND/009",
+      "is_clean": false,
+      "planted_frauds": [
+        "duplicate_faculty_ids",
+        "reused_seal_and_lab_photo"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [
+          {
+            "aadhaar": "9737 6994 3714",
+            "name": "Dr. Ramesh Sharma (Shared)",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ],
+            "designation": "Professor & HOD"
+          }
+        ],
+        "photos": [
+          {
+            "phash": "c06b6b806f7f8495",
+            "type": "PHYSICS_LAB",
+            "source_path": "C:\\Users\\Admin\\nirikshan\\backend\\tests\\fixtures\\synthetic\\blind\\shared_assets\\shared_physics_lab.jpg"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "ba33e5c4161bcb64",
+            "issuing_authority": "Delhi State Revenue Dept",
+            "source_path": "C:\\Users\\Admin\\nirikshan\\backend\\tests\\fixtures\\synthetic\\blind\\shared_assets\\shared_circular_seal.png"
+          }
+        ]
+      },
+      "files": {
+        "documents": [],
+        "photos": [
+          "blind\\app_blind_09\\photos\\lab.jpg",
+          "blind\\app_blind_09\\photos\\seal.png"
+        ]
+      }
+    },
+    "app_blind_10": {
+      "application_id": "app_blind_10",
+      "split": "blind",
+      "institution_name": "Institution Blind #10",
+      "application_number": "AICTE/2024/BLIND/010",
+      "is_clean": false,
+      "planted_frauds": [
+        "reused_seal_and_lab_photo",
+        "duplicate_faculty_ids"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [
+          {
+            "aadhaar": "9737 6994 3714",
+            "name": "Dr. Ramesh Sharma (Shared)",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ],
+            "designation": "Professor"
+          }
+        ],
+        "photos": [
+          {
+            "phash": "c06b6b806f7f8495",
+            "type": "PHYSICS_LAB",
+            "source_path": "C:\\Users\\Admin\\nirikshan\\backend\\tests\\fixtures\\synthetic\\blind\\shared_assets\\shared_physics_lab.jpg"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "ba33e5c4161bcb64",
+            "issuing_authority": "Pune Municipal Corporation",
+            "source_path": "C:\\Users\\Admin\\nirikshan\\backend\\tests\\fixtures\\synthetic\\blind\\shared_assets\\shared_circular_seal.png"
+          }
+        ]
+      },
+      "files": {
+        "documents": [],
+        "photos": []
+      }
+    },
+    "app_blind_11": {
+      "application_id": "app_blind_11",
+      "split": "blind",
+      "institution_name": "Institution Blind #11",
+      "application_number": "AICTE/2024/BLIND/011",
+      "is_clean": false,
+      "planted_frauds": [
+        "geotag_outside_campus"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [],
+        "photos": [
+          "blind\\app_blind_11\\photos\\site_photo.jpg"
+        ]
+      }
+    },
+    "app_blind_12": {
+      "application_id": "app_blind_12",
+      "split": "blind",
+      "institution_name": "Institution Blind #12",
+      "application_number": "AICTE/2024/BLIND/012",
+      "is_clean": false,
+      "planted_frauds": [
+        "scanned_hindi_documents"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no_deed": "104/1A",
+        "survey_no_conversion": "104/1A",
+        "survey_no_building_plan": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "cadre_professors": 6,
+        "cadre_assoc_professors": 14,
+        "cadre_asst_professors": 40,
+        "fdr_amount_lakhs": 100.0,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "blind\\app_blind_12\\documents\\khatauni_revenue_hi.pdf"
+        ],
+        "photos": []
+      }
+    }
+  }
+}

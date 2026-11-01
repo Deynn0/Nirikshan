@@ -1,0 +1,98 @@
+# Nirikshan Registered Issuers Registry
+# Used for signer disambiguation to classify signers as:
+# ISSUER_OFFICER, APPLICANT, or UNKNOWN.
+
+issuers:
+  - id: AICTE_HQ
+    name: "All India Council for Technical Education"
+    category: "REGULATORY_COUNCIL"
+    org_patterns:
+      - "All India Council for Technical Education"
+      - "AICTE"
+    ou_patterns:
+      - "Approval Bureau"
+      - "Scrutiny Committee"
+      - "Member Secretary"
+    cn_patterns:
+      - "*AICTE*"
+      - "*Director (Approval)*"
+      - "*Member Secretary*"
+    trusted_roles:
+      - "ISSUER_OFFICER"
+
+  - id: STATE_FIRE_SERVICES
+    name: "Directorate of Fire and Emergency Services"
+    category: "FIRE_SAFETY_AUTHORITY"
+    org_patterns:
+      - "*Fire and Emergency Services*"
+      - "*Directorate of Fire Services*"
+      - "*Department of Fire*"
+      - "*Fire Safety Department*"
+    ou_patterns:
+      - "*Fire Prevention Wing*"
+      - "*Fire Officer*"
+    cn_patterns:
+      - "*Chief Fire Officer*"
+      - "*Divisional Fire Officer*"
+      - "*Director Fire Services*"
+    trusted_roles:
+      - "ISSUER_OFFICER"
+
+  - id: SUB_REGISTRAR_REVENUE
+    name: "Department of Revenue & Inspector General of Registration"
+    category: "LAND_REGISTRATION_AUTHORITY"
+    org_patterns:
+      - "*Revenue Department*"
+      - "*Inspector General of Registration*"
+      - "*Sub-Registrar Office*"
+      - "*Department of Land Records*"
+      - "*Tahsildar*"
+      - "*Tehsildar*"
+    ou_patterns:
+      - "*Registration Wing*"
+      - "*Land Records Division*"
+    cn_patterns:
+      - "*Sub-Registrar*"
+      - "*Tahsildar*"
+      - "*District Registrar*"
+    trusted_roles:
+      - "ISSUER_OFFICER"
+
+  - id: TOWN_PLANNING_MUNICIPAL
+    name: "Town and Country Planning & Urban Development Authority"
+    category: "URBAN_PLANNING_AUTHORITY"
+    org_patterns:
+      - "*Town and Country Planning*"
+      - "*Urban Development Authority*"
+      - "*Municipal Corporation*"
+      - "*Development Authority*"
+      - "*BDA*"
+      - "*HMDA*"
+      - "*DDA*"
+      - "*CMDA*"
+    ou_patterns:
+      - "*Town Planning Wing*"
+      - "*Building Sanction Cell*"
+    cn_patterns:
+      - "*Town Planning Officer*"
+      - "*Chief Town Planner*"
+      - "*Executive Engineer*"
+      - "*Commissioner*"
+    trusted_roles:
+      - "ISSUER_OFFICER"
+
+  - id: PWD_BARRIER_FREE
+    name: "Public Works Department / State Social Welfare Department"
+    category: "ACCESSIBILITY_AUTHORITY"
+    org_patterns:
+      - "*Public Works Department*"
+      - "*PWD*"
+      - "*Social Welfare Department*"
+      - "*Disabilities Welfare*"
+    ou_patterns:
+      - "*Civil Buildings Wing*"
+    cn_patterns:
+      - "*Executive Engineer*"
+      - "*Superintending Engineer*"
+    trusted_roles:
+      - "ISSUER_OFFICER"

@@ -1,0 +1,166 @@
+{
+  "timestamp": "2026-10-31T19:29:14.641876+00:00",
+  "total_applications": 24,
+  "dev_split": {
+    "num_applications": 12,
+    "false_alarm_rate": 0.0,
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "runtime_seconds": 8.135,
+    "per_fraud_metrics": {
+      "expired_certificate": {
+        "fraud_type": "expired_certificate",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "edited_date_incremental_revision": {
+        "fraud_type": "edited_date_incremental_revision",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "font_mismatch": {
+        "fraud_type": "font_mismatch",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "whiteout": {
+        "fraud_type": "whiteout",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "invalid_or_applicant_signature": {
+        "fraud_type": "invalid_or_applicant_signature",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "tampered_qr": {
+        "fraud_type": "tampered_qr",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "duplicate_faculty_ids": {
+        "fraud_type": "duplicate_faculty_ids",
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 10
+      },
+      "reused_seal_and_lab_photo": {
+        "fraud_type": "reused_seal_and_lab_photo",
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 10
+      },
+      "geotag_outside_campus": {
+        "fraud_type": "geotag_outside_campus",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "scanned_hindi_documents": {
+        "fraud_type": "scanned_hindi_documents",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      }
+    },
+    "failures": []
+  },
+  "blind_split": {
+    "num_applications": 12,
+    "false_alarm_rate": 0.0,
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "runtime_seconds": 7.355,
+    "per_fraud_metrics": {
+      "expired_certificate": {
+        "fraud_type": "expired_certificate",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "edited_date_incremental_revision": {
+        "fraud_type": "edited_date_incremental_revision",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "font_mismatch": {
+        "fraud_type": "font_mismatch",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "whiteout": {
+        "fraud_type": "whiteout",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "invalid_or_applicant_signature": {
+        "fraud_type": "invalid_or_applicant_signature",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "tampered_qr": {
+        "fraud_type": "tampered_qr",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "duplicate_faculty_ids": {
+        "fraud_type": "duplicate_faculty_ids",
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 10
+      },
+      "reused_seal_and_lab_photo": {
+        "fraud_type": "reused_seal_and_lab_photo",
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 10
+      },
+      "geotag_outside_campus": {
+        "fraud_type": "geotag_outside_campus",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      },
+      "scanned_hindi_documents": {
+        "fraud_type": "scanned_hindi_documents",
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11
+      }
+    },
+    "failures": []
+  }
+}

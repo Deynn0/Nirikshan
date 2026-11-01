@@ -1,0 +1,74 @@
+{
+  "application_id": "app_blind_01",
+  "split": "blind",
+  "institution_name": "Institution Blind #1",
+  "application_number": "AICTE/2024/BLIND/001",
+  "is_clean": true,
+  "planted_frauds": [],
+  "campus_polygon": [
+    [
+      77.2,
+      28.61
+    ],
+    [
+      77.22,
+      28.61
+    ],
+    [
+      77.22,
+      28.625
+    ],
+    [
+      77.2,
+      28.625
+    ]
+  ],
+  "extracted_params": {
+    "land_area_acres": 4.5,
+    "is_contiguous": true,
+    "survey_no_deed": "104/1A",
+    "survey_no_conversion": "104/1A",
+    "survey_no_building_plan": "104/1A",
+    "built_up_area_sqm": 12500.0,
+    "fire_noc_expired": false,
+    "faculty_count": 60,
+    "cadre_professors": 6,
+    "cadre_assoc_professors": 14,
+    "cadre_asst_professors": 40,
+    "fdr_amount_lakhs": 100.0,
+    "faculty": [
+      {
+        "aadhaar": "6452 7286 6895",
+        "name": "Dr. Sunil Kumar #1",
+        "employment_type": "FULL_TIME",
+        "periods": [
+          "2024-2025"
+        ]
+      }
+    ],
+    "photos": [
+      {
+        "phash": "af85d03aad2fd0d0",
+        "type": "COMPUTER_LAB"
+      }
+    ],
+    "seals": [
+      {
+        "phash": "ba99ede4309b8364",
+        "issuing_authority": "Delhi Fire Service"
+      }
+    ]
+  },
+  "files": {
+    "documents": [
+      "blind\\app_blind_01\\documents\\approval_letter.pdf",
+      "blind\\app_blind_01\\documents\\fire_noc.pdf",
+      "blind\\app_blind_01\\documents\\land_deed.pdf"
+    ],
+    "photos": [
+      "blind\\app_blind_01\\photos\\approval_qr.png",
+      "blind\\app_blind_01\\photos\\lab_view.jpg",
+      "blind\\app_blind_01\\photos\\seal.png"
+    ]
+  }
+}

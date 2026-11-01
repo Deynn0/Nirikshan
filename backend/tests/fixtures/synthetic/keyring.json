@@ -1,0 +1,11 @@
+{
+  "keys": [
+    {
+      "key_id": "aicte-ed25519-root-01",
+      "algorithm": "Ed25519",
+      "issuer": "All India Council for Technical Education",
+      "role": "ISSUER_OFFICER",
+      "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEADhDSu8gCDK8EwgjvCPGdYKDOPu0HohlLh1Bus2irLEw=\n-----END PUBLIC KEY-----\n"
+    }
+  ]
+}

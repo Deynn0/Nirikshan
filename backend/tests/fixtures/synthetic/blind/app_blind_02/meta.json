@@ -1,0 +1,74 @@
+{
+  "application_id": "app_blind_02",
+  "split": "blind",
+  "institution_name": "Institution Blind #2",
+  "application_number": "AICTE/2024/BLIND/002",
+  "is_clean": true,
+  "planted_frauds": [],
+  "campus_polygon": [
+    [
+      77.2,
+      28.61
+    ],
+    [
+      77.22,
+      28.61
+    ],
+    [
+      77.22,
+      28.625
+    ],
+    [
+      77.2,
+      28.625
+    ]
+  ],
+  "extracted_params": {
+    "land_area_acres": 4.5,
+    "is_contiguous": true,
+    "survey_no_deed": "104/1A",
+    "survey_no_conversion": "104/1A",
+    "survey_no_building_plan": "104/1A",
+    "built_up_area_sqm": 12500.0,
+    "fire_noc_expired": false,
+    "faculty_count": 60,
+    "cadre_professors": 6,
+    "cadre_assoc_professors": 14,
+    "cadre_asst_professors": 40,
+    "fdr_amount_lakhs": 100.0,
+    "faculty": [
+      {
+        "aadhaar": "6040 7415 4357",
+        "name": "Dr. Sunil Kumar #2",
+        "employment_type": "FULL_TIME",
+        "periods": [
+          "2024-2025"
+        ]
+      }
+    ],
+    "photos": [
+      {
+        "phash": "bf94843f953e806a",
+        "type": "CHEMISTRY_LAB"
+      }
+    ],
+    "seals": [
+      {
+        "phash": "9e3f69c03c1fc1e0",
+        "issuing_authority": "Municipal Corporation"
+      }
+    ]
+  },
+  "files": {
+    "documents": [
+      "blind\\app_blind_02\\documents\\approval_letter.pdf",
+      "blind\\app_blind_02\\documents\\fire_noc.pdf",
+      "blind\\app_blind_02\\documents\\land_deed.pdf"
+    ],
+    "photos": [
+      "blind\\app_blind_02\\photos\\approval_qr.png",
+      "blind\\app_blind_02\\photos\\lab_view.jpg",
+      "blind\\app_blind_02\\photos\\seal.png"
+    ]
+  }
+}

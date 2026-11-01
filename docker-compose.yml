@@ -1,0 +1,110 @@
+version: "3.8"
+
+services:
+  # 1. API: Core Scrutiny Web Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nirikshan-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - NIRIKSHAN_DATABASE_URL=sqlite+aiosqlite:////app/var/nirikshan.db
+      - NIRIKSHAN_DATABASE_SYNC_URL=sqlite:////app/var/nirikshan.db
+      - NIRIKSHAN_OLLAMA_BASE_URL=http://ollama:11434
+      - NIRIKSHAN_ALLOW_EXTERNAL_NETWORK=false
+      - NIRIKSHAN_RATE_LIMIT_PER_MINUTE=120
+      - NIRIKSHAN_SANDBOX_CPU_LIMIT_SECONDS=15
+      - NIRIKSHAN_SANDBOX_WALL_CLOCK_TIMEOUT_SECONDS=20
+      - NIRIKSHAN_SANDBOX_MAX_PAGE_COUNT=100
+      - NIRIKSHAN_SANDBOX_MAX_DECOMPRESSION_RATIO=30.0
+      - NIRIKSHAN_ACTIVE_MASTER_KEY_ID=master-key-2024-v1
+    volumes:
+      - nirikshan_data:/app/var
+      - nirikshan_trust:/app/trust
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    networks:
+      - nirikshan_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # 2. Worker: Asynchronous Job Processing & Background Verification
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nirikshan-worker
+    restart: unless-stopped
+    command: ["python", "-m", "nirikshan.worker.runner", "--help"]
+    environment:
+      - NIRIKSHAN_DATABASE_URL=sqlite+aiosqlite:////app/var/nirikshan.db
+      - NIRIKSHAN_DATABASE_SYNC_URL=sqlite:////app/var/nirikshan.db
+      - NIRIKSHAN_OLLAMA_BASE_URL=http://ollama:11434
+      - NIRIKSHAN_ALLOW_EXTERNAL_NETWORK=false
+      - NIRIKSHAN_ACTIVE_MASTER_KEY_ID=master-key-2024-v1
+    volumes:
+      - nirikshan_data:/app/var
+      - nirikshan_trust:/app/trust
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - nirikshan_net
+
+  # 3. Database: Relational State Store
+  db:
+    image: postgres:16-alpine
+    container_name: nirikshan-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=nirikshan
+      - POSTGRES_PASSWORD=nirikshan_secure_pass
+      - POSTGRES_DB=nirikshan
+    volumes:
+      - nirikshan_pgdata:/var/lib/postgresql/data
+    networks:
+      - nirikshan_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nirikshan -d nirikshan"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # 4. Ollama: Offline Advisory LLM Inference Engine
+  ollama:
+    image: ollama/ollama:latest
+    container_name: nirikshan-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - nirikshan_ollama_models:/root/.ollama
+    networks:
+      - nirikshan_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  nirikshan_data:
+  nirikshan_trust:
+  nirikshan_pgdata:
+  nirikshan_ollama_models:
+
+networks:
+  nirikshan_net:
+    driver: bridge

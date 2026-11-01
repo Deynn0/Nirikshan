@@ -1,0 +1,3003 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Nirikshan Regulatory Scrutiny System",
+    "description": "Offline-first explainable document verification system for AICTE regulatory scrutiny.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "System health check and offline policy verification.",
+        "operationId": "health_check_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/token": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login For Access Token",
+        "description": "Issue a signed JWT access token for testing or offline deployment.",
+        "operationId": "login_for_access_token_api_auth_token_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get Current User Profile",
+        "description": "Return currently authenticated principal and active scrutiny role.",
+        "operationId": "get_current_user_profile_api_auth_me_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Nirikshan-Role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nirikshan-Role"
+            }
+          },
+          {
+            "name": "X-Nirikshan-User",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nirikshan-User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPrincipal"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dossiers": {
+      "get": {
+        "tags": [
+          "dossiers"
+        ],
+        "summary": "List Dossiers",
+        "description": "List all application dossiers.",
+        "operationId": "list_dossiers_api_dossiers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationDossier"
+                  },
+                  "type": "array",
+                  "title": "Response List Dossiers Api Dossiers Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "dossiers"
+        ],
+        "summary": "Create Dossier",
+        "description": "Register a new institution application dossier for scrutiny.",
+        "operationId": "create_dossier_api_dossiers_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DossierCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDossier"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dossiers/{dossier_id}": {
+      "get": {
+        "tags": [
+          "dossiers"
+        ],
+        "summary": "Get Dossier",
+        "description": "Retrieve full details, documents, and verification findings of a dossier.",
+        "operationId": "get_dossier_api_dossiers__dossier_id__get",
+        "parameters": [
+          {
+            "name": "dossier_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dossier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDossier"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dossiers/{dossier_id}/verify": {
+      "post": {
+        "tags": [
+          "dossiers"
+        ],
+        "summary": "Verify Dossier",
+        "description": "Execute offline deterministic scrutiny engine over the dossier's uploaded documents.",
+        "operationId": "verify_dossier_api_dossiers__dossier_id__verify_post",
+        "parameters": [
+          {
+            "name": "dossier_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dossier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationDossier"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dossiers/{dossier_id}/documents/upload": {
+      "post": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Upload Document",
+        "description": "Safely receive an untrusted regulatory document.\n\nStores in quarantine and delegates parsing exclusively to the isolated sandboxed worker.",
+        "operationId": "upload_document_api_dossiers__dossier_id__documents_upload_post",
+        "parameters": [
+          {
+            "name": "dossier_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dossier Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_document_api_dossiers__dossier_id__documents_upload_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dossiers/{dossier_id}/documents/{document_id}/file": {
+      "get": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Get Document File",
+        "description": "Serve quarantined document file for scrutiny preview and bounding-box overlay.",
+        "operationId": "get_document_file_api_dossiers__dossier_id__documents__document_id__file_get",
+        "parameters": [
+          {
+            "name": "dossier_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dossier Id"
+            }
+          },
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/dossiers/{dossier_id}/evaluate": {
+      "post": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Submit Evaluation Job",
+        "description": "Submit an asynchronous scrutiny job for a dossier with stage-by-stage event tracking.",
+        "operationId": "submit_evaluation_job_api_jobs_dossiers__dossier_id__evaluate_post",
+        "parameters": [
+          {
+            "name": "dossier_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dossier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Get Job Status",
+        "description": "Retrieve the current processing state and progress percent of a verification job.",
+        "operationId": "get_job_status_api_jobs__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/{job_id}/events": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Stream Job Events",
+        "description": "Stream stage-by-stage progress events (ingest, ocr, forensics, crypto, extract, rules, graph) via SSE.",
+        "operationId": "stream_job_events_api_jobs__job_id__events_get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/audit/chain": {
+      "get": {
+        "tags": [
+          "audit"
+        ],
+        "summary": "Get Audit Chain Status",
+        "description": "Verify cryptographic integrity of the immutable audit hash chain.",
+        "operationId": "get_audit_chain_status_api_audit_chain_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChainVerificationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/audit/entries": {
+      "get": {
+        "tags": [
+          "audit"
+        ],
+        "summary": "List Audit Entries",
+        "description": "List all audit log entries with previous hash and entry hash.",
+        "operationId": "list_audit_entries_api_audit_entries_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response List Audit Entries Api Audit Entries Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/audit/replay/{evaluation_id}": {
+      "post": {
+        "tags": [
+          "audit"
+        ],
+        "summary": "Replay Evaluation Endpoint",
+        "description": "Replay recorded evaluation and confirm identical deterministic output.",
+        "operationId": "replay_evaluation_endpoint_api_audit_replay__evaluation_id__post",
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Evaluation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rules": {
+      "get": {
+        "tags": [
+          "rules"
+        ],
+        "summary": "List Rules",
+        "description": "List all deterministic AICTE Approval Process Handbook rules loaded from YAML.",
+        "operationId": "list_rules_api_rules_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response List Rules Api Rules Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rules/{rule_id}": {
+      "get": {
+        "tags": [
+          "rules"
+        ],
+        "summary": "Get Rule",
+        "description": "Retrieve details, citation, and handbook references for a specific rule.",
+        "operationId": "get_rule_api_rules__rule_id__get",
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rule Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Rule Api Rules  Rule Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dossiers/{dossier_id}/report": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "Generate Scrutiny Report",
+        "description": "Generate comprehensive, explainable AICTE regulatory scrutiny report.\n\nContains full Trust Ladder breakdown, rule citations, evidence items, and bounding boxes.",
+        "operationId": "generate_scrutiny_report_api_dossiers__dossier_id__report_get",
+        "parameters": [
+          {
+            "name": "dossier_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dossier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Generate Scrutiny Report Api Dossiers  Dossier Id  Report Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scan": {
+      "get": {
+        "tags": [
+          "Scan"
+        ],
+        "summary": "Scan Page",
+        "description": "Serve the public mobile-friendly QR scanner page.",
+        "operationId": "scan_page_scan_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Scan"
+        ],
+        "summary": "Scan Verify",
+        "description": "Verify QR code from uploaded image or direct JSON payload.",
+        "operationId": "scan_verify_scan_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_scan_verify_scan_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Scan Verify Scan Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/advisory/extract": {
+      "post": {
+        "tags": [
+          "advisory-ml"
+        ],
+        "summary": "Extract And Ground",
+        "description": "Extract structured fields using Ollama/Stub and verify grounding with spatial bboxes.",
+        "operationId": "extract_and_ground_api_advisory_extract_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtractAndGroundRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroundedResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/advisory/asset-count": {
+      "post": {
+        "tags": [
+          "advisory-ml"
+        ],
+        "summary": "Audit Lab Assets",
+        "description": "Detect workstations in a lab photo, compare with declared inventory, and emit advisory Finding.",
+        "operationId": "audit_lab_assets_api_advisory_asset_count_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_audit_lab_assets_api_advisory_asset_count_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabInventoryResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/advisory/ask-why": {
+      "post": {
+        "tags": [
+          "advisory-ml"
+        ],
+        "summary": "Ask Why",
+        "description": "Answer scrutiny officer questions using strictly grounded context with citations.",
+        "operationId": "ask_why_api_advisory_ask_why_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskWhyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskWhyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fraud/graph": {
+      "get": {
+        "tags": [
+          "fraud-graph"
+        ],
+        "summary": "Get Fraud Graph",
+        "description": "Retrieve full cross-application compliance graph in Cytoscape.js format.\n\nElements contain nodes and edges with cluster IDs and severity values.\nIncludes connected components analysis and cross-application fraud findings.",
+        "operationId": "get_fraud_graph_api_fraud_graph_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CytoscapeGraphResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fraud/index/{dossier_id}": {
+      "post": {
+        "tags": [
+          "fraud-graph"
+        ],
+        "summary": "Index Dossier",
+        "description": "Incrementally extract and index entities for an application dossier.\n\nPersists faculty salted hashes, certificate numbers, file SHA-256s,\nphoto perceptual hashes, seal perceptual hashes, land registration numbers,\nand declared addresses into the state store.",
+        "operationId": "index_dossier_api_fraud_index__dossier_id__post",
+        "parameters": [
+          {
+            "name": "dossier_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Dossier Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityExtractionResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fraud/scan": {
+      "post": {
+        "tags": [
+          "fraud-graph"
+        ],
+        "summary": "Scan Fraud Detectors",
+        "description": "Execute all cross-application fraud detectors:\n\n- Ghost Faculty (same faculty hash full-time at 2+ institutions overlapping)\n- Certificate Sharing (same Fire NOC / land deed across institutions)\n- Photo Reuse (identical or near-identical photos across applicants)\n- Seal Reuse (same seal phash across different issuing authorities)",
+        "operationId": "scan_fraud_detectors_api_fraud_scan_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Finding"
+                  },
+                  "type": "array",
+                  "title": "Response Scan Fraud Detectors Api Fraud Scan Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/fraud/findings": {
+      "get": {
+        "tags": [
+          "fraud-graph"
+        ],
+        "summary": "Get Fraud Findings",
+        "description": "Retrieve all current cross-application fraud findings.",
+        "operationId": "get_fraud_findings_api_fraud_findings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Finding"
+                  },
+                  "type": "array",
+                  "title": "Response Get Fraud Findings Api Fraud Findings Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApplicationDossier": {
+        "properties": {
+          "dossier_id": {
+            "type": "string",
+            "title": "Dossier Id"
+          },
+          "institution_name": {
+            "type": "string",
+            "title": "Institution Name"
+          },
+          "application_number": {
+            "type": "string",
+            "title": "Application Number"
+          },
+          "program": {
+            "type": "string",
+            "title": "Program"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "institution_type": {
+            "type": "string",
+            "title": "Institution Type"
+          },
+          "location_type": {
+            "type": "string",
+            "title": "Location Type"
+          },
+          "intake_proposed": {
+            "type": "integer",
+            "title": "Intake Proposed"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentRecord"
+            },
+            "type": "array",
+            "title": "Documents"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "overall_status": {
+            "$ref": "#/components/schemas/VerificationStatus",
+            "default": "INCONCLUSIVE"
+          },
+          "risk_score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Risk Score",
+            "default": 0.0
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "default": "Awaiting verification."
+          }
+        },
+        "type": "object",
+        "required": [
+          "dossier_id",
+          "institution_name",
+          "application_number",
+          "program",
+          "level",
+          "institution_type",
+          "location_type",
+          "intake_proposed"
+        ],
+        "title": "ApplicationDossier",
+        "description": "Complete scrutiny dossier with documents and verification findings."
+      },
+      "ApplicationEntityEdge": {
+        "properties": {
+          "edge_id": {
+            "type": "string",
+            "title": "Edge Id"
+          },
+          "dossier_id": {
+            "type": "string",
+            "title": "Dossier Id"
+          },
+          "entity_id": {
+            "type": "string",
+            "title": "Entity Id"
+          },
+          "relation": {
+            "type": "string",
+            "title": "Relation",
+            "default": "uses"
+          },
+          "context_label": {
+            "type": "string",
+            "title": "Context Label",
+            "default": ""
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "edge_id",
+          "dossier_id",
+          "entity_id"
+        ],
+        "title": "ApplicationEntityEdge",
+        "description": "Graph edge connecting an application dossier to an entity."
+      },
+      "AskWhyCitation": {
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id"
+          },
+          "clause": {
+            "type": "string",
+            "title": "Clause"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Page"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule_id",
+          "clause",
+          "page"
+        ],
+        "title": "AskWhyCitation",
+        "description": "Citation back to the regulatory clause and page."
+      },
+      "AskWhyRequest": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "finding": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finding"
+          },
+          "rule": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule"
+          },
+          "facts": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Facts"
+          },
+          "evidence_items": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "AskWhyRequest",
+        "description": "Request payload for Ask Why officer assistant."
+      },
+      "AskWhyResponse": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "is_refusal": {
+            "type": "boolean",
+            "title": "Is Refusal",
+            "description": "True if question was out-of-context and refused"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/AskWhyCitation"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "trust_level": {
+            "$ref": "#/components/schemas/TrustLevel",
+            "description": "Always MODEL advisory",
+            "default": "MODEL"
+          },
+          "context_keys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Context Keys"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "answer",
+          "is_refusal"
+        ],
+        "title": "AskWhyResponse",
+        "description": "Structured response from the Ask Why assistant."
+      },
+      "Body_audit_lab_assets_api_advisory_asset_count_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          },
+          "declared_count": {
+            "type": "integer",
+            "title": "Declared Count"
+          },
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id",
+            "default": "AICTE-2024-LAB-001"
+          },
+          "use_mock": {
+            "type": "boolean",
+            "title": "Use Mock",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "file",
+          "declared_count"
+        ],
+        "title": "Body_audit_lab_assets_api_advisory_asset_count_post"
+      },
+      "Body_scan_verify_scan_post": {
+        "properties": {
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "title": "Body_scan_verify_scan_post"
+      },
+      "Body_upload_document_api_dossiers__dossier_id__documents_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          },
+          "doc_type": {
+            "type": "string",
+            "title": "Doc Type",
+            "default": "LAND_SALE_DEED"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "default": ""
+          },
+          "is_self_attested": {
+            "type": "boolean",
+            "title": "Is Self Attested",
+            "default": false
+          },
+          "land_area_acres": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Land Area Acres"
+          },
+          "survey_no": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Survey No"
+          },
+          "faculty_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Faculty Count"
+          },
+          "cadre_professors": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cadre Professors"
+          },
+          "cadre_assoc_professors": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cadre Assoc Professors"
+          },
+          "cadre_asst_professors": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cadre Asst Professors"
+          },
+          "fdr_amount_lakhs": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fdr Amount Lakhs"
+          },
+          "built_up_area_sqm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Built Up Area Sqm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_document_api_dossiers__dossier_id__documents_upload_post"
+      },
+      "BoundingBox": {
+        "properties": {
+          "page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Page",
+            "description": "1-indexed page number"
+          },
+          "x": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "X",
+            "description": "X coordinate (left)"
+          },
+          "y": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Y",
+            "description": "Y coordinate (top)"
+          },
+          "width": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Width",
+            "description": "Width"
+          },
+          "height": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Height",
+            "description": "Height"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page",
+          "x",
+          "y",
+          "width",
+          "height"
+        ],
+        "title": "BoundingBox",
+        "description": "Bounding box on a document page (PDF coordinate points)."
+      },
+      "ChainVerificationResult": {
+        "properties": {
+          "is_valid": {
+            "type": "boolean",
+            "title": "Is Valid"
+          },
+          "total_entries": {
+            "type": "integer",
+            "title": "Total Entries"
+          },
+          "head_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Head Hash"
+          },
+          "broken_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Broken Index"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "expected_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Hash"
+          },
+          "actual_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Hash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_valid",
+          "total_entries"
+        ],
+        "title": "ChainVerificationResult",
+        "description": "Result of audit hash chain integrity verification."
+      },
+      "CytoscapeClusterSummary": {
+        "properties": {
+          "cluster_id": {
+            "type": "integer",
+            "title": "Cluster Id"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size"
+          },
+          "node_count": {
+            "type": "integer",
+            "title": "Node Count"
+          },
+          "edge_count": {
+            "type": "integer",
+            "title": "Edge Count"
+          },
+          "max_severity": {
+            "type": "string",
+            "title": "Max Severity"
+          },
+          "fraud_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fraud Types"
+          },
+          "involved_application_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Involved Application Ids"
+          },
+          "involved_institutions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Involved Institutions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cluster_id",
+          "size",
+          "node_count",
+          "edge_count",
+          "max_severity"
+        ],
+        "title": "CytoscapeClusterSummary",
+        "description": "Summary of a connected fraud cluster in the graph."
+      },
+      "CytoscapeEdge": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CytoscapeEdgeData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "CytoscapeEdge",
+        "description": "Cytoscape.js edge element."
+      },
+      "CytoscapeEdgeData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "relation": {
+            "type": "string",
+            "title": "Relation",
+            "default": "uses"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "default": "uses"
+          },
+          "cluster_id": {
+            "type": "integer",
+            "title": "Cluster Id",
+            "default": 0
+          },
+          "severity": {
+            "type": "string",
+            "title": "Severity",
+            "default": "CLEAN"
+          },
+          "hamming_distance": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hamming Distance"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "target"
+        ],
+        "title": "CytoscapeEdgeData",
+        "description": "Edge data payload for Cytoscape.js rendering."
+      },
+      "CytoscapeElements": {
+        "properties": {
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/CytoscapeNode"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/CytoscapeEdge"
+            },
+            "type": "array",
+            "title": "Edges"
+          }
+        },
+        "type": "object",
+        "title": "CytoscapeElements",
+        "description": "Cytoscape.js elements dictionary containing nodes and edges."
+      },
+      "CytoscapeGraphResponse": {
+        "properties": {
+          "elements": {
+            "$ref": "#/components/schemas/CytoscapeElements"
+          },
+          "clusters": {
+            "items": {
+              "$ref": "#/components/schemas/CytoscapeClusterSummary"
+            },
+            "type": "array",
+            "title": "Clusters"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "total_applications": {
+            "type": "integer",
+            "title": "Total Applications",
+            "default": 0
+          },
+          "total_entities": {
+            "type": "integer",
+            "title": "Total Entities",
+            "default": 0
+          },
+          "total_edges": {
+            "type": "integer",
+            "title": "Total Edges",
+            "default": 0
+          },
+          "fraud_detected": {
+            "type": "boolean",
+            "title": "Fraud Detected",
+            "default": false
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "elements"
+        ],
+        "title": "CytoscapeGraphResponse",
+        "description": "Complete API response payload for the fraud graph."
+      },
+      "CytoscapeNode": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CytoscapeNodeData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "CytoscapeNode",
+        "description": "Cytoscape.js node element."
+      },
+      "CytoscapeNodeData": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "node_type": {
+            "type": "string",
+            "title": "Node Type",
+            "description": "'application' or 'entity'"
+          },
+          "entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Type"
+          },
+          "cluster_id": {
+            "type": "integer",
+            "title": "Cluster Id",
+            "default": 0
+          },
+          "severity": {
+            "type": "string",
+            "title": "Severity",
+            "default": "CLEAN"
+          },
+          "institution_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution Name"
+          },
+          "application_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Application Number"
+          },
+          "risk_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Score"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "node_type"
+        ],
+        "title": "CytoscapeNodeData",
+        "description": "Node data payload for Cytoscape.js rendering."
+      },
+      "DetectionBox": {
+        "properties": {
+          "x1": {
+            "type": "number",
+            "title": "X1"
+          },
+          "y1": {
+            "type": "number",
+            "title": "Y1"
+          },
+          "x2": {
+            "type": "number",
+            "title": "X2"
+          },
+          "y2": {
+            "type": "number",
+            "title": "Y2"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "class_id": {
+            "type": "integer",
+            "title": "Class Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "x1",
+          "y1",
+          "x2",
+          "y2",
+          "confidence",
+          "class_id",
+          "label"
+        ],
+        "title": "DetectionBox",
+        "description": "Bounding box detection result."
+      },
+      "DocumentRecord": {
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "dossier_id": {
+            "type": "string",
+            "title": "Dossier Id"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "doc_type": {
+            "$ref": "#/components/schemas/DocumentType"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "page_count": {
+            "type": "integer",
+            "title": "Page Count"
+          },
+          "forensic": {
+            "$ref": "#/components/schemas/ForensicReport"
+          },
+          "extracted_text_preview": {
+            "type": "string",
+            "title": "Extracted Text Preview",
+            "default": ""
+          },
+          "is_self_attested": {
+            "type": "boolean",
+            "title": "Is Self Attested",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_id",
+          "dossier_id",
+          "file_name",
+          "doc_type",
+          "title",
+          "page_count",
+          "forensic"
+        ],
+        "title": "DocumentRecord",
+        "description": "Metadata record of an uploaded institutional document."
+      },
+      "DocumentType": {
+        "type": "string",
+        "enum": [
+          "LAND_SALE_DEED",
+          "LAND_LEASE_DEED",
+          "LAND_USE_CONVERSION_CERT",
+          "BUILDING_PLAN_APPROVED",
+          "BUILDING_COMPLETION_CERT",
+          "FIRE_SAFETY_NOC",
+          "BARRIER_FREE_CERT",
+          "FDR_RECEIPT",
+          "TRUST_REGISTRATION_CERT",
+          "FACULTY_MASTER_LIST",
+          "AFFIDAVIT_SELF_DECLARATION",
+          "UNKNOWN"
+        ],
+        "title": "DocumentType",
+        "description": "Document classification types in regulatory dossier."
+      },
+      "DossierCreate": {
+        "properties": {
+          "institution_name": {
+            "type": "string",
+            "title": "Institution Name"
+          },
+          "application_number": {
+            "type": "string",
+            "title": "Application Number"
+          },
+          "program": {
+            "type": "string",
+            "title": "Program",
+            "default": "Engineering & Technology"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level",
+            "default": "Under Graduate (UG)"
+          },
+          "institution_type": {
+            "type": "string",
+            "title": "Institution Type",
+            "default": "Private-Self Financing"
+          },
+          "location_type": {
+            "type": "string",
+            "title": "Location Type",
+            "description": "Mega City, Metro City, Urban, Rural",
+            "default": "Urban"
+          },
+          "intake_proposed": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Intake Proposed",
+            "default": 300
+          }
+        },
+        "type": "object",
+        "required": [
+          "institution_name",
+          "application_number"
+        ],
+        "title": "DossierCreate",
+        "description": "Payload to initialize a new application dossier."
+      },
+      "EntityExtractionResult": {
+        "properties": {
+          "dossier_id": {
+            "type": "string",
+            "title": "Dossier Id"
+          },
+          "application_number": {
+            "type": "string",
+            "title": "Application Number"
+          },
+          "institution_name": {
+            "type": "string",
+            "title": "Institution Name"
+          },
+          "entities": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedEntity"
+            },
+            "type": "array",
+            "title": "Entities"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/ApplicationEntityEdge"
+            },
+            "type": "array",
+            "title": "Edges"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dossier_id",
+          "application_number",
+          "institution_name"
+        ],
+        "title": "EntityExtractionResult",
+        "description": "Bundle of all entities extracted for a single application dossier."
+      },
+      "EntityType": {
+        "type": "string",
+        "enum": [
+          "FACULTY",
+          "CERTIFICATE",
+          "FILE_HASH",
+          "PHOTO_PHASH",
+          "SEAL_PHASH",
+          "LAND_REG",
+          "DECLARED_ADDRESS"
+        ],
+        "title": "EntityType",
+        "description": "Categorization of cross-application scrutiny entities."
+      },
+      "EvidenceItem": {
+        "properties": {
+          "evidence_id": {
+            "type": "string",
+            "title": "Evidence Id"
+          },
+          "trust_level": {
+            "$ref": "#/components/schemas/TrustLevel"
+          },
+          "source_type": {
+            "type": "string",
+            "title": "Source Type",
+            "description": "e.g. 'Sale Deed', 'Building Plan', 'Fire NOC'"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "raw_value": {
+            "title": "Raw Value"
+          },
+          "source_document_id": {
+            "type": "string",
+            "title": "Source Document Id"
+          },
+          "source_document_name": {
+            "type": "string",
+            "title": "Source Document Name"
+          },
+          "page_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Number"
+          },
+          "bounding_box": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BoundingBox"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_self_attested": {
+            "type": "boolean",
+            "title": "Is Self Attested",
+            "default": false
+          },
+          "is_tampered": {
+            "type": "boolean",
+            "title": "Is Tampered",
+            "default": false
+          },
+          "verification_method": {
+            "type": "string",
+            "title": "Verification Method",
+            "description": "e.g. 'PKI_X509', 'SUB_REGISTRAR_SEAL', 'OCR_ADVISORY'"
+          }
+        },
+        "type": "object",
+        "required": [
+          "evidence_id",
+          "trust_level",
+          "source_type",
+          "description",
+          "source_document_id",
+          "source_document_name",
+          "verification_method"
+        ],
+        "title": "EvidenceItem",
+        "description": "Atomic piece of evidence supporting a finding."
+      },
+      "ExtractAndGroundRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Raw text or OCR output"
+          },
+          "schema_definition": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Definition",
+            "description": "Optional target JSON schema"
+          },
+          "pages_text": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages Text",
+            "description": "Optional page-split text for spatial tokens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "ExtractAndGroundRequest",
+        "description": "Request payload for text field extraction and grounding."
+      },
+      "ExtractedEntity": {
+        "properties": {
+          "entity_id": {
+            "type": "string",
+            "title": "Entity Id",
+            "description": "Unique deterministic identifier (e.g. 'FACULTY:a1b2c3...')"
+          },
+          "entity_type": {
+            "$ref": "#/components/schemas/EntityType"
+          },
+          "entity_value": {
+            "type": "string",
+            "title": "Entity Value",
+            "description": "Exact match value (salted hash, normalized cert no, phash, sha256)"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Human-readable label for graph display"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entity_id",
+          "entity_type",
+          "entity_value",
+          "label"
+        ],
+        "title": "ExtractedEntity",
+        "description": "Normalized entity extracted from an application dossier."
+      },
+      "Finding": {
+        "properties": {
+          "finding_id": {
+            "type": "string",
+            "title": "Finding Id"
+          },
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id",
+            "description": "Unique deterministic rule ID e.g. 'AICTE-2024-LAND-001'"
+          },
+          "rule_name": {
+            "type": "string",
+            "title": "Rule Name"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Regulatory domain (e.g., 'Land', 'Infrastructure', 'Faculty')"
+          },
+          "status": {
+            "$ref": "#/components/schemas/VerificationStatus"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "details": {
+            "type": "string",
+            "title": "Details"
+          },
+          "handbook_citation": {
+            "$ref": "#/components/schemas/HandbookCitation"
+          },
+          "evidence_list": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceItem"
+            },
+            "type": "array",
+            "title": "Evidence List"
+          },
+          "primary_bounding_box": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BoundingBox"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "advisory_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Advisory Notes"
+          },
+          "is_model_advisory_only": {
+            "type": "boolean",
+            "title": "Is Model Advisory Only",
+            "default": false
+          },
+          "needs_verification": {
+            "type": "boolean",
+            "title": "Needs Verification",
+            "default": false
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "finding_id",
+          "rule_id",
+          "rule_name",
+          "category",
+          "status",
+          "summary",
+          "details",
+          "handbook_citation"
+        ],
+        "title": "Finding",
+        "description": "Explainable scrutiny finding attached to a regulatory rule."
+      },
+      "ForensicReport": {
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "sha256_hash": {
+            "type": "string",
+            "title": "Sha256 Hash"
+          },
+          "file_size_bytes": {
+            "type": "integer",
+            "title": "File Size Bytes"
+          },
+          "page_count": {
+            "type": "integer",
+            "title": "Page Count"
+          },
+          "is_tampered": {
+            "type": "boolean",
+            "title": "Is Tampered",
+            "default": false
+          },
+          "tamper_flags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tamper Flags"
+          },
+          "has_digital_signature": {
+            "type": "boolean",
+            "title": "Has Digital Signature",
+            "default": false
+          },
+          "signature_valid": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signature Valid"
+          },
+          "signer_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signer Name"
+          },
+          "signer_org": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signer Org"
+          },
+          "signature_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signature Time"
+          },
+          "creation_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Creation Date"
+          },
+          "modification_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modification Date"
+          },
+          "producer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Producer"
+          },
+          "incremental_updates_count": {
+            "type": "integer",
+            "title": "Incremental Updates Count",
+            "default": 0
+          },
+          "font_anomalies": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Font Anomalies"
+          },
+          "assessed_trust_level": {
+            "$ref": "#/components/schemas/TrustLevel",
+            "default": "STRUCTURAL_FORENSIC"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_id",
+          "file_name",
+          "sha256_hash",
+          "file_size_bytes",
+          "page_count"
+        ],
+        "title": "ForensicReport",
+        "description": "Forensic and cryptographic verification of an untrusted file."
+      },
+      "GroundedField": {
+        "properties": {
+          "field_name": {
+            "type": "string",
+            "title": "Field Name"
+          },
+          "value": {
+            "title": "Value"
+          },
+          "matched_text": {
+            "type": "string",
+            "title": "Matched Text"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "bbox": {
+            "$ref": "#/components/schemas/BoundingBox"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          },
+          "match_type": {
+            "type": "string",
+            "title": "Match Type",
+            "description": "'exact' or 'fuzzy'",
+            "default": "exact"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "grounded"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field_name",
+          "value",
+          "matched_text",
+          "page",
+          "bbox",
+          "confidence"
+        ],
+        "title": "GroundedField",
+        "description": "A field whose value was verified and located in the document."
+      },
+      "GroundedResult": {
+        "properties": {
+          "grounded_fields": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GroundedField"
+            },
+            "type": "object",
+            "title": "Grounded Fields"
+          },
+          "rejected_fields": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rejected Fields",
+            "description": "Fields whose values could not be grounded in document text (hallucination_rejected)"
+          },
+          "rejection_reasons": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Rejection Reasons"
+          },
+          "hallucination_log": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Hallucination Log"
+          },
+          "total_extracted": {
+            "type": "integer",
+            "title": "Total Extracted",
+            "default": 0
+          },
+          "grounded_count": {
+            "type": "integer",
+            "title": "Grounded Count",
+            "default": 0
+          },
+          "rejected_count": {
+            "type": "integer",
+            "title": "Rejected Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "GroundedResult",
+        "description": "Result of grounded field verification across an extracted dictionary."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HandbookCitation": {
+        "properties": {
+          "handbook": {
+            "type": "string",
+            "title": "Handbook",
+            "description": "Official handbook title",
+            "default": "AICTE Approval Process Handbook 2024-2027"
+          },
+          "clause": {
+            "type": "string",
+            "title": "Clause",
+            "description": "Clause or Sub-clause e.g. 'Clause 4.1'"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Page",
+            "description": "Exact page reference or TODO"
+          },
+          "edition": {
+            "type": "string",
+            "title": "Edition",
+            "description": "Handbook academic block",
+            "default": "2024-2027"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table",
+            "description": "Optional Table reference e.g. 'Table 4.1'"
+          },
+          "needs_verification": {
+            "type": "boolean",
+            "title": "Needs Verification",
+            "description": "Flag indicating handbook reference requires manual verification",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "clause",
+          "page"
+        ],
+        "title": "HandbookCitation",
+        "description": "Citations pointing directly to AICTE Approval Process Handbook clauses."
+      },
+      "JobResponse": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "dossier_id": {
+            "type": "string",
+            "title": "Dossier Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "current_stage": {
+            "type": "string",
+            "title": "Current Stage"
+          },
+          "progress_percent": {
+            "type": "integer",
+            "title": "Progress Percent"
+          },
+          "stage_message": {
+            "type": "string",
+            "title": "Stage Message"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "dossier_id",
+          "status",
+          "current_stage",
+          "progress_percent",
+          "stage_message"
+        ],
+        "title": "JobResponse"
+      },
+      "LabInventoryResult": {
+        "properties": {
+          "detected_count": {
+            "type": "integer",
+            "title": "Detected Count"
+          },
+          "declared_count": {
+            "type": "integer",
+            "title": "Declared Count"
+          },
+          "discrepancy": {
+            "type": "integer",
+            "title": "Discrepancy",
+            "description": "detected_count - declared_count"
+          },
+          "detections": {
+            "items": {
+              "$ref": "#/components/schemas/DetectionBox"
+            },
+            "type": "array",
+            "title": "Detections"
+          },
+          "annotated_image_path": {
+            "type": "string",
+            "title": "Annotated Image Path"
+          },
+          "finding": {
+            "$ref": "#/components/schemas/Finding"
+          }
+        },
+        "type": "object",
+        "required": [
+          "detected_count",
+          "declared_count",
+          "discrepancy",
+          "annotated_image_path",
+          "finding"
+        ],
+        "title": "LabInventoryResult",
+        "description": "Complete scrutiny audit of lab photo workstation inventory."
+      },
+      "LoginRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole",
+            "default": "applicant"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "default": "offline-pass"
+          },
+          "institution_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username"
+        ],
+        "title": "LoginRequest"
+      },
+      "ReplayResult": {
+        "properties": {
+          "evaluation_id": {
+            "type": "string",
+            "title": "Evaluation Id"
+          },
+          "is_identical": {
+            "type": "boolean",
+            "title": "Is Identical"
+          },
+          "original_status": {
+            "type": "string",
+            "title": "Original Status"
+          },
+          "replayed_status": {
+            "type": "string",
+            "title": "Replayed Status"
+          },
+          "original_risk_score": {
+            "type": "number",
+            "title": "Original Risk Score"
+          },
+          "replayed_risk_score": {
+            "type": "number",
+            "title": "Replayed Risk Score"
+          },
+          "original_findings_count": {
+            "type": "integer",
+            "title": "Original Findings Count"
+          },
+          "replayed_findings_count": {
+            "type": "integer",
+            "title": "Replayed Findings Count"
+          },
+          "diffs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Diffs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "evaluation_id",
+          "is_identical",
+          "original_status",
+          "replayed_status",
+          "original_risk_score",
+          "replayed_risk_score",
+          "original_findings_count",
+          "replayed_findings_count"
+        ],
+        "title": "ReplayResult",
+        "description": "Outcome of replaying a past regulatory evaluation."
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "expires_in_hours": {
+            "type": "integer",
+            "title": "Expires In Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "role",
+          "username",
+          "expires_in_hours"
+        ],
+        "title": "TokenResponse"
+      },
+      "TrustLevel": {
+        "type": "string",
+        "enum": [
+          "CRYPTOGRAPHIC",
+          "ISSUER",
+          "RECORD",
+          "RULE",
+          "STRUCTURAL_FORENSIC",
+          "MODEL",
+          "UNVERIFIED_CLAIM"
+        ],
+        "title": "TrustLevel",
+        "description": "Ordinal trust levels ranked from most authoritative to advisory."
+      },
+      "UserPrincipal": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name",
+            "default": ""
+          },
+          "institution_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "username",
+          "role"
+        ],
+        "title": "UserPrincipal",
+        "description": "Authenticated user principal."
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "applicant",
+          "officer"
+        ],
+        "title": "UserRole"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VerificationStatus": {
+        "type": "string",
+        "enum": [
+          "PASS",
+          "FAIL",
+          "INCONCLUSIVE",
+          "MANUAL_REVIEW_REQUIRED",
+          "FLAGGED_TAMPER"
+        ],
+        "title": "VerificationStatus",
+        "description": "Scrutiny verification result status."
+      }
+    }
+  }
+}

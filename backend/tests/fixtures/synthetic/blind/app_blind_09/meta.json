@@ -1,0 +1,75 @@
+{
+  "application_id": "app_blind_09",
+  "split": "blind",
+  "institution_name": "Institution Blind #9",
+  "application_number": "AICTE/2024/BLIND/009",
+  "is_clean": false,
+  "planted_frauds": [
+    "duplicate_faculty_ids",
+    "reused_seal_and_lab_photo"
+  ],
+  "campus_polygon": [
+    [
+      77.2,
+      28.61
+    ],
+    [
+      77.22,
+      28.61
+    ],
+    [
+      77.22,
+      28.625
+    ],
+    [
+      77.2,
+      28.625
+    ]
+  ],
+  "extracted_params": {
+    "land_area_acres": 4.5,
+    "is_contiguous": true,
+    "survey_no_deed": "104/1A",
+    "survey_no_conversion": "104/1A",
+    "survey_no_building_plan": "104/1A",
+    "built_up_area_sqm": 12500.0,
+    "fire_noc_expired": false,
+    "faculty_count": 60,
+    "cadre_professors": 6,
+    "cadre_assoc_professors": 14,
+    "cadre_asst_professors": 40,
+    "fdr_amount_lakhs": 100.0,
+    "faculty": [
+      {
+        "aadhaar": "9737 6994 3714",
+        "name": "Dr. Ramesh Sharma (Shared)",
+        "employment_type": "FULL_TIME",
+        "periods": [
+          "2024-2025"
+        ],
+        "designation": "Professor & HOD"
+      }
+    ],
+    "photos": [
+      {
+        "phash": "c06b6b806f7f8495",
+        "type": "PHYSICS_LAB",
+        "source_path": "C:\\Users\\Admin\\nirikshan\\backend\\tests\\fixtures\\synthetic\\blind\\shared_assets\\shared_physics_lab.jpg"
+      }
+    ],
+    "seals": [
+      {
+        "phash": "ba33e5c4161bcb64",
+        "issuing_authority": "Delhi State Revenue Dept",
+        "source_path": "C:\\Users\\Admin\\nirikshan\\backend\\tests\\fixtures\\synthetic\\blind\\shared_assets\\shared_circular_seal.png"
+      }
+    ]
+  },
+  "files": {
+    "documents": [],
+    "photos": [
+      "blind\\app_blind_09\\photos\\lab.jpg",
+      "blind\\app_blind_09\\photos\\seal.png"
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+name: Nirikshan CI & Benchmark Evaluation
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  test-and-eval:
+    name: Scrutiny Tests & Synthetic Evaluation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "backend/pyproject.toml"
+
+      - name: Install system dependencies (Poppler & OpenCV support)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-glx poppler-utils fonts-deva
+
+      - name: Install Python dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install segno fonttools
+
+      - name: Run Lint and Type Verification
+        run: |
+          cd backend
+          ruff check .
+          mypy nirikshan tests
+
+      - name: Run Pytest Test Suite
+        run: |
+          cd backend
+          pytest -v
+
+      - name: Generate Synthetic Benchmark Fixtures
+        run: |
+          cd backend
+          python scripts/make_fixtures.py --num-apps 24
+
+      - name: Run Scrutiny Benchmark Evaluation with Regression Thresholds
+        run: |
+          cd backend
+          python scripts/evaluate.py --check-thresholds --min-f1 0.90 --max-far 0.05
+
+      - name: Archive Evaluation Reports & Benchmark Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scrutiny-evaluation-report
+          path: |
+            backend/evaluation_report.md
+            backend/evaluation_report.json
+            backend/tests/fixtures/synthetic/ground_truth.json
+          retention-days: 14
