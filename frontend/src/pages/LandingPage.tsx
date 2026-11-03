@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Eye,
@@ -14,6 +14,7 @@ import { PramanaHeroHands } from '../components/landing/PramanaHeroHands';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const [wristY, setWristY] = useState<number | undefined>(undefined);
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -33,11 +34,14 @@ export const LandingPage: React.FC = () => {
         className="relative h-screen max-h-[100vh] min-h-[640px] w-full flex flex-col justify-between overflow-hidden"
         style={{
           background:
-            'linear-gradient(180deg, #FDCFA6 0%, #FDD8B9 20%, #FBE3E3 45%, #F4E8F7 70%, #E6DDF8 100%)',
+            'linear-gradient(180deg, #F4956A 0%, #F2A47E 18%, #ECA8B8 42%, #D4ADE8 68%, #BBA8EE 100%)',
         }}
       >
-        {/* 1. Flatter, Calmer Tile Floor with Soft Horizon Fade */}
-        <VoxelFloorCanvas />
+        {/* 1. Voxel floor — two canvas layers: back (z-0) and front (z-30) */}
+        <VoxelFloorCanvas onWristY={setWristY} />
+
+        {/* 2. Hands — absolute layer filling the hero so wristY maps 1:1 (z-10) */}
+        <PramanaHeroHands wristY={wristY} />
 
         {/* 2. Navbar: Floating white rounded pill, slightly narrower with soft shadow */}
         <header className="relative z-50 pt-3 px-4 sm:px-6 w-full flex justify-center">
@@ -135,10 +139,8 @@ export const LandingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Tall upright flat-style hands sitting on the grid horizon */}
-            <div className="lg:col-span-7 relative w-full h-[400px] sm:h-[440px] lg:h-[480px] xl:h-[500px] flex items-end justify-center">
-              <PramanaHeroHands />
-            </div>
+            {/* Right Column: empty spacer to preserve the two-column layout */}
+            <div className="lg:col-span-7" aria-hidden="true" />
           </div>
         </div>
 
