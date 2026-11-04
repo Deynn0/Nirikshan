@@ -1,11 +1,11 @@
-"""Tests for cross-application fraud graph, detectors, PII salting, and Cytoscape.js API.
+"""Insight Engine: Entity cross-referencing & affiliation graph analysis.
 
 Verifies:
 1. Planted fraud patterns (Ghost Faculty, Certificate Sharing, Photo Reuse, Seal Reuse) are accurately detected.
 2. Clean control set yields ZERO false positives.
 3. Plaintext Aadhaar/PAN is NEVER stored (salted HMAC-SHA256 only).
 4. Incremental database updates function correctly.
-5. API endpoints return valid Cytoscape.js JSON with cluster IDs and severities.
+5. Entity affiliation graph builder generates Cytoscape.js clusters and cross-references.
 """
 
 import uuid
