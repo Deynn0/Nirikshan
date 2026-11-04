@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Eye,
@@ -15,6 +15,9 @@ import { PramanaHeroHands } from '../components/landing/PramanaHeroHands';
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [wristY, setWristY] = useState<number | undefined>(undefined);
+  const handleWristY = useCallback((y: number) => {
+    setWristY(y);
+  }, []);
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -27,62 +30,72 @@ export const LandingPage: React.FC = () => {
     <div className="min-h-screen bg-[#FAF8F4] text-stone-900 flex flex-col font-sans selection:bg-purple-200 selection:text-purple-900">
       {/* 
         HERO SECTION: Fits in exactly one viewport height (100vh),
-        soft smooth vertical gradient with NO hard edge (warm peach/apricot #FDCFA6 -> soft pink-white #FBE3E3 -> pale lavender #E6DDF8),
-        flatter, calmer perspective tile floor, two chunky flat-style hand characters in OK gesture.
+        warm color gradient from pink/orange to light yellow on top,
+        pattern of low purple 3D grid blocks and larger purple and grey rectangular objects,
+        two 3D hand sculptures with character eyes (pink looking sideways, purple looking up).
       */}
       <section
         className="relative h-screen max-h-[100vh] min-h-[640px] w-full flex flex-col justify-between overflow-hidden"
         style={{
           background:
-            'linear-gradient(180deg, #F4956A 0%, #F2A47E 18%, #ECA8B8 42%, #D4ADE8 68%, #BBA8EE 100%)',
+            'linear-gradient(180deg, #E87152 0%, #EE8564 16%, #F59F7A 30%, #F9BF94 40%, #FDE4C9 43.5%, #D0C3F4 44.5%, #C2B3EE 100%)',
         }}
       >
         {/* 1. Voxel floor — two canvas layers: back (z-0) and front (z-30) */}
-        <VoxelFloorCanvas onWristY={setWristY} />
+        <VoxelFloorCanvas onWristY={handleWristY} />
 
         {/* 2. Hands — absolute layer filling the hero so wristY maps 1:1 (z-10) */}
         <PramanaHeroHands wristY={wristY} />
 
-        {/* 2. Navbar: Floating white rounded pill, slightly narrower with soft shadow */}
-        <header className="relative z-50 pt-3 px-4 sm:px-6 w-full flex justify-center">
-          <nav className="w-full max-w-5xl px-6 py-2.5 rounded-full bg-white/90 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.03)] border border-white/60 flex items-center justify-between gap-4">
-            {/* Logo: Small eye icon and name "Nirikshan" */}
-            <Link to="/" className="flex items-center gap-2 group">
-              <Eye className="w-5 h-5 text-[#7B24E7] group-hover:scale-110 transition-transform" />
-              <span className="font-extrabold text-base tracking-tight text-stone-900">
+        {/* 3. Navbar: Floating white rounded pill with soft shadow */}
+        <header className="relative z-50 pt-4 px-4 sm:px-6 w-full flex justify-center">
+          <nav className="w-full max-w-5xl px-6 py-2.5 rounded-full bg-white/95 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.03)] border border-white flex items-center justify-between gap-4">
+            {/* Logo: Nirikshan eye/iris symbol and title */}
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <svg
+                className="w-5 h-5 text-[#7B24E7] group-hover:scale-110 transition-transform"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <circle cx="12" cy="12" r="9" />
+                <circle cx="12" cy="12" r="3.5" fill="currentColor" />
+              </svg>
+              <span className="font-extrabold text-[17px] tracking-tight text-stone-900">
                 Nirikshan
               </span>
             </Link>
 
             {/* Center links */}
-            <div className="hidden md:flex items-center gap-7 text-xs font-medium text-stone-600">
+            <div className="hidden md:flex items-center gap-7 text-[13px] font-medium text-stone-700">
               <button
                 onClick={() => scrollToSection('how-it-works')}
-                className="hover:text-[#7B24E7] transition-colors"
+                className="hover:text-[#7B24E7] transition-colors cursor-pointer"
               >
                 How it works
               </button>
               <button
                 onClick={() => scrollToSection('edits')}
-                className="hover:text-[#7B24E7] transition-colors"
+                className="hover:text-[#7B24E7] transition-colors cursor-pointer"
               >
                 Edits
               </button>
               <button
                 onClick={() => scrollToSection('cross-check')}
-                className="hover:text-[#7B24E7] transition-colors"
+                className="hover:text-[#7B24E7] transition-colors cursor-pointer"
               >
                 Cross-check
               </button>
               <button
                 onClick={() => scrollToSection('trust-ladder')}
-                className="hover:text-[#7B24E7] transition-colors"
+                className="hover:text-[#7B24E7] transition-colors cursor-pointer"
               >
                 Trust ladder
               </button>
               <button
                 onClick={() => scrollToSection('results')}
-                className="hover:text-[#7B24E7] transition-colors"
+                className="hover:text-[#7B24E7] transition-colors cursor-pointer"
               >
                 Results
               </button>
@@ -91,55 +104,51 @@ export const LandingPage: React.FC = () => {
             {/* Right: Purple pill button */}
             <button
               onClick={() => navigate('/workspace')}
-              className="px-4 py-2 rounded-full bg-[#7B24E7] hover:bg-[#6A1BD6] active:bg-[#5815B6] text-white text-xs font-semibold shadow-[0_2px_12px_rgba(123,36,231,0.35)] hover:shadow-[0_4px_16px_rgba(123,36,231,0.45)] transition-all shrink-0"
+              className="px-5 py-2 rounded-full bg-[#7B24E7] hover:bg-[#6A1BD6] active:bg-[#5815B6] text-white text-xs sm:text-[13px] font-semibold shadow-[0_2px_12px_rgba(123,36,231,0.35)] hover:shadow-[0_4px_16px_rgba(123,36,231,0.45)] transition-all shrink-0 flex items-center gap-1.5 cursor-pointer"
             >
-              Open workspace →
+              <span>Open workspace</span>
+              <span className="text-sm font-normal">→</span>
             </button>
           </nav>
         </header>
 
-        {/* 3. Hero Middle: Two Columns, Vertically Centered */}
+        {/* 4. Hero Content: Two Columns, Vertically Centered */}
         <div className="relative z-20 flex-1 flex items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-2">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center w-full">
-            {/* Left Column: Pill badge, 3-line headline, 2-line subtext, 2 buttons */}
+            {/* Left Column: Pill badge, headline, and CTA buttons */}
             <div className="lg:col-span-5 flex flex-col items-start text-left z-20">
               {/* Pill badge above headline */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 backdrop-blur-md border border-white/60 shadow-[0_2px_8px_rgba(0,0,0,0.04)] text-[#7C3AED] text-xs font-semibold mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md border border-white/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)] text-[#7C3AED] text-xs font-semibold mb-5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED] animate-pulse" />
                 <span>SIH 2026 · PS 26261 · AICTE</span>
               </div>
 
-              {/* 3-line headline (bold, near-black, tight line height, -0.03em tracking) */}
-              <h1 className="text-4xl sm:text-[46px] lg:text-[50px] xl:text-[54px] font-bold text-[#0F172A] tracking-[-0.03em] leading-[1.12]">
+              {/* Bold black headline */}
+              <h1 className="text-4xl sm:text-[46px] lg:text-[52px] xl:text-[56px] font-extrabold text-[#0F172A] tracking-[-0.03em] leading-[1.12]">
                 Every approval,<br />
                 checked against<br />
                 its evidence.
               </h1>
 
-              {/* 2-line small gray subtext */}
-              <p className="mt-4 sm:mt-5 text-sm sm:text-[15px] text-stone-600 leading-relaxed font-normal max-w-md">
-                Signatures, records and rules, verified at the source.<br className="hidden sm:inline" />
-                Officials decide; Nirikshan shows the proof.
-              </p>
-
-              {/* Two buttons: Filled purple pill and Translucent light rounded pill with thin border */}
-              <div className="mt-6 flex flex-wrap items-center gap-3">
+              {/* Call to Action: Solid purple button with arrow & white outlined button */}
+              <div className="mt-7 flex flex-wrap items-center gap-3.5">
                 <button
                   onClick={() => navigate('/workspace')}
-                  className="px-6 py-3 rounded-full bg-[#7B24E7] hover:bg-[#6A1BD6] active:bg-[#5815B6] text-white text-xs sm:text-sm font-semibold shadow-[0_4px_16px_rgba(123,36,231,0.32)] hover:shadow-[0_6px_22px_rgba(123,36,231,0.42)] transition-all flex items-center gap-1.5"
+                  className="px-6 py-3 rounded-full bg-[#7B24E7] hover:bg-[#6A1BD6] active:bg-[#5815B6] text-white text-xs sm:text-sm font-semibold shadow-[0_4px_16px_rgba(123,36,231,0.35)] hover:shadow-[0_6px_22px_rgba(123,36,231,0.45)] transition-all flex items-center gap-2 group cursor-pointer"
                 >
-                  Open the workspace →
+                  <span>Open the workspace</span>
+                  <span className="text-base group-hover:translate-x-0.5 transition-transform">→</span>
                 </button>
                 <button
                   onClick={() => scrollToSection('how-it-works')}
-                  className="px-6 py-3 rounded-full bg-white/30 hover:bg-white/45 backdrop-blur-md text-stone-900 border border-white/60 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md text-xs sm:text-sm font-semibold transition-all"
+                  className="px-6 py-3 rounded-full bg-white/40 hover:bg-white/80 text-stone-900 border-2 border-white shadow-sm hover:shadow-md text-xs sm:text-sm font-semibold transition-all backdrop-blur-sm cursor-pointer"
                 >
                   See how it works
                 </button>
               </div>
             </div>
 
-            {/* Right Column: empty spacer to preserve the two-column layout */}
+            {/* Right Column: empty spacer to preserve the two-column layout for the 3D hand sculptures */}
             <div className="lg:col-span-7" aria-hidden="true" />
           </div>
         </div>
