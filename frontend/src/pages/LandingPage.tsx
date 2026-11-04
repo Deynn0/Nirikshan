@@ -38,7 +38,7 @@ export const LandingPage: React.FC = () => {
         className="relative h-screen max-h-[100vh] min-h-[640px] w-full flex flex-col justify-between overflow-hidden"
         style={{
           background:
-            'linear-gradient(180deg, #FDC4A6 0%, #FDCDB1 16%, #FDDDC4 28%, #FEEBD8 38%, #FFF5EC 42.5%, #EAE2FC 43.5%, #CEBCFC 70%, #BAA4FB 100%)',
+            'linear-gradient(180deg, #FDC4A6 0%, #FDCDB1 16%, #FDDDC4 28%, #FEEBD8 42%, #FFF5EC 48.5%, #EAE2FC 49.5%, #CEBCFC 72%, #BAA4FB 100%)',
         }}
       >
         {/* 1. Voxel floor — two canvas layers: back (z-0) and front (z-30) */}

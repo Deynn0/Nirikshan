@@ -238,7 +238,7 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
 
   const svgStyle: React.CSSProperties = {
     position: 'absolute',
-    top: wristY !== undefined ? `${wristY}px` : '63.1%',
+    top: wristY !== undefined ? `${wristY}px` : '68.6%',
     left: '64%',
     transform: 'translateX(-50%) translateY(-87.7%)',
     width: 'min(100%, 730px)',

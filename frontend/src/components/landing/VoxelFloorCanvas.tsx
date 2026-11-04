@@ -75,7 +75,7 @@ export function drawFloor(
   const H = hero.clientHeight;
   const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
-  const hor = H * 0.43;                 // horizon Y (~43% of hero height)
+  const hor = H * 0.49;                 // horizon Y (~49% of hero height, slightly lower box land)
   const F = (H - hor) * ZN;           // focal depth scale
   const wristY = hor + F / wristYRatio; // Y where hands touch the floor
 
