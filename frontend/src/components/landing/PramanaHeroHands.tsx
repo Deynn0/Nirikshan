@@ -22,6 +22,7 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
 
   const targetMouse = useRef({ x: 0, y: 0 });
   const currentGaze = useRef({ x: 0, y: 0 });
+  const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -43,19 +44,36 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
     let lastTime = performance.now();
 
     const animate = (now: number) => {
+      if (startTimeRef.current === null) startTimeRef.current = now;
+      const elapsed = (now - startTimeRef.current) / 1000;
+
       const dt = Math.min((now - lastTime) / 1000, 0.05);
       lastTime = now;
       const t = now * 0.001;
 
-      // Exponential decay smoothing for gaze tracking
-      const gazeLerp = 1 - Math.exp(-8 * dt);
+      // Pop-out entrance animation: hands rocket out of the land box like a jack-in-the-box
+      let popY = 0;
+      if (elapsed < 1.4) {
+        if (elapsed < 0.12) {
+          popY = 320; // submerged deep inside the box
+        } else {
+          const p = Math.min(1, (elapsed - 0.12) / 0.65);
+          const easeOut = Math.sin(p * Math.PI * 0.5);
+          // Elastic spring bounce overshoot
+          const bounce = Math.sin(p * Math.PI * 2.5) * Math.exp(-3.5 * p);
+          popY = (1 - easeOut) * 320 - bounce * 55;
+        }
+      }
+
+      // Exponential decay smoothing for gaze tracking (responsive & smooth)
+      const gazeLerp = 1 - Math.exp(-14 * dt);
       currentGaze.current.x += (targetMouse.current.x - currentGaze.current.x) * gazeLerp;
       currentGaze.current.y += (targetMouse.current.y - currentGaze.current.y) * gazeLerp;
 
       const gx = currentGaze.current.x;
       const gy = currentGaze.current.y;
 
-      // Gentle breathing float on the floor
+      // Gentle breathing float on the floor (blends in smoothly after pop-out)
       const leftY = Math.sin(t * 1.5) * 2.2;
       const leftRot = Math.cos(t * 1.1) * 0.45;
       const rightY = Math.sin(t * 1.5 + 1.2) * 2.5;
@@ -64,19 +82,19 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
       if (pinkHandRef.current) {
         pinkHandRef.current.setAttribute(
           'transform',
-          `translate(0, ${leftY.toFixed(2)}) scale(1.04) rotate(${leftRot.toFixed(2)}, 160, 240)`
+          `translate(0, ${(popY + leftY).toFixed(2)}) scale(1.04) rotate(${leftRot.toFixed(2)}, 160, 240)`
         );
       }
       if (purpleHandRef.current) {
         purpleHandRef.current.setAttribute(
           'transform',
-          `translate(740, 18) scale(-0.92, 0.92) translate(0, ${rightY.toFixed(2)}) rotate(${rightRot.toFixed(2)}, 160, 240)`
+          `translate(740, 18) scale(-0.92, 0.92) translate(0, ${(popY * 1.08 + rightY).toFixed(2)}) rotate(${rightRot.toFixed(2)}, 160, 240)`
         );
       }
 
-      // Pink pupil: looking sideways
-      const pCx = 292 + gx * 3.5;
-      const pCy = 170 + gy * 2.2;
+      // Pink pupil: dynamic gaze actively following cursor across screen
+      const pCx = 276 + gx * 16;
+      const pCy = 170 + gy * 10;
       if (pinkPupilRef.current) {
         pinkPupilRef.current.setAttribute('cx', pCx.toFixed(1));
         pinkPupilRef.current.setAttribute('cy', pCy.toFixed(1));
@@ -86,9 +104,9 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
         pinkGlintRef.current.setAttribute('cy', (pCy - 5).toFixed(1));
       }
 
-      // Purple pupil: looking up
-      const uCx = 280 + gx * 2.5;
-      const uCy = 148 + gy * 2.2;
+      // Purple pupil: dynamic gaze actively following cursor across screen (mirrored coordinate space)
+      const uCx = 272 - gx * 16;
+      const uCy = 156 + gy * 10;
       if (purplePupilRef.current) {
         purplePupilRef.current.setAttribute('cx', uCx.toFixed(1));
         purplePupilRef.current.setAttribute('cy', uCy.toFixed(1));
@@ -151,7 +169,7 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
         </g>
       </g>
 
-      {/* ── Finger 2: ring ── translate(122,185) rotate(-7) */}
+      {/* ── Finger 2: ring (with cute warm yellow dot accent from reference image) ── translate(122,185) rotate(-7) */}
       <g transform="translate(122,185) rotate(-7)">
         <g
           className="pointer-events-auto cursor-pointer"
@@ -160,7 +178,7 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
           onMouseLeave={() => setHoveredFinger(null)}
         >
           <rect x="-24" y="-140" width="48" height="165" rx="24" fill={skin} />
-          <circle cx="0" cy="-116" r="8" fill="#ffffff" />
+          <circle cx="0" cy="-116" r="8" fill="#FEE08B" />
         </g>
       </g>
 

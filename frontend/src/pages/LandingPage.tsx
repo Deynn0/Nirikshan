@@ -38,7 +38,7 @@ export const LandingPage: React.FC = () => {
         className="relative h-screen max-h-[100vh] min-h-[640px] w-full flex flex-col justify-between overflow-hidden"
         style={{
           background:
-            'linear-gradient(180deg, #E87152 0%, #EE8564 16%, #F59F7A 30%, #F9BF94 40%, #FDE4C9 43.5%, #D0C3F4 44.5%, #C2B3EE 100%)',
+            'linear-gradient(180deg, #FDC4A6 0%, #FDCDB1 16%, #FDDDC4 28%, #FEEBD8 38%, #FFF5EC 42.5%, #EAE2FC 43.5%, #CEBCFC 70%, #BAA4FB 100%)',
         }}
       >
         {/* 1. Voxel floor — two canvas layers: back (z-0) and front (z-30) */}
@@ -113,35 +113,52 @@ export const LandingPage: React.FC = () => {
         </header>
 
         {/* 4. Hero Content: Two Columns, Vertically Centered */}
-        <div className="relative z-20 flex-1 flex items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-2">
+        <div className="relative z-20 flex-1 flex items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center w-full">
-            {/* Left Column: Pill badge, headline, and CTA buttons */}
-            <div className="lg:col-span-5 flex flex-col items-start text-left z-20">
+            {/* Left Column: Pill badge, headline with white gradient, subtext, and CTA buttons */}
+            <div className="lg:col-span-6 xl:col-span-5 flex flex-col items-start text-left z-20 relative">
+              {/* Soft luminous white gradient glow behind the sentence */}
+              <div
+                className="absolute -top-16 -left-16 w-[560px] h-[480px] rounded-full pointer-events-none"
+                style={{
+                  background:
+                    'radial-gradient(ellipse 65% 55% at 40% 45%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.70) 42%, rgba(255, 255, 255, 0.25) 68%, transparent 85%)',
+                  filter: 'blur(22px)',
+                  zIndex: -1,
+                }}
+              />
+
               {/* Pill badge above headline */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md border border-white/70 shadow-[0_2px_8px_rgba(0,0,0,0.04)] text-[#7C3AED] text-xs font-semibold mb-5">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/85 backdrop-blur-md border border-white/80 shadow-[0_2px_8px_rgba(0,0,0,0.04)] text-[#7C3AED] text-xs font-semibold mb-4">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED] animate-pulse" />
                 <span>SIH 2026 · PS 26261 · AICTE</span>
               </div>
 
-              {/* Bold black headline */}
-              <h1 className="text-4xl sm:text-[46px] lg:text-[52px] xl:text-[56px] font-extrabold text-[#0F172A] tracking-[-0.03em] leading-[1.12]">
+              {/* Bold black headline — clean leading & padding so "its evidence" is never cut */}
+              <h1 className="text-4xl sm:text-[46px] lg:text-[50px] xl:text-[54px] font-extrabold text-[#0F172A] tracking-[-0.03em] leading-[1.18] pb-1.5 overflow-visible">
                 Every approval,<br />
                 checked against<br />
                 its evidence.
               </h1>
 
+              {/* 2-line clean subtext */}
+              <p className="mt-3.5 text-xs sm:text-[13px] md:text-sm text-stone-600 leading-relaxed font-normal max-w-md">
+                Signatures, records and rules, verified at the source.<br />
+                Officials decide; Nirikshan shows the proof.
+              </p>
+
               {/* Call to Action: Solid purple button with arrow & white outlined button */}
-              <div className="mt-7 flex flex-wrap items-center gap-3.5">
+              <div className="mt-6 flex flex-wrap items-center gap-3">
                 <button
                   onClick={() => navigate('/workspace')}
-                  className="px-6 py-3 rounded-full bg-[#7B24E7] hover:bg-[#6A1BD6] active:bg-[#5815B6] text-white text-xs sm:text-sm font-semibold shadow-[0_4px_16px_rgba(123,36,231,0.35)] hover:shadow-[0_6px_22px_rgba(123,36,231,0.45)] transition-all flex items-center gap-2 group cursor-pointer"
+                  className="px-5 py-2.5 rounded-full bg-[#7B24E7] hover:bg-[#6A1BD6] active:bg-[#5815B6] text-white text-xs sm:text-[13px] font-semibold shadow-[0_4px_16px_rgba(123,36,231,0.35)] hover:shadow-[0_6px_22px_rgba(123,36,231,0.45)] transition-all flex items-center gap-2 group cursor-pointer"
                 >
                   <span>Open the workspace</span>
-                  <span className="text-base group-hover:translate-x-0.5 transition-transform">→</span>
+                  <span className="text-sm group-hover:translate-x-0.5 transition-transform">→</span>
                 </button>
                 <button
                   onClick={() => scrollToSection('how-it-works')}
-                  className="px-6 py-3 rounded-full bg-white/40 hover:bg-white/80 text-stone-900 border-2 border-white shadow-sm hover:shadow-md text-xs sm:text-sm font-semibold transition-all backdrop-blur-sm cursor-pointer"
+                  className="px-5 py-2.5 rounded-full bg-white/50 hover:bg-white text-stone-900 border border-stone-300 shadow-sm hover:shadow-md text-xs sm:text-[13px] font-semibold transition-all backdrop-blur-sm cursor-pointer"
                 >
                   See how it works
                 </button>
@@ -149,7 +166,7 @@ export const LandingPage: React.FC = () => {
             </div>
 
             {/* Right Column: empty spacer to preserve the two-column layout for the 3D hand sculptures */}
-            <div className="lg:col-span-7" aria-hidden="true" />
+            <div className="lg:col-span-6 xl:col-span-7" aria-hidden="true" />
           </div>
         </div>
 
