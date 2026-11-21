@@ -3,6 +3,21 @@
  * Reference: Atmospheric sky, purple voxel landscape, and character palette
  */
 
+export const palette = {
+  brand: {
+    100: '#ede9fe',
+    200: '#ddd6fe',
+    300: '#c4b5fd',
+    400: '#a78bfa',
+    500: '#7c3aed',
+    600: '#6d28d9',
+    700: '#5b21b6',
+  },
+  peach: '#FDB695',
+  lilac: '#ECE3FA',
+  ink: '#111111',
+};
+
 export const LANDING_PALETTE = {
   // ── Atmospheric Background Gradient Tokens ──
   sky: {

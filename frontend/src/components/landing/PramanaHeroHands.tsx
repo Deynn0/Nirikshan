@@ -1,277 +1,370 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { LANDING_PALETTE } from '../../landing/palette';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import {
+  drawWholeHand,
+  tapAngle,
+  type HandPose,
+  type Folds,
+  CUT,
+} from './hand';
 
 interface PramanaHeroHandsProps {
   /**
    * The Y pixel (within the hero section) where the hand wrists touch the floor.
-   * Passed from VoxelFloorCanvas so the SVG is pinned precisely to the floor horizon.
+   * Passed from VoxelFloorCanvas so the hands are pinned precisely to the floor horizon.
    */
   wristY?: number;
 }
 
 export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) => {
-  const [hoveredFinger, setHoveredFinger] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // SVG group and element refs for 60fps transform updates with 0 React re-renders
-  const pinkHandRef = useRef<SVGGElement>(null);
-  const purpleHandRef = useRef<SVGGElement>(null);
-  const pinkPupilRef = useRef<SVGEllipseElement>(null);
-  const pinkGlintRef = useRef<SVGCircleElement>(null);
-  const purplePupilRef = useRef<SVGEllipseElement>(null);
-  const purpleGlintRef = useRef<SVGCircleElement>(null);
+  // Interaction states
+  const [hoveredHand, setHoveredHand] = useState<'left' | 'right' | null>(null);
 
-  const targetMouse = useRef({ x: 0, y: 0 });
-  const currentGaze = useRef({ x: 0, y: 0 });
+  // Animation and state refs (kept out of React state for silky 60fps loop)
+  const animFrameRef = useRef<number>(0);
+  const pointerPos = useRef({ x: 0, y: 0, has: false });
+
+  // Gaze tracking for Rose (left) and Violet (right)
+  const gazeLeft = useRef({ px: 0, py: 0 });
+  const gazeRight = useRef({ px: 0, py: 0 });
+
+  // Blinking states
+  const blinkLeft = useRef({ start: 0, duration: 160, isBlinking: false });
+  const blinkRight = useRef({ start: 0, duration: 160, isBlinking: false });
+  const nextBlinkLeft = useRef(performance.now() + 2500);
+  const nextBlinkRight = useRef(performance.now() + 3200);
+
+  // Tapping states (triggering tapAngle)
+  const tapLeftStart = useRef<number>(-9999);
+  const tapRightStart = useRef<number>(-9999);
+  const nextTapSchedule = useRef(performance.now() + 3500);
+  const tapTurn = useRef<'left' | 'right'>('left');
+
+  // Finger fold animation targets (for hover)
+  const foldLeft = useRef<[number, number, number]>([0, 0, 0]);
+  const foldRight = useRef<[number, number, number]>([0, 0, 0]);
+
+  // Trigger manual blink
+  const triggerBlink = useCallback(() => {
+    const now = performance.now();
+    blinkLeft.current = { start: now, duration: 160, isBlinking: true };
+    blinkRight.current = { start: now, duration: 160, isBlinking: true };
+  }, []);
+
+  // Trigger manual tap
+  const triggerTap = useCallback((side: 'left' | 'right') => {
+    const now = performance.now();
+    if (side === 'left') {
+      tapLeftStart.current = now;
+    } else {
+      tapRightStart.current = now;
+    }
+  }, []);
+
+  // Click handler on hands container
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    triggerBlink();
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (rect) {
+      const clickX = e.clientX - rect.left;
+      if (clickX < rect.width * 0.5) {
+        triggerTap('left');
+      } else {
+        triggerTap('right');
+      }
+    }
+  }, [triggerBlink, triggerTap]);
 
   useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
     const prefersReducedMotion =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (prefersReducedMotion) return;
-      targetMouse.current = {
-        x: Math.max(-1, Math.min(1, (e.clientX / window.innerWidth) * 2 - 1)),
-        y: Math.max(-1, Math.min(1, (e.clientY / window.innerHeight) * 2 - 1)),
+    // Window mouse move listener to track gaze across the entire hero / page
+    const handleWindowPointerMove = (e: PointerEvent) => {
+      pointerPos.current = {
+        x: e.clientX,
+        y: e.clientY,
+        has: true,
       };
     };
 
-    const handleMouseLeave = () => {
-      targetMouse.current = { x: 0, y: 0 };
+    const handleWindowPointerLeave = () => {
+      pointerPos.current.has = false;
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('mouseleave', handleMouseLeave);
-    window.addEventListener('blur', handleMouseLeave);
+    window.addEventListener('pointermove', handleWindowPointerMove, { passive: true });
+    document.addEventListener('pointerleave', handleWindowPointerLeave);
 
-    let animId: number;
+    // Canvas coordinate dimensions (virtual resolution)
+    const V_WIDTH = 640;
+    const V_HEIGHT = 440;
+
     let lastTime = performance.now();
 
-    const animate = (now: number) => {
+    const render = (now: number) => {
       const dt = Math.min((now - lastTime) / 1000, 0.05);
       lastTime = now;
       const t = now * 0.001;
 
-      if (!prefersReducedMotion) {
-        // Smooth exponential damping for subtle gaze tracking
-        const gazeLerp = 1 - Math.exp(-10 * dt);
-        currentGaze.current.x += (targetMouse.current.x - currentGaze.current.x) * gazeLerp;
-        currentGaze.current.y += (targetMouse.current.y - currentGaze.current.y) * gazeLerp;
+      // Handle DPI and canvas resizing
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const displayW = Math.round(rect.width * dpr);
+      const displayH = Math.round(rect.height * dpr);
 
-        const gx = currentGaze.current.x;
-        const gy = currentGaze.current.y;
+      if (canvas.width !== displayW || canvas.height !== displayH) {
+        canvas.width = displayW;
+        canvas.height = displayH;
+      }
 
-        // Very subtle idle breathing movement (visually stable, no wild bouncing)
-        const leftY = Math.sin(t * 1.2) * 1.2;
-        const rightY = Math.sin(t * 1.2 + 1.1) * 1.4;
+      ctx.save();
+      ctx.scale(displayW / V_WIDTH, displayH / V_HEIGHT);
+      ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
 
-        if (pinkHandRef.current) {
-          pinkHandRef.current.setAttribute(
-            'transform',
-            `translate(10, ${leftY.toFixed(2)}) scale(0.86)`
-          );
-        }
-        if (purpleHandRef.current) {
-          purpleHandRef.current.setAttribute(
-            'transform',
-            `translate(580, 28) scale(-0.76, 0.76) translate(0, ${rightY.toFixed(2)})`
-          );
-        }
+      if (prefersReducedMotion) {
+        // Static dignified still frame for reduced motion
+        const stillLeft: HandPose = {
+          hue: 'rose',
+          mirror: true,
+          pose: 0,
+          tapDeg: 0,
+          folds: [0, 0, 0],
+          tilt: 0,
+          eye: { px: 0, py: 0, open: 1 },
+        };
+        const stillRight: HandPose = {
+          hue: 'violet',
+          mirror: false,
+          pose: 0,
+          tapDeg: 0,
+          folds: [0, 0, 0],
+          tilt: 0,
+          eye: { px: 0, py: 0, open: 1 },
+        };
 
-        // Pink pupil: subtle eye tracking
-        const pCx = 284 + gx * 8;
-        const pCy = 170 + gy * 5;
-        if (pinkPupilRef.current) {
-          pinkPupilRef.current.setAttribute('cx', pCx.toFixed(1));
-          pinkPupilRef.current.setAttribute('cy', pCy.toFixed(1));
-        }
-        if (pinkGlintRef.current) {
-          pinkGlintRef.current.setAttribute('cx', (pCx - 3.5).toFixed(1));
-          pinkGlintRef.current.setAttribute('cy', (pCy - 3.5).toFixed(1));
-        }
+        // Draw left hand (Rose)
+        ctx.save();
+        ctx.translate(30, 42);
+        ctx.scale(0.84, 0.84);
+        drawWholeHand(ctx, stillLeft, CUT + 45);
+        ctx.restore();
 
-        // Purple pupil: subtle eye tracking (mirrored space)
-        const uCx = 284 - gx * 8;
-        const uCy = 154 + gy * 5;
-        if (purplePupilRef.current) {
-          purplePupilRef.current.setAttribute('cx', uCx.toFixed(1));
-          purplePupilRef.current.setAttribute('cy', uCy.toFixed(1));
-        }
-        if (purpleGlintRef.current) {
-          purpleGlintRef.current.setAttribute('cx', (uCx - 3.5).toFixed(1));
-          purpleGlintRef.current.setAttribute('cy', (uCy - 3.5).toFixed(1));
+        // Draw right hand (Violet)
+        ctx.save();
+        ctx.translate(345, 68);
+        ctx.scale(0.77, 0.77);
+        drawWholeHand(ctx, stillRight, CUT + 45);
+        ctx.restore();
+
+        ctx.restore();
+        return;
+      }
+
+      // ── 1. Automatic periodic tapping ──
+      if (now > nextTapSchedule.current) {
+        if (tapTurn.current === 'left') {
+          tapLeftStart.current = now;
+          tapTurn.current = 'right';
+          nextTapSchedule.current = now + 4200;
+        } else {
+          tapRightStart.current = now;
+          tapTurn.current = 'left';
+          nextTapSchedule.current = now + 4800;
         }
       }
 
-      animId = requestAnimationFrame(animate);
+      const tapDegLeft = tapAngle(now - tapLeftStart.current);
+      const tapDegRight = tapAngle(now - tapRightStart.current);
+
+      // ── 2. Automatic natural blinking ──
+      if (now > nextBlinkLeft.current && !blinkLeft.current.isBlinking) {
+        blinkLeft.current = { start: now, duration: 150, isBlinking: true };
+        nextBlinkLeft.current = now + 3200 + Math.random() * 3000;
+      }
+      if (now > nextBlinkRight.current && !blinkRight.current.isBlinking) {
+        blinkRight.current = { start: now, duration: 150, isBlinking: true };
+        nextBlinkRight.current = now + 3400 + Math.random() * 2800;
+      }
+
+      const computeBlinkOpen = (blink: { start: number; duration: number; isBlinking: boolean }) => {
+        if (!blink.isBlinking) return 1;
+        const u = (now - blink.start) / blink.duration;
+        if (u >= 1) {
+          blink.isBlinking = false;
+          return 1;
+        }
+        if (u < 0.4) {
+          return 1 - (u / 0.4) * 0.95;
+        } else {
+          return 0.05 + ((u - 0.4) / 0.6) * 0.95;
+        }
+      };
+
+      const eyeOpenLeft = computeBlinkOpen(blinkLeft.current);
+      const eyeOpenRight = computeBlinkOpen(blinkRight.current);
+
+      // ── 3. Smooth Gaze Tracking ──
+      let targetLeftPx = 0;
+      let targetLeftPy = 0;
+      let targetRightPx = 0;
+      let targetRightPy = 0;
+
+      if (pointerPos.current.has) {
+        // Left eye center in screen coordinates
+        const scaleX = rect.width / V_WIDTH;
+        const scaleY = rect.height / V_HEIGHT;
+
+        // Rose hand eye screen coord: (30 + (360 - 112) * 0.84, 42 + 222 * 0.84)
+        const eyeLeftScreenX = rect.left + (30 + 248 * 0.84) * scaleX;
+        const eyeLeftScreenY = rect.top + (42 + 222 * 0.84) * scaleY;
+
+        // Violet hand eye screen coord: (345 + 112 * 0.77, 68 + 222 * 0.77)
+        const eyeRightScreenX = rect.left + (345 + 112 * 0.77) * scaleX;
+        const eyeRightScreenY = rect.top + (68 + 222 * 0.77) * scaleY;
+
+        const dLx = pointerPos.current.x - eyeLeftScreenX;
+        const dLy = pointerPos.current.y - eyeLeftScreenY;
+        const distL = Math.hypot(dLx, dLy) + 120;
+        targetLeftPx = Math.max(-12, Math.min(12, (dLx / distL) * 16));
+        targetLeftPy = Math.max(-8, Math.min(8, (dLy / distL) * 12));
+
+        const dRx = pointerPos.current.x - eyeRightScreenX;
+        const dRy = pointerPos.current.y - eyeRightScreenY;
+        const distR = Math.hypot(dRx, dRy) + 120;
+        targetRightPx = Math.max(-12, Math.min(12, (dRx / distR) * 16));
+        targetRightPy = Math.max(-8, Math.min(8, (dRy / distR) * 12));
+      }
+
+      // Exponential smoothing for natural gaze
+      const gazeLerp = 1 - Math.exp(-12 * dt);
+      gazeLeft.current.px += (targetLeftPx - gazeLeft.current.px) * gazeLerp;
+      gazeLeft.current.py += (targetLeftPy - gazeLeft.current.py) * gazeLerp;
+      gazeRight.current.px += (targetRightPx - gazeRight.current.px) * gazeLerp;
+      gazeRight.current.py += (targetRightPy - gazeRight.current.py) * gazeLerp;
+
+      // ── 4. Interactive Finger Folds (Hover Curl) ──
+      const targetFoldLeft: [number, number, number] =
+        hoveredHand === 'left' ? [0.45, 0.65, 0.5] : [0, 0, 0];
+      const targetFoldRight: [number, number, number] =
+        hoveredHand === 'right' ? [0.45, 0.65, 0.5] : [0, 0, 0];
+
+      const foldLerp = 1 - Math.exp(-8 * dt);
+      for (let k = 0; k < 3; k++) {
+        foldLeft.current[k] += (targetFoldLeft[k] - foldLeft.current[k]) * foldLerp;
+        foldRight.current[k] += (targetFoldRight[k] - foldRight.current[k]) * foldLerp;
+      }
+
+      // ── 5. Idle Bobbing & Tilting ──
+      const bobLeft = Math.sin(t * 1.5) * 4.5;
+      const bobRight = Math.sin(t * 1.5 + 1.2) * 4.0;
+      const tiltLeft = Math.sin(t * 1.2) * 2.2 + gazeLeft.current.px * 0.15;
+      const tiltRight = Math.sin(t * 1.2 + 0.9) * -2.4 + gazeRight.current.px * 0.15;
+
+      // ── 6. Assemble Hand Poses ──
+      const poseLeft: HandPose = {
+        hue: 'rose',
+        mirror: true, // OK ring faces toward the purple hand
+        pose: 0,
+        tapDeg: tapDegLeft,
+        folds: foldLeft.current as Folds,
+        tilt: tiltLeft,
+        eye: {
+          px: gazeLeft.current.px,
+          py: gazeLeft.current.py,
+          open: eyeOpenLeft,
+        },
+      };
+
+      const poseRight: HandPose = {
+        hue: 'violet',
+        mirror: false, // OK ring faces toward the pink hand
+        pose: 0,
+        tapDeg: tapDegRight,
+        folds: foldRight.current as Folds,
+        tilt: tiltRight,
+        eye: {
+          px: gazeRight.current.px,
+          py: gazeRight.current.py,
+          open: eyeOpenRight,
+        },
+      };
+
+      // ── 7. Draw Hands onto Canvas ──
+      // Hand 1: Rose (Pink) on the left
+      ctx.save();
+      ctx.translate(30, 42 + bobLeft);
+      ctx.scale(0.84, 0.84);
+      drawWholeHand(ctx, poseLeft, CUT + 45);
+      ctx.restore();
+
+      // Hand 2: Violet (Purple) on the right
+      ctx.save();
+      ctx.translate(345, 68 + bobRight);
+      ctx.scale(0.77, 0.77);
+      drawWholeHand(ctx, poseRight, CUT + 45);
+      ctx.restore();
+
+      ctx.restore();
+      animFrameRef.current = requestAnimationFrame(render);
     };
 
-    animId = requestAnimationFrame(animate);
+    animFrameRef.current = requestAnimationFrame(render);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseleave', handleMouseLeave);
-      window.removeEventListener('blur', handleMouseLeave);
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(animFrameRef.current);
+      window.removeEventListener('pointermove', handleWindowPointerMove);
+      document.removeEventListener('pointerleave', handleWindowPointerLeave);
     };
-  }, []);
+  }, [hoveredHand]);
 
-  // ── Finger hover scale ──
-  const fingerStyle = (id: string): React.CSSProperties => ({
-    transformBox: 'fill-box',
-    transformOrigin: 'bottom center',
-    transform: hoveredFinger === id ? 'scaleY(0.88)' : 'scaleY(1)',
-    transition: 'transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-  });
+  // Handle pointer hover on hands
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = e.clientX - rect.left;
+    if (x < rect.width * 0.48) {
+      setHoveredHand('left');
+    } else {
+      setHoveredHand('right');
+    }
+  };
 
-  // ── Hand SVG Paths ──
-  const HandPaths = ({
-    side,
-    skin,
-    ring,
-    initialPupilCx,
-    initialPupilCy,
-    pupilRef,
-    glintRef,
-  }: {
-    side: 'left' | 'right';
-    skin: string;
-    ring: string;
-    initialPupilCx: number;
-    initialPupilCy: number;
-    pupilRef: React.RefObject<SVGEllipseElement | null>;
-    glintRef: React.RefObject<SVGCircleElement | null>;
-  }) => (
-    <>
-      {/* Finger 1: pinky */}
-      <g transform="translate(78,190) rotate(-14)">
-        <g
-          className="pointer-events-auto cursor-pointer"
-          style={fingerStyle(`${side}-1`)}
-          onMouseEnter={() => setHoveredFinger(`${side}-1`)}
-          onMouseLeave={() => setHoveredFinger(null)}
-        >
-          <rect x="-24" y="-100" width="48" height="125" rx="24" fill={skin} />
-          <circle cx="0" cy="-76" r="8" fill="#FFFFFF" />
-        </g>
-      </g>
-
-      {/* Finger 2: ring (with signature warm yellow dot accent) */}
-      <g transform="translate(122,185) rotate(-7)">
-        <g
-          className="pointer-events-auto cursor-pointer"
-          style={fingerStyle(`${side}-2`)}
-          onMouseEnter={() => setHoveredFinger(`${side}-2`)}
-          onMouseLeave={() => setHoveredFinger(null)}
-        >
-          <rect x="-24" y="-140" width="48" height="165" rx="24" fill={skin} />
-          <circle cx="0" cy="-116" r="8" fill={LANDING_PALETTE.characters.pink.ringFingerDot} />
-        </g>
-      </g>
-
-      {/* Finger 3: middle (tallest) */}
-      <g transform="translate(162,180) rotate(-3)">
-        <g
-          className="pointer-events-auto cursor-pointer"
-          style={fingerStyle(`${side}-3`)}
-          onMouseEnter={() => setHoveredFinger(`${side}-3`)}
-          onMouseLeave={() => setHoveredFinger(null)}
-        >
-          <rect x="-24" y="-160" width="48" height="185" rx="24" fill={skin} />
-          <circle cx="0" cy="-136" r="8" fill="#FFFFFF" />
-        </g>
-      </g>
-
-      {/* "OK" Ring */}
-      <circle cx="268" cy="158" r="58" fill="none" stroke={ring} strokeWidth="26" />
-
-      {/* Sclera */}
-      <ellipse cx="272" cy="170" rx="40" ry="33" fill="#FFFFFF" />
-
-      {/* Pupil + Glint */}
-      <ellipse
-        ref={pupilRef}
-        cx={initialPupilCx}
-        cy={initialPupilCy}
-        rx="13"
-        ry="15"
-        fill={LANDING_PALETTE.characters.pink.pupil}
-      />
-      <circle
-        ref={glintRef}
-        cx={initialPupilCx - 4}
-        cy={initialPupilCy - 4}
-        r="4"
-        fill="#FFFFFF"
-      />
-
-      {/* Palm + Thumb */}
-      <path
-        d="M62 185 Q62 168 90 168 L190 168 Q235 175 245 215 L250 335 L62 335 Z"
-        fill={skin}
-      />
-      <path
-        d="M232 240 C275 252 315 232 326 190"
-        fill="none"
-        stroke={skin}
-        strokeWidth="46"
-        strokeLinecap="round"
-      />
-
-      {/* White dot accent on ring edge */}
-      <circle cx="333" cy="168" r="7" fill="#FFFFFF" />
-    </>
-  );
+  const handlePointerLeave = () => {
+    setHoveredHand(null);
+  };
 
   return (
-    <div className="absolute inset-0 pointer-events-none select-none z-10">
+    <div className="absolute inset-0 pointer-events-none select-none z-10 overflow-visible">
       <div
-        className="absolute left-1/2 lg:left-[69%] xl:left-[70%] -translate-x-1/2 w-[min(90vw,480px)] lg:w-[min(40vw,540px)] h-auto overflow-visible"
+        ref={containerRef}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={handlePointerLeave}
+        onPointerDown={handlePointerDown}
+        className="pointer-events-auto cursor-pointer absolute left-1/2 lg:left-[69%] xl:left-[70%] -translate-x-1/2 w-[min(92vw,500px)] lg:w-[min(42vw,580px)] h-auto overflow-visible select-none"
         style={{
           top: wristY !== undefined ? `${wristY}px` : '70%',
           transform: 'translateX(-50%) translateY(-86%)',
-          filter: 'drop-shadow(0 16px 32px rgba(45, 10, 80, 0.12))',
+          filter: 'drop-shadow(0 20px 36px rgba(45, 10, 80, 0.14))',
           willChange: 'transform',
         }}
+        title="Interactive Pramana hand verifiers: click or hover to interact"
       >
-        <svg
-          viewBox="0 0 620 380"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-auto overflow-visible"
-        >
-          {/* ── RIGHT HAND (purple, slightly smaller, facing pink hand) ── */}
-          <g
-            ref={purpleHandRef}
-            transform="translate(580, 28) scale(-0.76, 0.76)"
-          >
-            <HandPaths
-              side="right"
-              skin={LANDING_PALETTE.characters.purple.skin}
-              ring={LANDING_PALETTE.characters.purple.ring}
-              initialPupilCx={284}
-              initialPupilCy={154}
-              pupilRef={purplePupilRef}
-              glintRef={purpleGlintRef}
-            />
-          </g>
-
-          {/* ── LEFT HAND (pink, iconic OK gesture with playful eye) ── */}
-          <g
-            ref={pinkHandRef}
-            transform="translate(10, 0) scale(0.86)"
-            filter="drop-shadow(4px 8px 16px rgba(0,0,0,0.12))"
-          >
-            <HandPaths
-              side="left"
-              skin={LANDING_PALETTE.characters.pink.skin}
-              ring={LANDING_PALETTE.characters.pink.ring}
-              initialPupilCx={284}
-              initialPupilCy={170}
-              pupilRef={pinkPupilRef}
-              glintRef={pinkGlintRef}
-            />
-          </g>
-        </svg>
+        <canvas
+          ref={canvasRef}
+          className="w-full h-auto block overflow-visible"
+          style={{
+            aspectRatio: '640 / 440',
+          }}
+          aria-label="Two hands, one rose and one violet, making OK signs around watching eyes that track your cursor and confirm approvals"
+        />
       </div>
     </div>
   );
