@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { LANDING_PALETTE } from '../../landing/palette';
 
 interface PramanaHeroHandsProps {
   /**
    * The Y pixel (within the hero section) where the hand wrists touch the floor.
    * Passed from VoxelFloorCanvas so the SVG is pinned precisely to the floor horizon.
-   * If omitted the SVG aligns to the bottom of its container as before.
    */
   wristY?: number;
 }
@@ -12,7 +12,7 @@ interface PramanaHeroHandsProps {
 export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) => {
   const [hoveredFinger, setHoveredFinger] = useState<string | null>(null);
 
-  // SVG group and element refs to animate directly on the DOM with ZERO React re-renders
+  // SVG group and element refs for 60fps transform updates with 0 React re-renders
   const pinkHandRef = useRef<SVGGElement>(null);
   const purpleHandRef = useRef<SVGGElement>(null);
   const pinkPupilRef = useRef<SVGEllipseElement>(null);
@@ -22,10 +22,14 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
 
   const targetMouse = useRef({ x: 0, y: 0 });
   const currentGaze = useRef({ x: 0, y: 0 });
-  const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const handleMouseMove = (e: MouseEvent) => {
+      if (prefersReducedMotion) return;
       targetMouse.current = {
         x: Math.max(-1, Math.min(1, (e.clientX / window.innerWidth) * 2 - 1)),
         y: Math.max(-1, Math.min(1, (e.clientY / window.innerHeight) * 2 - 1)),
@@ -44,76 +48,59 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
     let lastTime = performance.now();
 
     const animate = (now: number) => {
-      if (startTimeRef.current === null) startTimeRef.current = now;
-      const elapsed = (now - startTimeRef.current) / 1000;
-
       const dt = Math.min((now - lastTime) / 1000, 0.05);
       lastTime = now;
       const t = now * 0.001;
 
-      // Pop-out entrance animation: hands rocket out of the land box like a jack-in-the-box
-      let popY = 0;
-      if (elapsed < 1.4) {
-        if (elapsed < 0.12) {
-          popY = 320; // submerged deep inside the box
-        } else {
-          const p = Math.min(1, (elapsed - 0.12) / 0.65);
-          const easeOut = Math.sin(p * Math.PI * 0.5);
-          // Elastic spring bounce overshoot
-          const bounce = Math.sin(p * Math.PI * 2.5) * Math.exp(-3.5 * p);
-          popY = (1 - easeOut) * 320 - bounce * 55;
+      if (!prefersReducedMotion) {
+        // Smooth exponential damping for subtle gaze tracking
+        const gazeLerp = 1 - Math.exp(-10 * dt);
+        currentGaze.current.x += (targetMouse.current.x - currentGaze.current.x) * gazeLerp;
+        currentGaze.current.y += (targetMouse.current.y - currentGaze.current.y) * gazeLerp;
+
+        const gx = currentGaze.current.x;
+        const gy = currentGaze.current.y;
+
+        // Very subtle idle breathing movement (visually stable, no wild bouncing)
+        const leftY = Math.sin(t * 1.2) * 1.2;
+        const rightY = Math.sin(t * 1.2 + 1.1) * 1.4;
+
+        if (pinkHandRef.current) {
+          pinkHandRef.current.setAttribute(
+            'transform',
+            `translate(10, ${leftY.toFixed(2)}) scale(0.86)`
+          );
         }
-      }
+        if (purpleHandRef.current) {
+          purpleHandRef.current.setAttribute(
+            'transform',
+            `translate(580, 28) scale(-0.76, 0.76) translate(0, ${rightY.toFixed(2)})`
+          );
+        }
 
-      // Exponential decay smoothing for gaze tracking (responsive & smooth)
-      const gazeLerp = 1 - Math.exp(-14 * dt);
-      currentGaze.current.x += (targetMouse.current.x - currentGaze.current.x) * gazeLerp;
-      currentGaze.current.y += (targetMouse.current.y - currentGaze.current.y) * gazeLerp;
+        // Pink pupil: subtle eye tracking
+        const pCx = 284 + gx * 8;
+        const pCy = 170 + gy * 5;
+        if (pinkPupilRef.current) {
+          pinkPupilRef.current.setAttribute('cx', pCx.toFixed(1));
+          pinkPupilRef.current.setAttribute('cy', pCy.toFixed(1));
+        }
+        if (pinkGlintRef.current) {
+          pinkGlintRef.current.setAttribute('cx', (pCx - 3.5).toFixed(1));
+          pinkGlintRef.current.setAttribute('cy', (pCy - 3.5).toFixed(1));
+        }
 
-      const gx = currentGaze.current.x;
-      const gy = currentGaze.current.y;
-
-      // Gentle breathing float on the floor (blends in smoothly after pop-out)
-      const leftY = Math.sin(t * 1.5) * 2.2;
-      const leftRot = Math.cos(t * 1.1) * 0.45;
-      const rightY = Math.sin(t * 1.5 + 1.2) * 2.5;
-      const rightRot = Math.cos(t * 1.1 + 1.2) * 0.45;
-
-      if (pinkHandRef.current) {
-        pinkHandRef.current.setAttribute(
-          'transform',
-          `translate(0, ${(popY + leftY).toFixed(2)}) scale(1.04) rotate(${leftRot.toFixed(2)}, 160, 240)`
-        );
-      }
-      if (purpleHandRef.current) {
-        purpleHandRef.current.setAttribute(
-          'transform',
-          `translate(740, 18) scale(-0.92, 0.92) translate(0, ${(popY * 1.08 + rightY).toFixed(2)}) rotate(${rightRot.toFixed(2)}, 160, 240)`
-        );
-      }
-
-      // Pink pupil: dynamic gaze actively following cursor across screen
-      const pCx = 276 + gx * 16;
-      const pCy = 170 + gy * 10;
-      if (pinkPupilRef.current) {
-        pinkPupilRef.current.setAttribute('cx', pCx.toFixed(1));
-        pinkPupilRef.current.setAttribute('cy', pCy.toFixed(1));
-      }
-      if (pinkGlintRef.current) {
-        pinkGlintRef.current.setAttribute('cx', (pCx - 5).toFixed(1));
-        pinkGlintRef.current.setAttribute('cy', (pCy - 5).toFixed(1));
-      }
-
-      // Purple pupil: dynamic gaze actively following cursor across screen (mirrored coordinate space)
-      const uCx = 272 - gx * 16;
-      const uCy = 156 + gy * 10;
-      if (purplePupilRef.current) {
-        purplePupilRef.current.setAttribute('cx', uCx.toFixed(1));
-        purplePupilRef.current.setAttribute('cy', uCy.toFixed(1));
-      }
-      if (purpleGlintRef.current) {
-        purpleGlintRef.current.setAttribute('cx', (uCx - 4.5).toFixed(1));
-        purpleGlintRef.current.setAttribute('cy', (uCy - 4.5).toFixed(1));
+        // Purple pupil: subtle eye tracking (mirrored space)
+        const uCx = 284 - gx * 8;
+        const uCy = 154 + gy * 5;
+        if (purplePupilRef.current) {
+          purplePupilRef.current.setAttribute('cx', uCx.toFixed(1));
+          purplePupilRef.current.setAttribute('cy', uCy.toFixed(1));
+        }
+        if (purpleGlintRef.current) {
+          purpleGlintRef.current.setAttribute('cx', (uCx - 3.5).toFixed(1));
+          purpleGlintRef.current.setAttribute('cy', (uCy - 3.5).toFixed(1));
+        }
       }
 
       animId = requestAnimationFrame(animate);
@@ -129,15 +116,15 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
     };
   }, []);
 
-  // ── Finger scale helper ────────────────────────────────────────────────────
+  // ── Finger hover scale ──
   const fingerStyle = (id: string): React.CSSProperties => ({
     transformBox: 'fill-box',
     transformOrigin: 'bottom center',
-    transform: hoveredFinger === id ? 'scaleY(0.86)' : 'scaleY(1)',
+    transform: hoveredFinger === id ? 'scaleY(0.88)' : 'scaleY(1)',
     transition: 'transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1)',
   });
 
-  // ── Inline hand renderer (used for both hands) ─────────────────────────────
+  // ── Hand SVG Paths ──
   const HandPaths = ({
     side,
     skin,
@@ -156,7 +143,7 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
     glintRef: React.RefObject<SVGCircleElement | null>;
   }) => (
     <>
-      {/* ── Finger 1: pinky ── translate(78,190) rotate(-14) */}
+      {/* Finger 1: pinky */}
       <g transform="translate(78,190) rotate(-14)">
         <g
           className="pointer-events-auto cursor-pointer"
@@ -165,11 +152,11 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
           onMouseLeave={() => setHoveredFinger(null)}
         >
           <rect x="-24" y="-100" width="48" height="125" rx="24" fill={skin} />
-          <circle cx="0" cy="-76" r="8" fill="#ffffff" />
+          <circle cx="0" cy="-76" r="8" fill="#FFFFFF" />
         </g>
       </g>
 
-      {/* ── Finger 2: ring (with cute warm yellow dot accent from reference image) ── translate(122,185) rotate(-7) */}
+      {/* Finger 2: ring (with signature warm yellow dot accent) */}
       <g transform="translate(122,185) rotate(-7)">
         <g
           className="pointer-events-auto cursor-pointer"
@@ -178,11 +165,11 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
           onMouseLeave={() => setHoveredFinger(null)}
         >
           <rect x="-24" y="-140" width="48" height="165" rx="24" fill={skin} />
-          <circle cx="0" cy="-116" r="8" fill="#FEE08B" />
+          <circle cx="0" cy="-116" r="8" fill={LANDING_PALETTE.characters.pink.ringFingerDot} />
         </g>
       </g>
 
-      {/* ── Finger 3: middle ── translate(162,180) rotate(-3) */}
+      {/* Finger 3: middle (tallest) */}
       <g transform="translate(162,180) rotate(-3)">
         <g
           className="pointer-events-auto cursor-pointer"
@@ -191,34 +178,34 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
           onMouseLeave={() => setHoveredFinger(null)}
         >
           <rect x="-24" y="-160" width="48" height="185" rx="24" fill={skin} />
-          <circle cx="0" cy="-136" r="8" fill="#ffffff" />
+          <circle cx="0" cy="-136" r="8" fill="#FFFFFF" />
         </g>
       </g>
 
-      {/* ── OK ring (stroke donut) ── */}
+      {/* "OK" Ring */}
       <circle cx="268" cy="158" r="58" fill="none" stroke={ring} strokeWidth="26" />
 
-      {/* ── Eye (sclera) ── */}
-      <ellipse cx="272" cy="170" rx="40" ry="33" fill="#ffffff" />
+      {/* Sclera */}
+      <ellipse cx="272" cy="170" rx="40" ry="33" fill="#FFFFFF" />
 
-      {/* ── Pupil + glint (direct ref targets for 60fps zero-cost animation) ── */}
+      {/* Pupil + Glint */}
       <ellipse
         ref={pupilRef}
         cx={initialPupilCx}
         cy={initialPupilCy}
-        rx="14"
-        ry="16"
-        fill="#111111"
+        rx="13"
+        ry="15"
+        fill={LANDING_PALETTE.characters.pink.pupil}
       />
       <circle
         ref={glintRef}
-        cx={initialPupilCx - 5}
-        cy={initialPupilCy - 5}
-        r="4.5"
-        fill="#ffffff"
+        cx={initialPupilCx - 4}
+        cy={initialPupilCy - 4}
+        r="4"
+        fill="#FFFFFF"
       />
 
-      {/* ── Palm + thumb ── */}
+      {/* Palm + Thumb */}
       <path
         d="M62 185 Q62 168 90 168 L190 168 Q235 175 245 215 L250 335 L62 335 Z"
         fill={skin}
@@ -231,63 +218,61 @@ export const PramanaHeroHands: React.FC<PramanaHeroHandsProps> = ({ wristY }) =>
         strokeLinecap="round"
       />
 
-      {/* White dot on ring outer edge */}
-      <circle cx="333" cy="168" r="7.5" fill="#ffffff" />
+      {/* White dot accent on ring edge */}
+      <circle cx="333" cy="168" r="7" fill="#FFFFFF" />
     </>
   );
 
-  const svgStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: wristY !== undefined ? `${wristY}px` : '68.6%',
-    left: '64%',
-    transform: 'translateX(-50%) translateY(-87.7%)',
-    width: 'min(100%, 730px)',
-    filter: 'drop-shadow(0 18px 36px rgba(0,0,0,0.12))',
-    zIndex: 10,
-    willChange: 'transform',
-  };
-
   return (
-    <div className="absolute inset-0 pointer-events-none select-none">
-      <svg
-        viewBox="0 0 740 390"
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-full max-w-[660px] sm:max-w-[730px] h-auto overflow-visible"
-        style={svgStyle}
+    <div className="absolute inset-0 pointer-events-none select-none z-10">
+      <div
+        className="absolute left-1/2 lg:left-[69%] xl:left-[70%] -translate-x-1/2 w-[min(90vw,480px)] lg:w-[min(40vw,540px)] h-auto overflow-visible"
+        style={{
+          top: wristY !== undefined ? `${wristY}px` : '70%',
+          transform: 'translateX(-50%) translateY(-86%)',
+          filter: 'drop-shadow(0 16px 32px rgba(45, 10, 80, 0.12))',
+          willChange: 'transform',
+        }}
       >
-        {/* ── RIGHT HAND (purple, slightly smaller, sitting behind, character eyes looking UP) ── */}
-        <g
-          ref={purpleHandRef}
-          transform="translate(740, 18) scale(-0.92, 0.92) translate(0, 0) rotate(0, 160, 240)"
+        <svg
+          viewBox="0 0 620 380"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-auto overflow-visible"
         >
-          <HandPaths
-            side="right"
-            skin="#703BE8"
-            ring="#5E27D5"
-            initialPupilCx={280}
-            initialPupilCy={148}
-            pupilRef={purplePupilRef}
-            glintRef={purpleGlintRef}
-          />
-        </g>
+          {/* ── RIGHT HAND (purple, slightly smaller, facing pink hand) ── */}
+          <g
+            ref={purpleHandRef}
+            transform="translate(580, 28) scale(-0.76, 0.76)"
+          >
+            <HandPaths
+              side="right"
+              skin={LANDING_PALETTE.characters.purple.skin}
+              ring={LANDING_PALETTE.characters.purple.ring}
+              initialPupilCx={284}
+              initialPupilCy={154}
+              pupilRef={purplePupilRef}
+              glintRef={purpleGlintRef}
+            />
+          </g>
 
-        {/* ── LEFT HAND (pink, larger, closer to front, character eyes looking TO THE SIDE) ── */}
-        <g
-          ref={pinkHandRef}
-          transform="translate(0, 0) scale(1.04) rotate(0, 160, 240)"
-          filter="drop-shadow(6px 10px 20px rgba(0,0,0,0.15))"
-        >
-          <HandPaths
-            side="left"
-            skin="#EE738A"
-            ring="#DB5B74"
-            initialPupilCx={292}
-            initialPupilCy={170}
-            pupilRef={pinkPupilRef}
-            glintRef={pinkGlintRef}
-          />
-        </g>
-      </svg>
+          {/* ── LEFT HAND (pink, iconic OK gesture with playful eye) ── */}
+          <g
+            ref={pinkHandRef}
+            transform="translate(10, 0) scale(0.86)"
+            filter="drop-shadow(4px 8px 16px rgba(0,0,0,0.12))"
+          >
+            <HandPaths
+              side="left"
+              skin={LANDING_PALETTE.characters.pink.skin}
+              ring={LANDING_PALETTE.characters.pink.ring}
+              initialPupilCx={284}
+              initialPupilCy={170}
+              pupilRef={pinkPupilRef}
+              glintRef={pinkGlintRef}
+            />
+          </g>
+        </svg>
+      </div>
     </div>
   );
 };

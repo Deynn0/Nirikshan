@@ -38,30 +38,6 @@ html.dark body {
   background: rgba(120, 113, 108, 0.6);
 }
 
-/* 3D Purple Tiled Floor */
-.perspective-container {
-  perspective: 700px;
-  perspective-origin: 50% 60%;
-  overflow: hidden;
-}
-
-.tiled-floor-3d {
-  position: absolute;
-  bottom: -40px;
-  left: -50%;
-  right: -50%;
-  height: 280px;
-  background-image: 
-    linear-gradient(to right, rgba(109, 40, 217, 0.22) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(109, 40, 217, 0.22) 1px, transparent 1px);
-  background-size: 40px 40px;
-  transform: rotateX(68deg) translateZ(0);
-  transform-origin: 50% 100%;
-  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 20%, rgba(0, 0, 0, 0) 100%);
-  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 20%, rgba(0, 0, 0, 0) 100%);
-  pointer-events: none;
-}
-
 /* Orange selection outline */
 .item-selected-orange {
   outline: 2px solid #F59E0B !important;
@@ -92,6 +68,30 @@ html.dark .surface-card {
   line-height: 1rem;
 }
 
+/* ── Landing Page Scoped Styles (.lp) ── */
+.lp .perspective-container {
+  perspective: 700px;
+  perspective-origin: 50% 60%;
+  overflow: hidden;
+}
+
+.lp .tiled-floor-3d {
+  position: absolute;
+  bottom: -40px;
+  left: -50%;
+  right: -50%;
+  height: 280px;
+  background-image: 
+    linear-gradient(to right, rgba(109, 40, 217, 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(109, 40, 217, 0.22) 1px, transparent 1px);
+  background-size: 40px 40px;
+  transform: rotateX(68deg) translateZ(0);
+  transform-origin: 50% 100%;
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 20%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 20%, rgba(0, 0, 0, 0) 100%);
+  pointer-events: none;
+}
+
 /* Floating animation for vector hands */
 @keyframes float-gentle {
   0%, 100% {
@@ -101,15 +101,15 @@ html.dark .surface-card {
     transform: translateY(-4px);
   }
 }
-.animate-bounce-subtle {
+.lp .animate-bounce-subtle {
   animation: float-gentle 4.2s ease-in-out infinite;
 }
-.animate-bounce-delayed {
+.lp .animate-bounce-delayed {
   animation: float-gentle 4.2s ease-in-out 1.8s infinite;
 }
 
 /* Hero Hand Finger Hover Animation */
-.finger {
+.lp .finger {
   transform-box: fill-box;
   transform-origin: 50% 100%;
   transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -117,17 +117,17 @@ html.dark .surface-card {
   pointer-events: auto;
 }
 
-.finger:hover {
+.lp .finger:hover {
   transform: scaleY(0.6);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .finger {
+  .lp .finger {
     transition: none !important;
     transform: none !important;
   }
-  .animate-bounce-subtle,
-  .animate-bounce-delayed {
+  .lp .animate-bounce-subtle,
+  .lp .animate-bounce-delayed {
     animation: none !important;
   }
 }
