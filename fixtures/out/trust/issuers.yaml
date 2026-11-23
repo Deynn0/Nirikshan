@@ -1,0 +1,18 @@
+# Nirikshan Authorized Trust Anchors & Issuers
+issuers:
+  - id: aicte-central
+    name: "All India Council for Technical Education"
+    role: "REGULATORY_BODY"
+    ca_cert: "trust_ca.pem"
+    crl_url: "http://crl.aicte-india.org/root.crl"
+    status: "ACTIVE"
+  - id: delhi-fire-service
+    name: "Delhi Fire and Rescue Services"
+    role: "STATUTORY_AUTHORITY"
+    ca_cert: "trust_ca.pem"
+    status: "ACTIVE"
+  - id: delhi-revenue-dept
+    name: "State Revenue Department - Land Administration"
+    role: "REVENUE_AUTHORITY"
+    ca_cert: "trust_ca.pem"
+    status: "ACTIVE"

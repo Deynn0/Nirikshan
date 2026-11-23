@@ -1,221 +1,337 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { Shield, Lock, User, Building, CheckCircle2, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, ArrowRight, Building2, KeyRound, LoaderCircle, QrCode, ShieldCheck, User } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { type FormEvent, lazy, Suspense, useEffect, useState } from "react";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { AccessibilityMenu } from "../a11y/AccessibilityMenu";
+import { api, qk } from "../api";
+import { homePath, useLogin, useSession } from "../auth/session";
+import { Wordmark } from "../brand";
+import { LanguageToggle, useLang, useT } from "../i18n";
+import { SiteFooter } from "../site/SiteFooter";
+import type { AppNavState, DemoAccount, Role, SessionInfo } from "../types";
+import { palette } from "../landing/palette";
+import { Button, Field, Input, Tag } from "../ui";
 
-export const LoginPage: React.FC = () => {
-  const { t } = useTranslation();
-  const { login } = useAuth();
-  const navigate = useNavigate();
+const MiniEye = lazy(() => import("../landing/hero/MiniEye"));
 
-  const [username, setUsername] = useState('officer.aicte');
-  const [role, setRole] = useState<'applicant' | 'officer'>('officer');
-  const [institutionId, setInstitutionId] = useState('INST-DELHI-098');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+const OFFICIAL_ORDER: Role[] = ["officer", "verifier", "admin"];
+const ROLE_LABEL: Record<Role, string> = {
+  officer: "Scrutiny officer",
+  verifier: "Verification cell",
+  admin: "Administrator and auditor",
+  institution: "Institution applicant",
+};
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      await login(username, role, role === 'applicant' ? institutionId : undefined);
-      if (role === 'applicant') {
-        navigate('/applicant');
-      } else {
-        navigate('/officer');
-      }
-    } catch (err: any) {
-      setError(err?.message || 'Login failed');
-    } finally {
-      setLoading(false);
-    }
-  };
+const ease = [0.22, 1, 0.36, 1] as const;
 
-  const handleQuickLogin = async (selectedRole: 'applicant' | 'officer') => {
-    setRole(selectedRole);
-    const user = selectedRole === 'applicant' ? 'registrar.iitdelhi' : 'officer.scrutiny1';
-    setUsername(user);
-    setLoading(true);
-    try {
-      await login(user, selectedRole, selectedRole === 'applicant' ? 'INST-IITD-001' : undefined);
-      navigate(selectedRole === 'applicant' ? '/applicant' : '/officer');
-    } catch (err: any) {
-      setError(err?.message || 'Quick login failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+function DemoCard({
+  account,
+  title,
+  subtitle,
+  pending,
+  disabled,
+  onPick,
+}: {
+  account: DemoAccount;
+  title: string;
+  subtitle: string;
+  pending: boolean;
+  disabled: boolean;
+  onPick: () => void;
+}) {
+  const Icon = account.role === "institution" ? Building2 : account.role === "admin" ? ShieldCheck : User;
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 relative overflow-hidden bg-slate-950">
-      {/* Background Glow Orbs */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <motion.button
+      type="button"
+      onClick={onPick}
+      disabled={disabled}
+      whileTap={disabled ? undefined : { scale: 0.97 }}
+      aria-busy={pending || undefined}
+      className="group relative flex w-full items-center gap-3 overflow-hidden rounded-[14px] border border-line bg-surface px-3 py-2.5 text-left shadow-xs transition-[border-color,box-shadow,background-color] duration-200 hover:border-brand-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-default disabled:opacity-60 cursor-pointer"
+    >
+      <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-brand-50 text-brand-700 transition-colors group-hover:bg-brand-100">
+        <Icon className="size-4" aria-hidden />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[0.8438rem] font-semibold text-ink">{title}</span>
+        <span className="block truncate text-[0.75rem] text-ink-3">{subtitle}</span>
+      </span>
+      {pending ? (
+        <LoaderCircle className="size-4 shrink-0 animate-spin text-brand-600" aria-hidden />
+      ) : (
+        <ArrowRight
+          className="size-4 shrink-0 -translate-x-1 text-ink-4 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:text-brand-600 group-hover:opacity-100"
+          aria-hidden
+        />
+      )}
+      {pending && (
+        <motion.span
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-500"
+          initial={{ scaleX: 0, originX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 1.2, ease }}
+        />
+      )}
+    </motion.button>
+  );
+}
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Branding Title */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-600 via-indigo-600 to-purple-600 p-0.5 shadow-xl shadow-sky-500/25 mb-4">
-            <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-              <Shield className="w-8 h-8 text-sky-400" />
-            </div>
-          </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">
-            Nirikshan <span className="text-sky-400 font-hindi">(निरीक्षण)</span>
-          </h1>
-          <p className="mt-2 text-sm text-slate-400 max-w-xs mx-auto">
-            {t('auth.subtitle')} — AICTE Approval Process Handbook Compliance
-          </p>
-        </div>
-
-        {/* Card */}
-        <div className="glass-panel rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-800">
-          {error && (
-            <div className="mb-5 p-3 rounded-xl bg-rose-950/50 border border-rose-500/30 text-rose-200 text-xs flex items-center gap-2">
-              <span className="font-semibold">Error:</span> {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Role Picker */}
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                {t('auth.role')}
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setRole('officer')}
-                  className={`p-3 rounded-xl border text-left transition-all flex flex-col gap-1 ${
-                    role === 'officer'
-                      ? 'bg-indigo-950/60 border-indigo-500/60 ring-2 ring-indigo-500/30 text-white'
-                      : 'bg-slate-900/40 border-slate-800 text-slate-400 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <ShieldCheck className={`w-4 h-4 ${role === 'officer' ? 'text-indigo-400' : 'text-slate-500'}`} />
-                    {role === 'officer' && <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />}
-                  </div>
-                  <span className="text-xs font-bold mt-1 text-slate-200">{t('auth.officerRole')}</span>
-                  <span className="text-[10px] text-slate-400">Scrutiny & Evidence Audit</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setRole('applicant')}
-                  className={`p-3 rounded-xl border text-left transition-all flex flex-col gap-1 ${
-                    role === 'applicant'
-                      ? 'bg-sky-950/60 border-sky-500/60 ring-2 ring-sky-500/30 text-white'
-                      : 'bg-slate-900/40 border-slate-800 text-slate-400 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <Building className={`w-4 h-4 ${role === 'applicant' ? 'text-sky-400' : 'text-slate-500'}`} />
-                    {role === 'applicant' && <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />}
-                  </div>
-                  <span className="text-xs font-bold mt-1 text-slate-200">{t('auth.applicantRole')}</span>
-                  <span className="text-[10px] text-slate-400">Upload & Self-Check</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Username / ID */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                {t('auth.username')}
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                  <User className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl glass-input text-sm text-white placeholder-slate-500 transition-colors"
-                  placeholder="e.g. officer.aicte or inst.registrar"
-                />
-              </div>
-            </div>
-
-            {/* Institution ID (if applicant) */}
-            {role === 'applicant' && (
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  AICTE Permanent Institute ID
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                    <Building className="w-4 h-4" />
-                  </div>
-                  <input
-                    type="text"
-                    value={institutionId}
-                    onChange={(e) => setInstitutionId(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl glass-input text-sm text-white placeholder-slate-500 transition-colors"
-                    placeholder="e.g. 1-123456789"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 hover:from-sky-400 hover:to-purple-500 text-white font-semibold text-sm shadow-lg shadow-sky-500/20 hover:shadow-sky-500/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>{t('auth.loginBtn')}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Quick Demo Login Bar */}
-          <div className="mt-6 pt-5 border-t border-slate-800">
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                {t('auth.quickLogin')}
-              </span>
-              <span className="text-[10px] text-amber-400/80 font-mono">1-Click Test</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('officer')}
-                className="py-2 px-3 rounded-lg bg-indigo-950/40 hover:bg-indigo-900/50 border border-indigo-500/30 text-xs font-medium text-indigo-200 transition-colors flex items-center justify-center gap-1.5"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-                <span>AICTE Officer</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('applicant')}
-                className="py-2 px-3 rounded-lg bg-sky-950/40 hover:bg-sky-900/50 border border-sky-500/30 text-xs font-medium text-sky-200 transition-colors flex items-center justify-center gap-1.5"
-              >
-                <Building className="w-3.5 h-3.5 text-sky-400" />
-                <span>Applicant Portal</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Offline Guarantee Footer */}
-        <div className="mt-6 text-center">
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            <Lock className="w-3 h-3 inline mr-1 text-emerald-400" />
-            {t('auth.offlineNotice')}
-          </p>
-        </div>
+function DemoAccounts({ pending, onPick }: { pending: string | null; onPick: (a: DemoAccount, password: string) => void }) {
+  const { t, tn } = useLang();
+  const [showAll, setShowAll] = useState(false);
+  const demo = useQuery({ queryKey: qk.demo, queryFn: api.demoAccounts, retry: false, staleTime: 60_000 });
+  if (demo.isPending)
+    return (
+      <div className="grid gap-2 sm:grid-cols-2" aria-busy>
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="h-[58px] animate-pulse rounded-[14px] bg-surface-2" />
+        ))}
       </div>
+    );
+  if (demo.error)
+    return <p className="rounded-[14px] border border-line bg-surface-2 px-4 py-3 text-sm text-ink-2">{t("Demo accounts are not available right now.")}</p>;
+  const { accounts, password, notice } = demo.data;
+  const officials = OFFICIAL_ORDER.flatMap((r) => accounts.filter((a) => a.role === r));
+  const allInstitutions = accounts.filter((a) => a.role === "institution");
+  const institutions = showAll ? allInstitutions : allInstitutions.slice(0, 4);
+  const clean = (n: string) => n.replace(/\s*\(.*\)$/, "");
+  return (
+    <div>
+      <p className="flex flex-wrap items-center gap-2 text-[0.7812rem] text-ink-3">
+        <Tag variant="demo">{t("Simulated")}</Tag>
+        <span>
+          {t(notice)}. {t("One click signs in with the shared demo password.")}
+        </span>
+      </p>
+      {officials.length > 0 && (
+        <div className="mt-4">
+          <h3 className="mb-2 text-[0.6875rem] font-semibold tracking-[0.12em] text-ink-3 uppercase">{t("Officials")}</h3>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {officials.map((a, i) => (
+              <motion.li key={a.id} className="min-w-0" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i, duration: 0.4, ease }}>
+                <DemoCard
+                  account={a}
+                  title={t(a.role_label || ROLE_LABEL[a.role])}
+                  subtitle={`${clean(a.display_name)} · ${a.username}`}
+                  pending={pending === a.username}
+                  disabled={!!pending}
+                  onPick={() => onPick(a, password)}
+                />
+              </motion.li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {institutions.length > 0 && (
+        <div className="mt-4">
+          <h3 className="mb-2 text-[0.6875rem] font-semibold tracking-[0.12em] text-ink-3 uppercase">{t("Institutions")}</h3>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {institutions.map((a, i) => (
+              <motion.li
+                key={a.id}
+                className="min-w-0"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.04 * (i + officials.length), duration: 0.4, ease }}
+              >
+                <DemoCard
+                  account={a}
+                  title={a.institution ?? clean(a.display_name)}
+                  subtitle={`${clean(a.display_name)} · ${a.username}`}
+                  pending={pending === a.username}
+                  disabled={!!pending}
+                  onPick={() => onPick(a, password)}
+                />
+              </motion.li>
+            ))}
+          </ul>
+          {allInstitutions.length > 4 && (
+            <button
+              type="button"
+              onClick={() => setShowAll((v) => !v)}
+              aria-expanded={showAll}
+              className="mt-2 rounded-full px-2 py-1 text-[0.8125rem] font-semibold text-brand-700 hover:bg-brand-50 cursor-pointer"
+            >
+              {showAll ? t("Show fewer institutions") : tn(allInstitutions.length, "Show all {n} institutions", "Show all {n} institutions")}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
-};
+}
+
+export function LoginPage() {
+  const session = useSession();
+  const login = useLogin();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [pending, setPending] = useState<string | null>(null);
+  const [closing, setClosing] = useState(false);
+  const from = (location.state as AppNavState | null)?.from;
+  const t = useT();
+
+  useEffect(() => {
+    document.title = `${t("Sign in")} | Pramana Nirikshan`;
+    return () => {
+      document.title = "Nirikshan";
+    };
+  }, [t]);
+
+  if (session.data && !closing) return <Navigate to={homePath(session.data.user.role)} replace />;
+
+  function done(s: SessionInfo) {
+    const target = from && from !== "/login" ? from : homePath(s.user.role);
+    setClosing(true);
+    window.setTimeout(() => navigate(target, { replace: true }), 420);
+  }
+
+  function submit(e: FormEvent) {
+    e.preventDefault();
+    setPending(null);
+    login.mutate({ username: username.trim(), password }, { onSuccess: done });
+  }
+
+  function pick(a: DemoAccount, pw: string) {
+    setPending(a.username);
+    setUsername(a.username);
+    setPassword(pw);
+    login.mutate({ username: a.username, password: pw }, { onSuccess: done, onError: () => setPending(null) });
+  }
+
+  const formBusy = login.isPending && !pending;
+  const error = login.error instanceof Error ? login.error.message : login.error ? t("Sign in failed") : null;
+
+  return (
+    <div className="grid min-h-dvh bg-canvas lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] selection:bg-brand-200">
+      <div className="flex min-w-0 flex-col px-5 pt-6 sm:px-10 lg:px-14">
+        <a
+          href="#main"
+          className="sr-only z-[100] rounded-control bg-brand-solid px-3 py-2 text-sm text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+        >
+          {t("Skip to content")}
+        </a>
+        <header className="flex items-center justify-between gap-3">
+          <Link to="/" aria-label={t("Pramana home")} className="rounded-full">
+            <Wordmark size={30} />
+          </Link>
+          <div className="flex items-center gap-2">
+            <Link to="/" className="hidden items-center gap-1.5 rounded-full px-2 py-1 text-[0.8125rem] font-medium text-ink-3 hover:text-ink sm:inline-flex">
+              <ArrowLeft className="size-3.5" aria-hidden /> {t("Back to overview")}
+            </Link>
+            <LanguageToggle />
+            <AccessibilityMenu withTheme />
+          </div>
+        </header>
+
+        <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">
+          <motion.div
+            className="mx-auto my-auto w-full max-w-[520px] py-10"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease }}
+          >
+            <p className="text-[0.6875rem] font-semibold tracking-[0.12em] text-ink-3 uppercase">{t("Pramana workspace")}</p>
+            <h1 className="mt-2 font-display text-[2.375rem] leading-[1.05] font-semibold tracking-[-0.03em] text-ink sm:text-[2.75rem]">
+              {t("Sign in to review")}
+            </h1>
+            <p className="mt-3 max-w-md text-[0.9375rem] leading-relaxed text-ink-2">
+              {t("Officials review findings and the evidence behind them. Institutions submit applications and respond to rectification requests.")}
+            </p>
+
+            <form onSubmit={submit} className="mt-8 space-y-4" noValidate>
+              <Field label={t("Username")}>
+                <Input
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  leadingIcon={<User />}
+                  inputSize="lg"
+                  placeholder="officer"
+                />
+              </Field>
+              <Field label={t("Password")}>
+                <Input
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  leadingIcon={<KeyRound />}
+                  inputSize="lg"
+                  placeholder="••••••••"
+                />
+              </Field>
+              <AnimatePresence>
+                {error && !pending && (
+                  <motion.p
+                    role="alert"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden rounded-[10px] bg-mismatch-bg px-3 py-2 text-sm text-mismatch-fg"
+                  >
+                    {error}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full"
+                loading={formBusy}
+                disabled={!username.trim() || !password || !!pending}
+                trailingIcon={<ArrowRight className="size-4" />}
+              >
+                {t("Sign in")}
+              </Button>
+            </form>
+
+            <div className="my-8 flex items-center gap-3 text-[0.75rem] text-ink-3">
+              <span className="h-px flex-1 bg-line" />
+              {t("Demo accounts (synthetic data)")}
+              <span className="h-px flex-1 bg-line" />
+            </div>
+            <DemoAccounts pending={pending} onPick={pick} />
+
+            <Link
+              to="/workspace/tools/analyse"
+              className="group mt-6 flex items-center gap-3 rounded-[14px] border border-dashed border-line-2 px-3.5 py-3 text-left transition-colors duration-200 hover:border-brand-300 hover:bg-brand-50/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            >
+              <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-brand-50 text-brand-700">
+                <QrCode className="size-4" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[0.8438rem] font-semibold text-ink">{t("Holding a certificate with a QR code?")}</span>
+                <span className="block text-[0.75rem] text-ink-3">{t("Scan it to check the issuer's signature. No sign-in needed.")}</span>
+              </span>
+              <ArrowRight className="size-4 shrink-0 text-ink-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-brand-600" aria-hidden />
+            </Link>
+          </motion.div>
+        </main>
+
+        <SiteFooter className="px-0 pb-6 sm:px-0 lg:px-0" />
+      </div>
+
+      <aside aria-label={t("Pramana eye")} className="relative hidden p-3 lg:block">
+        <div className="sticky top-3 h-[calc(100dvh-24px)] overflow-hidden rounded-[28px] shadow-lg">
+          <Suspense fallback={<div className="h-full w-full lp-sky" />}>
+            <MiniEye closed={closing}>
+              <div className="max-w-[270px] text-center select-none px-4">
+                <p className="font-display text-[2rem] font-bold tracking-tight text-ink">Pratyaksha</p>
+                <p className="mt-2 text-[0.8438rem] leading-relaxed text-ink-2">
+                  {t("Perception, the first pramana. Every finding points at what was seen.")}
+                </p>
+              </div>
+            </MiniEye>
+          </Suspense>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+export default LoginPage;

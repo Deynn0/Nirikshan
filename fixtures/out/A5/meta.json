@@ -1,0 +1,45 @@
+{
+  "application_id": "A5",
+  "title": "Font Splicing & Size Discontinuity",
+  "institution_name": "Institute of Technology & Science (A5)",
+  "application_number": "AICTE/2024/APP/A5",
+  "is_clean": false,
+  "planted_frauds": [
+    "font_mismatch"
+  ],
+  "campus_polygon": [
+    [
+      77.2,
+      28.61
+    ],
+    [
+      77.22,
+      28.61
+    ],
+    [
+      77.22,
+      28.625
+    ],
+    [
+      77.2,
+      28.625
+    ]
+  ],
+  "extracted_params": {
+    "land_area_acres": 4.5,
+    "is_contiguous": true,
+    "survey_no": "104/1A",
+    "built_up_area_sqm": 12500.0,
+    "fire_noc_expired": false,
+    "faculty_count": 60,
+    "faculty": [],
+    "photos": [],
+    "seals": []
+  },
+  "files": {
+    "documents": [
+      "land_deed.pdf"
+    ],
+    "photos": []
+  }
+}

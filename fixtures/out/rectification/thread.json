@@ -1,0 +1,19 @@
+{
+  "thread_id": "rect-thread-9821",
+  "application_id": "A3",
+  "status": "UNDER_REVIEW",
+  "messages": [
+    {
+      "sender": "OFFICER",
+      "timestamp": "2024-10-10T09:30:00Z",
+      "message": "Fire NOC submitted is expired as of 2022-12-31. Please upload valid certificate.",
+      "attachment": "rectification_notice.pdf"
+    },
+    {
+      "sender": "APPLICANT",
+      "timestamp": "2024-10-14T14:15:00Z",
+      "message": "Renewed Fire NOC obtained from State Fire Department attached herewith.",
+      "attachment": "remedial_fire_noc.pdf"
+    }
+  ]
+}

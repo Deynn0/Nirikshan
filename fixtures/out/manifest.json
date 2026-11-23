@@ -1,0 +1,610 @@
+{
+  "version": "1.0.0",
+  "type": "synthetic_scrutiny_fixtures",
+  "total_applications": 11,
+  "applications": {
+    "A1": {
+      "application_id": "A1",
+      "title": "Clean Engineering Application",
+      "institution_name": "Institute of Technology & Science (A1)",
+      "application_number": "AICTE/2024/APP/A1",
+      "is_clean": true,
+      "planted_frauds": [],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "faculty": [
+          {
+            "aadhaar": "4521 8832 1092",
+            "name": "Dr. Sunil Kumar",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ]
+          }
+        ],
+        "photos": [
+          {
+            "phash": "af85d03aad2fd0d0",
+            "type": "COMPUTER_LAB"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "ba99ede4309b8364",
+            "issuing_authority": "Delhi Fire Service"
+          }
+        ]
+      },
+      "files": {
+        "documents": [
+          "approval_letter.pdf",
+          "fire_noc.pdf",
+          "land_deed.pdf"
+        ],
+        "photos": [
+          "approval_qr.png",
+          "computer_lab.jpg",
+          "fire_service_seal.png"
+        ]
+      }
+    },
+    "A2": {
+      "application_id": "A2",
+      "title": "Clean Pharmacy Application",
+      "institution_name": "Institute of Technology & Science (A2)",
+      "application_number": "AICTE/2024/APP/A2",
+      "is_clean": true,
+      "planted_frauds": [],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "faculty": [],
+        "photos": [
+          {
+            "phash": "bf95903f953a806a",
+            "type": "CHEMISTRY_LAB"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "9e3f69c03c1fc1e0",
+            "issuing_authority": "Municipal Corporation"
+          }
+        ]
+      },
+      "files": {
+        "documents": [
+          "fire_noc.pdf",
+          "land_deed.pdf",
+          "sanction_order.pdf"
+        ],
+        "photos": [
+          "approval_qr.png",
+          "chemistry_lab.jpg",
+          "municipal_seal.png"
+        ]
+      }
+    },
+    "A3": {
+      "application_id": "A3",
+      "title": "Expired Fire Safety NOC",
+      "institution_name": "Institute of Technology & Science (A3)",
+      "application_number": "AICTE/2024/APP/A3",
+      "is_clean": false,
+      "planted_frauds": [
+        "expired_certificate"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": true,
+        "faculty_count": 60,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "fire_safety_noc.pdf",
+          "land_deed.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "A4": {
+      "application_id": "A4",
+      "title": "Incremental Revision Order Tampering",
+      "institution_name": "Institute of Technology & Science (A4)",
+      "application_number": "AICTE/2024/APP/A4",
+      "is_clean": false,
+      "planted_frauds": [
+        "edited_date_incremental_revision"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "fire_noc.pdf",
+          "land_conversion_order.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "A5": {
+      "application_id": "A5",
+      "title": "Font Splicing & Size Discontinuity",
+      "institution_name": "Institute of Technology & Science (A5)",
+      "application_number": "AICTE/2024/APP/A5",
+      "is_clean": false,
+      "planted_frauds": [
+        "font_mismatch"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "land_deed.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "A6": {
+      "application_id": "A6",
+      "title": "Building Sanction Whiteout Concealment",
+      "institution_name": "Institute of Technology & Science (A6)",
+      "application_number": "AICTE/2024/APP/A6",
+      "is_clean": false,
+      "planted_frauds": [
+        "whiteout"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "building_sanction.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "A7": {
+      "application_id": "A7",
+      "title": "Unauthorized Applicant Self-Signature",
+      "institution_name": "Institute of Technology & Science (A7)",
+      "application_number": "AICTE/2024/APP/A7",
+      "is_clean": false,
+      "planted_frauds": [
+        "invalid_or_applicant_signature"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [
+          "official_sanction.pdf"
+        ],
+        "photos": []
+      }
+    },
+    "A8": {
+      "application_id": "A8",
+      "title": "Cryptographically Tampered QR Code",
+      "institution_name": "Institute of Technology & Science (A8)",
+      "application_number": "AICTE/2024/APP/A8",
+      "is_clean": false,
+      "planted_frauds": [
+        "tampered_qr"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "faculty": [],
+        "photos": [],
+        "seals": []
+      },
+      "files": {
+        "documents": [],
+        "photos": [
+          "verification_qr.png"
+        ]
+      }
+    },
+    "A9": {
+      "application_id": "A9",
+      "title": "Duplicate Faculty & Shared Lab Infrastructure (Part 1)",
+      "institution_name": "Institute of Technology & Science (A9)",
+      "application_number": "AICTE/2024/APP/A9",
+      "is_clean": false,
+      "planted_frauds": [
+        "duplicate_faculty_ids",
+        "reused_seal_and_lab_photo"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "faculty": [
+          {
+            "aadhaar": "9988 7766 5544",
+            "name": "Dr. Ramesh Sharma (Shared Faculty)",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ],
+            "designation": "Professor & HOD"
+          }
+        ],
+        "photos": [
+          {
+            "phash": "846b6b806f7f8495",
+            "type": "PHYSICS_LAB",
+            "source_path": "out\\_shared_assets\\physics_lab_shared.jpg"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "ba33e5c4161bcb64",
+            "issuing_authority": "Delhi State Revenue Dept",
+            "source_path": "out\\_shared_assets\\registrar_seal_shared.png"
+          }
+        ]
+      },
+      "files": {
+        "documents": [],
+        "photos": [
+          "physics_lab.jpg",
+          "revenue_seal.png"
+        ]
+      }
+    },
+    "A10": {
+      "application_id": "A10",
+      "title": "Cross-Institution Photo & Seal Reuse (Part 2)",
+      "institution_name": "Institute of Technology & Science (A10)",
+      "application_number": "AICTE/2024/APP/A10",
+      "is_clean": false,
+      "planted_frauds": [
+        "reused_seal_and_lab_photo",
+        "duplicate_faculty_ids"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "faculty": [
+          {
+            "aadhaar": "9988 7766 5544",
+            "name": "Dr. Ramesh Sharma (Shared Faculty)",
+            "employment_type": "FULL_TIME",
+            "periods": [
+              "2024-2025"
+            ],
+            "designation": "Professor"
+          }
+        ],
+        "photos": [
+          {
+            "phash": "846b6b806f7f8495",
+            "type": "PHYSICS_LAB",
+            "source_path": "out\\_shared_assets\\physics_lab_shared.jpg"
+          }
+        ],
+        "seals": [
+          {
+            "phash": "ba33e5c4161bcb64",
+            "issuing_authority": "Pune Municipal Corporation (Reused Seal)",
+            "source_path": "out\\_shared_assets\\registrar_seal_shared.png"
+          }
+        ]
+      },
+      "files": {
+        "documents": [],
+        "photos": [
+          "physics_lab.jpg",
+          "revenue_seal.png"
+        ]
+      }
+    },
+    "A11": {
+      "application_id": "A11",
+      "title": "Geotag Outside Declared Campus Boundary",
+      "institution_name": "Institute of Technology & Science (A11)",
+      "application_number": "AICTE/2024/APP/A11",
+      "is_clean": false,
+      "planted_frauds": [
+        "geotag_outside_campus"
+      ],
+      "campus_polygon": [
+        [
+          77.2,
+          28.61
+        ],
+        [
+          77.22,
+          28.61
+        ],
+        [
+          77.22,
+          28.625
+        ],
+        [
+          77.2,
+          28.625
+        ]
+      ],
+      "extracted_params": {
+        "land_area_acres": 4.5,
+        "is_contiguous": true,
+        "survey_no": "104/1A",
+        "built_up_area_sqm": 12500.0,
+        "fire_noc_expired": false,
+        "faculty_count": 60,
+        "faculty": [],
+        "photos": [
+          {
+            "phash": "af85d03aad2fd0d0",
+            "type": "CAMPUS_EXTERIOR"
+          }
+        ],
+        "seals": []
+      },
+      "files": {
+        "documents": [],
+        "photos": [
+          "site_photo.jpg"
+        ]
+      }
+    }
+  },
+  "special_suites": {
+    "rectification": [
+      "rectification_notice.pdf",
+      "remedial_fire_noc.pdf"
+    ],
+    "scan": [
+      "khatauni_revenue_hi_scanned.pdf",
+      "scanned_stub_image_only.pdf"
+    ],
+    "trust": [
+      "trust_ca.der",
+      "trust_ca.pem",
+      "keyring.json",
+      "issuers.yaml"
+    ]
+  }
+}

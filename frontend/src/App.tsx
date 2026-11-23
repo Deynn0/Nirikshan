@@ -113,6 +113,11 @@ export const App: React.FC = () => {
               <Route path="/applicant" element={<ApplicantPage />} />
               <Route path="/officer" element={<OfficerPage />} />
 
+              {/* Pramana alias routes */}
+              <Route path="/scan" element={<Navigate to="/workspace/tools/analyse" replace />} />
+              <Route path="/portal" element={<Navigate to="/applicant" replace />} />
+              <Route path="/dashboard" element={<Navigate to="/workspace/queue" replace />} />
+
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

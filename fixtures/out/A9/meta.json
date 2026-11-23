@@ -1,0 +1,69 @@
+{
+  "application_id": "A9",
+  "title": "Duplicate Faculty & Shared Lab Infrastructure (Part 1)",
+  "institution_name": "Institute of Technology & Science (A9)",
+  "application_number": "AICTE/2024/APP/A9",
+  "is_clean": false,
+  "planted_frauds": [
+    "duplicate_faculty_ids",
+    "reused_seal_and_lab_photo"
+  ],
+  "campus_polygon": [
+    [
+      77.2,
+      28.61
+    ],
+    [
+      77.22,
+      28.61
+    ],
+    [
+      77.22,
+      28.625
+    ],
+    [
+      77.2,
+      28.625
+    ]
+  ],
+  "extracted_params": {
+    "land_area_acres": 4.5,
+    "is_contiguous": true,
+    "survey_no": "104/1A",
+    "built_up_area_sqm": 12500.0,
+    "fire_noc_expired": false,
+    "faculty_count": 60,
+    "faculty": [
+      {
+        "aadhaar": "9988 7766 5544",
+        "name": "Dr. Ramesh Sharma (Shared Faculty)",
+        "employment_type": "FULL_TIME",
+        "periods": [
+          "2024-2025"
+        ],
+        "designation": "Professor & HOD"
+      }
+    ],
+    "photos": [
+      {
+        "phash": "846b6b806f7f8495",
+        "type": "PHYSICS_LAB",
+        "source_path": "out\\_shared_assets\\physics_lab_shared.jpg"
+      }
+    ],
+    "seals": [
+      {
+        "phash": "ba33e5c4161bcb64",
+        "issuing_authority": "Delhi State Revenue Dept",
+        "source_path": "out\\_shared_assets\\registrar_seal_shared.png"
+      }
+    ]
+  },
+  "files": {
+    "documents": [],
+    "photos": [
+      "physics_lab.jpg",
+      "revenue_seal.png"
+    ]
+  }
+}

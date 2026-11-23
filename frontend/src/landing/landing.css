@@ -1,0 +1,13 @@
+/* Atmospheric sky with sunset colors and soft radial center glow */
+:root {
+  --lp-peach: #ffe1c9;
+  --lp-apricot: #ffcfa8;
+  --lp-rose: #f8cde0;
+  --lp-lilac: #e2d3ff;
+}
+
+.lp-sky {
+  background:
+    radial-gradient(60% 55% at 50% 52%, rgb(255 250 246 / 0.9) 0%, rgb(255 244 236 / 0) 70%),
+    linear-gradient(180deg, #ffe1c9 0%, #ffcfa8 34%, #f8cde0 70%, #e2d3ff 100%);
+}

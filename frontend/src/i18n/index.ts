@@ -1,5 +1,7 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import { initReactI18next, useTranslation } from 'react-i18next';
+
+export { LanguageToggle } from './LanguageToggle';
 
 const resources = {
   en: {
@@ -30,58 +32,34 @@ const resources = {
         loginBtn: "Access Scrutiny Console",
         offlineNotice: "All cryptographic, OCR, and deterministic rule engines operate strictly on-premise without external telemetry.",
       },
-      applicant: {
-        title: "Institution Compliance Dossier",
-        newDossier: "Register New Application Dossier",
-        institutionName: "Institution Full Name",
-        applicationNo: "Application Ref Number",
-        program: "Program",
-        level: "Level (UG/PG/Diploma)",
-        locationType: "Location Type",
-        intake: "Proposed Intake",
-        uploadTitle: "Document Submissions & Verification",
-        docType: "Document Type",
-        selectDocType: "Select AICTE Document Category",
-        dragDrop: "Drag and drop regulatory PDF or image here, or browse",
-        fileSelected: "Selected file",
-        uploadAndVerify: "Upload & Trigger Verification",
-        liveProgress: "Live Processing Pipeline (SSE)",
-        selfAssessmentTitle: "Pre-Submission Self-Assessment Check",
-        selfAssessmentDesc: "Validate your regulatory claims against AICTE Approval Process Handbook (APH 2024-2027) norms before formal submission.",
-        rectificationTitle: "Rectification & Deficiency Resolution",
-        rectificationDesc: "Respond to deficiency observations issued by AICTE scrutiny officers with documentary justification.",
-        submitRectification: "Submit Rectification Response",
-        responseSent: "Rectification submitted successfully to the scrutiny officer.",
-      },
-      officer: {
-        title: "Regulatory Scrutiny Console",
-        dossierList: "Application Dossiers Under Scrutiny",
-        documentsTab: "Documents & Evidence",
-        viewerTab: "Document Viewer (pdf.js)",
-        revisionTab: "Revision Time Machine",
-        networkTab: "Integrity Network",
-        geotagTab: "Geotag Verification Map",
-        rulesTab: "Trust Ladder & Rule Findings",
-        deficiencyTab: "Deficiency Letter Generator",
-        askWhyTab: "Ask Why Assistant",
-        trustLadder: "Evidence Trust Ladder",
-        advisoryWarning: "Advisory: Machine Learning output is non-deterministic and requires human scrutiny.",
-        exportPdf: "Export AICTE Deficiency Notice (PDF)",
-      },
-      trust: {
-        level1: "Level 1: Cryptographic Proof (DSig / QR / Hash)",
-        level2: "Level 2: Statutory Database (Direct Verification)",
-        level3: "Level 3: Hardened Document (Microprint / Forensics)",
-        level4: "Level 4: Advisory Model (YOLOX / LLM Extractor)",
-        level5: "Level 5: Unverified Claim (Self-declaration)",
-      },
-      status: {
-        pass: "COMPLIANT (PASS)",
-        fail: "DEFICIENT (FAIL)",
-        manual: "MANUAL SCRUTINY REQUIRED",
-        tamper: "FLAGGED TAMPER / ANOMALY",
-        inconclusive: "INCONCLUSIVE / PENDING",
-      }
+      "Sign in": "Sign in",
+      "Sign in to review": "Sign in to review",
+      "Pramana workspace": "Pramana workspace",
+      "Officials": "Officials",
+      "Institutions": "Institutions",
+      "Simulated": "Simulated",
+      "One click signs in with the shared demo password.": "One click signs in with the shared demo password.",
+      "Pre-configured synthetic profiles for regulatory testing.": "Pre-configured synthetic profiles for regulatory testing.",
+      "Demo accounts (synthetic data)": "Demo accounts (synthetic data)",
+      "Demo accounts are not available right now.": "Demo accounts are not available right now.",
+      "Username": "Username",
+      "Password": "Password",
+      "Skip to content": "Skip to content",
+      "Back to overview": "Back to overview",
+      "Holding a certificate with a QR code?": "Holding a certificate with a QR code?",
+      "Scan it to check the issuer's signature. No sign-in needed.": "Scan it to check the issuer's signature. No sign-in needed.",
+      "Sign in failed": "Sign in failed",
+      "Show fewer institutions": "Show fewer institutions",
+      "Show all {n} institutions": "Show all {n} institutions",
+      "Scrutiny officer": "Scrutiny officer",
+      "Verification cell": "Verification cell",
+      "Administrator and auditor": "Administrator and auditor",
+      "Institution applicant": "Institution applicant",
+      "Accessibility options": "Accessibility options",
+      "Text size": "Text size",
+      "Contrast": "Contrast",
+      "Theme": "Theme",
+      "Accessibility statement": "Accessibility statement",
     }
   },
   hi: {
@@ -112,58 +90,19 @@ const resources = {
         loginBtn: "संवीक्षा कंसोल खोलें",
         offlineNotice: "सभी क्रिप्टोग्राफ़िक, ओसीआर और नियम इंजन बिना किसी बाहरी नेटवर्क के सुरक्षित रूप से चलते हैं।",
       },
-      applicant: {
-        title: "संस्थान अनुपालन डॉसियर",
-        newDossier: "नया आवेदन डॉसियर पंजीकृत करें",
-        institutionName: "संस्थान का पूरा नाम",
-        applicationNo: "आवेदन संदर्भ संख्या",
-        program: "कार्यक्रम",
-        level: "स्तर (यूजी/पीजी/डिप्लोमा)",
-        locationType: "स्थान का प्रकार",
-        intake: "प्रस्तावित प्रवेश क्षमता",
-        uploadTitle: "दस्तावेज़ प्रस्तुति एवं सत्यापन",
-        docType: "दस्तावेज़ प्रकार",
-        selectDocType: "एआईसीटीई दस्तावेज़ श्रेणी चुनें",
-        dragDrop: "पीडीएफ या छवि यहाँ खींचें या चुनें",
-        fileSelected: "चयनित फ़ाइल",
-        uploadAndVerify: "अपलोड करें एवं सत्यापन शुरू करें",
-        liveProgress: "लाइव सत्यापन पाइपलाइन (एसएसई)",
-        selfAssessmentTitle: "प्रस्तुति-पूर्व स्व-मूल्यांकन जांच",
-        selfAssessmentDesc: "औपचारिक रूप से जमा करने से पहले एआईसीटीई अनुमोदन प्रक्रिया पुस्तिका (2024-2027) के अनुसार अपनी पात्रता की जांच करें।",
-        rectificationTitle: "त्रुटि निवारण एवं अनुपालन उत्तर",
-        rectificationDesc: "संवीक्षा अधिकारियों द्वारा पहचानी गई कमियों का दस्तावेजी साक्ष्य के साथ समाधान करें।",
-        submitRectification: "सुधार उत्तर सबमिट करें",
-        responseSent: "संवीक्षा अधिकारी को सुधार उत्तर सफलतापूर्वक प्रेषित किया गया।",
-      },
-      officer: {
-        title: "विनियामक संवीक्षा कंसोल",
-        dossierList: "संवीक्षाधीन आवेदन डॉसियर",
-        documentsTab: "दस्तावेज़ एवं साक्ष्य",
-        viewerTab: "दस्तावेज़ दर्शक (pdf.js)",
-        revisionTab: "संशोधन टाइम मशीन",
-        networkTab: "सत्यनिष्ठा नेटवर्क (ग्राफ़)",
-        geotagTab: "जियोटैग सत्यापन मानचित्र",
-        rulesTab: "ट्रस्ट लैडर एवं नियम निष्कर्ष",
-        deficiencyTab: "कमी पत्र (Deficiency Letter) जनरेटर",
-        askWhyTab: "\"क्यों पूछें\" सहायक",
-        trustLadder: "साक्ष्य ट्रस्ट लैडर",
-        advisoryWarning: "सलाहकारी: मशीन लर्निंग निष्कर्ष गैर-नियतात्मक हैं और मानवीय संवीक्षा अनिवार्य है।",
-        exportPdf: "एआईसीटीई कमी सूचना (पीडीएफ) निर्यात करें",
-      },
-      trust: {
-        level1: "स्तर 1: क्रिप्टोग्राफ़िक प्रमाण (डी-सिग / क्यूआर / हैश)",
-        level2: "स्तर 2: सांविधिक डेटाबेस (प्रत्यक्ष सत्यापन)",
-        level3: "स्तर 3: सुदृढ़ दस्तावेज़ (माइक्रोप्रिंट / फोरेंसिक)",
-        level4: "स्तर 4: सलाहकारी मॉडल (YOLOX / एलएलएम एक्सट्रैक्टर)",
-        level5: "स्तर 5: असत्यापित दावा (स्व-घोषणा)",
-      },
-      status: {
-        pass: "अनुपालन पूर्ण (उत्तीर्ण)",
-        fail: "नियम उल्लंघन (कमी पाई गई)",
-        manual: "मानवीय संवीक्षा आवश्यक",
-        tamper: "छेड़छाड़ / विसंगति चेतावनी",
-        inconclusive: "अपूर्ण / लंबित",
-      }
+      "Sign in": "साइन इन करें",
+      "Sign in to review": "समीक्षा के लिए साइन इन करें",
+      "Pramana workspace": "प्रमाण कार्यक्षेत्र",
+      "Officials": "अधिकारी",
+      "Institutions": "संस्थान",
+      "Simulated": "सिम्युलेटेड",
+      "One click signs in with the shared demo password.": "एक क्लिक में साझा डेमो पासवर्ड से साइन इन करें।",
+      "Demo accounts (synthetic data)": "डेमो खाते (सिंथेटिक डेटा)",
+      "Username": "उपयोगकर्ता नाम",
+      "Password": "पासवर्ड",
+      "Back to overview": "अवलोकन पर वापस जाएँ",
+      "Holding a certificate with a QR code?": "क्या आपके पास क्यूआर कोड वाला प्रमाणपत्र है?",
+      "Scan it to check the issuer's signature. No sign-in needed.": "जारीकर्ता के हस्ताक्षर की जांच के लिए इसे स्कैन करें। साइन-इन की आवश्यकता नहीं है।",
     }
   }
 };
@@ -178,5 +117,24 @@ i18n
       escapeValue: false,
     },
   });
+
+export function useT() {
+  const { t } = useTranslation();
+  return (key: string) => t(key, { defaultValue: key });
+}
+
+export function useLang() {
+  const { t, i18n: i18nInst } = useTranslation();
+  const tn = (count: number, singular: string, plural: string) => {
+    const text = count === 1 ? singular : plural;
+    return text.replace('{n}', String(count));
+  };
+  return {
+    t: (key: string) => t(key, { defaultValue: key }),
+    tn,
+    lang: i18nInst.language,
+    setLang: (lang: string) => i18nInst.changeLanguage(lang),
+  };
+}
 
 export default i18n;

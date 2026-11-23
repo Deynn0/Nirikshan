@@ -1,0 +1,52 @@
+{
+  "version": "1.0.0",
+  "type": "real_inspection_photos_manifest",
+  "total_photos": 5,
+  "photos": [
+    {
+      "filename": "campus_entrance.jpg",
+      "description": "Campus Main Administrative Gate",
+      "latitude": 28.6139,
+      "longitude": 77.209,
+      "perceptual_hash": "af85d03aad2fd0d0",
+      "has_c2pa_manifest": false,
+      "exif_verified": true
+    },
+    {
+      "filename": "computer_center.jpg",
+      "description": "High Performance Computing Lab",
+      "latitude": 28.6142,
+      "longitude": 77.2094,
+      "perceptual_hash": "af85d03aad2fd0d0",
+      "has_c2pa_manifest": false,
+      "exif_verified": true
+    },
+    {
+      "filename": "chemistry_lab.jpg",
+      "description": "Applied Chemistry Research Lab",
+      "latitude": 28.6146,
+      "longitude": 77.2088,
+      "perceptual_hash": "bf95903f953a806a",
+      "has_c2pa_manifest": false,
+      "exif_verified": true
+    },
+    {
+      "filename": "central_library.jpg",
+      "description": "Central Academic Library",
+      "latitude": 28.615,
+      "longitude": 77.2082,
+      "perceptual_hash": "c0e06be06bc26f1f",
+      "has_c2pa_manifest": false,
+      "exif_verified": true
+    },
+    {
+      "filename": "physics_lab.jpg",
+      "description": "Laser Optics and Sensor Lab",
+      "latitude": 28.614,
+      "longitude": 77.2099,
+      "perceptual_hash": "c06b6b806f7f8495",
+      "has_c2pa_manifest": false,
+      "exif_verified": true
+    }
+  ]
+}
