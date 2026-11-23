@@ -53,6 +53,12 @@ async def submit_evaluation_job(
         stage_message="Job queued for asynchronous scrutiny evaluation.",
     )
     db.add(job)
+
+    # Mark dossier as pending review immediately so it appears in the officer review queue
+    if dossier.overall_status == "INCONCLUSIVE":
+        dossier.overall_status = "MANUAL_REVIEW_REQUIRED"
+        dossier.summary = "Documents uploaded. Pending officer scrutiny and rule evaluation."
+
     await db.commit()
     await db.refresh(job)
 

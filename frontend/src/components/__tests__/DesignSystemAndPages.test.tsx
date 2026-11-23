@@ -2,17 +2,30 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PillBadge } from '../common/PillBadge';
 import { LandingPage } from '../../pages/LandingPage';
 import { ReviewQueuePage } from '../../pages/workspace/ReviewQueuePage';
 import { ApplicationDetailPage } from '../../pages/workspace/ApplicationDetailPage';
 import { ThemeProvider } from '../../context/ThemeContext';
 
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
 const renderWithRouter = (ui: React.ReactElement) => {
+  const queryClient = createTestQueryClient();
   return render(
-    <ThemeProvider>
-      <BrowserRouter>{ui}</BrowserRouter>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <BrowserRouter>{ui}</BrowserRouter>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 

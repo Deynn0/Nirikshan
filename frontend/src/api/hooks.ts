@@ -110,3 +110,12 @@ export function useAskWhy() {
     mutationFn: (payload: AskWhyRequest) => api.askWhy(payload),
   });
 }
+
+/** Fetches live dossiers and maps them to ReviewQueue ApplicationItem shape */
+export function useReviewQueueDossiers() {
+  return useQuery({
+    queryKey: ['reviewQueueDossiers'],
+    queryFn: () => api.listDossiers(),
+    refetchInterval: 10000,
+  });
+}

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   FileText,
   Upload,
@@ -17,15 +18,29 @@ import {
   Database,
   ArrowRight,
   ExternalLink,
+  Layers,
+  Inbox,
 } from 'lucide-react';
 import { PillBadge } from '../../components/common/PillBadge';
-import { mockFindings, mockAuditTrail } from '../../data/mockScrutinyData';
+import { mockFindings, mockAuditTrail, ApplicationItem } from '../../data/mockScrutinyData';
+import { addAnalysedDocumentToReviewQueue, getAnalysedApplications } from '../../data/reviewQueueStore';
 
 // 1. Analyse a Document View
 export const AnalyseDocumentView: React.FC = () => {
+  const navigate = useNavigate();
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzed, setAnalyzed] = useState(false);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const [enrolledApp, setEnrolledApp] = useState<ApplicationItem | null>(null);
+
+  useEffect(() => {
+    // If there is already an analysed app in storage, restore it
+    const existing = getAnalysedApplications();
+    if (existing.length > 0) {
+      setEnrolledApp(existing[0]);
+    }
+  }, []);
 
   const handleStartAnalysis = (filename: string) => {
     setSelectedFile(filename);
@@ -34,7 +49,46 @@ export const AnalyseDocumentView: React.FC = () => {
     setTimeout(() => {
       setAnalyzing(false);
       setAnalyzed(true);
+
+      // Automatically enroll document and forensic findings into the Review Queue
+      const isTampered = filename.toLowerCase().includes('builtup') || filename.toLowerCase().includes('sample');
+      const enrolled = addAnalysedDocumentToReviewQueue({
+        filename,
+        isTampered,
+        sha256: '4d83e2f1839a829104ebc7612c77d9401bf5199859f14ba6',
+        tamperDetail: isTampered ? 'Incremental append detected at byte 0x004F8A20.' : undefined,
+        signatureDetail: 'Issued by eMudhra CA for Architect R. K. Joshi.',
+        trustLadder: isTampered ? 'E4 (Downgraded to E1)' : 'E4 Digilocker Validated',
+      });
+      setEnrolledApp(enrolled.app);
     }, 1800);
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleStartAnalysis(file.name);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleStartAnalysis(file.name);
+    }
   };
 
   return (
@@ -52,18 +106,37 @@ export const AnalyseDocumentView: React.FC = () => {
       </div>
 
       {/* Drag and Drop Zone */}
-      <div className="surface-card bg-white dark:bg-slate-900 border-2 border-dashed border-stone-300 dark:border-slate-700 rounded-2xl p-10 text-center hover:border-purple-500 transition-colors cursor-pointer">
+      <div
+        onDragEnter={handleDrag}
+        onDragOver={handleDrag}
+        onDragLeave={handleDrag}
+        onDrop={handleDrop}
+        onClick={() => document.getElementById('analyse-file-input')?.click()}
+        className={`surface-card bg-white dark:bg-slate-900 border-2 border-dashed rounded-2xl p-10 text-center transition-colors cursor-pointer ${
+          dragActive
+            ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20'
+            : 'border-stone-300 dark:border-slate-700 hover:border-purple-500'
+        }`}
+      >
+        <input
+          id="analyse-file-input"
+          type="file"
+          className="hidden"
+          accept=".pdf,.png,.jpg,.jpeg,.tiff"
+          onChange={handleFileChange}
+        />
         <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 flex items-center justify-center mx-auto mb-4">
           <Upload className="w-7 h-7" />
         </div>
         <h3 className="font-bold text-base text-stone-900 dark:text-white">
-          Drop PDF Document Here for Forensics
+          {dragActive ? 'Release to Analyse' : 'Drop PDF Document Here for Forensics'}
         </h3>
         <p className="text-xs text-stone-500 max-w-md mx-auto mt-1">
           Supports scanned land deeds, architect carpet area certificates, and digitally signed PDF portfolios up to 50 MB.
+          <span className="block mt-1 text-purple-500 font-medium">Or click to browse files</span>
         </p>
 
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-6 flex flex-wrap justify-center gap-2" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleStartAnalysis('Architect_Builtup_Area_Certificate.pdf')}
             className="px-4 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 text-purple-700 dark:text-purple-300 text-xs font-semibold border border-purple-200 dark:border-purple-800"
@@ -104,7 +177,45 @@ export const AnalyseDocumentView: React.FC = () => {
                 SHA-256: 4d83e2f1839a829104ebc7612c77d9401bf5199859f14ba6
               </p>
             </div>
-            <PillBadge variant="critical">Forensic Alert Triggered</PillBadge>
+            <div className="flex items-center gap-2">
+              <PillBadge variant="verified" size="sm">
+                In Review Queue
+              </PillBadge>
+              <PillBadge variant="critical">Forensic Alert Triggered</PillBadge>
+            </div>
+          </div>
+
+          {/* Enrolled in Review Queue Action Banner */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-purple-50/80 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#6D28D9] text-white flex items-center justify-center font-bold shrink-0">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-stone-900 dark:text-white">
+                    Document Enrolled in Review Queue
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-semibold">
+                    {enrolledApp?.id || 'APP-2026-REV-4D83E2F1'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-stone-500 mt-0.5">
+                  High-risk forensic anomaly flagged. This dossier is now queued for Committee Scrutiny.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => navigate('/workspace/queue')}
+                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#6D28D9] hover:bg-[#5B21B6] text-white text-xs font-semibold shadow-xs transition-all"
+              >
+                <Inbox className="w-3.5 h-3.5" />
+                <span>Go to Review Queue</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

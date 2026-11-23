@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UploadCloud, File, CheckCircle2, AlertCircle, Plus, Sparkles, Shield, ArrowRight } from 'lucide-react';
+import { UploadCloud, File, CheckCircle2, AlertCircle, Plus, Sparkles, Shield, ArrowRight, ClipboardList } from 'lucide-react';
 import { useUploadDocument, useSubmitJob } from '../../api/hooks';
 
 const DOCUMENT_TYPES = [
@@ -44,6 +44,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
 
   const [dragActive, setDragActive] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [reviewQueued, setReviewQueued] = useState(false);
 
   const uploadMutation = useUploadDocument();
   const submitJobMutation = useSubmitJob();
@@ -113,6 +114,9 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
       if (onJobStarted && job?.job_id) {
         onJobStarted(job.job_id);
       }
+      // Show review queue confirmation
+      setReviewQueued(true);
+      setTimeout(() => setReviewQueued(false), 8000);
     } catch (err: any) {
       setUploadError(err?.message || 'Failed to upload document');
     }
@@ -138,6 +142,16 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
         <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{uploadError}</span>
+        </div>
+      )}
+
+      {reviewQueued && (
+        <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-indigo-200 text-xs flex items-center gap-2 animate-in fade-in duration-300">
+          <ClipboardList className="w-4 h-4 shrink-0 text-indigo-400" />
+          <div>
+            <span className="font-bold text-indigo-300">Document sent to Review Queue.</span>
+            <span className="ml-1 text-indigo-400">The scrutiny officer will review your submission. Live pipeline analysis in progress.</span>
+          </div>
         </div>
       )}
 

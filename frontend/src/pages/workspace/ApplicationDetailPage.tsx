@@ -30,6 +30,7 @@ import {
   mockAuditTrail,
   FindingDetail,
 } from '../../data/mockScrutinyData';
+import { getAnalysedApplications, getAnalysedFindingsForApp } from '../../data/reviewQueueStore';
 import { AskWhyDrawer } from '../../components/workspace/AskWhyDrawer';
 import { ExportEvidenceModal } from '../../components/workspace/ExportEvidenceModal';
 
@@ -38,8 +39,10 @@ export const ApplicationDetailPage: React.FC = () => {
   const navigate = useNavigate();
 
   const appId = id || 'APP-2026-AICTE-4891';
+  const analysedApps = getAnalysedApplications();
+  const customApp = analysedApps.find((a) => a.id === appId);
   const appData =
-    mockApplications.find((a) => a.id === appId) || mockApplications[0];
+    customApp || mockApplications.find((a) => a.id === appId) || mockApplications[0];
 
   // Active Tab: Summary, Findings, Documents, Comparisons, Activity
   const [activeTab, setActiveTab] = useState<
@@ -52,15 +55,21 @@ export const ApplicationDetailPage: React.FC = () => {
   const [isDecideOpen, setIsDecideOpen] = useState(false);
   const [decisionFeedback, setDecisionFeedback] = useState<string | null>(null);
 
+  // Custom findings for analysed app, if any
+  const customFindings = getAnalysedFindingsForApp(appId);
+  const allFindings = customFindings.length > 0 ? [...customFindings, ...mockFindings] : mockFindings;
+
   // Findings selection
-  const [selectedFinding, setSelectedFinding] = useState<FindingDetail>(mockFindings[0]);
+  const [selectedFinding, setSelectedFinding] = useState<FindingDetail>(
+    customFindings[0] || mockFindings[0]
+  );
   const [activeDocPage, setActiveDocPage] = useState<number>(4);
   const [showBoundingBoxes, setShowBoundingBoxes] = useState<boolean>(true);
 
   // Group findings into Validity, Verification, Document forensics
-  const validityFindings = mockFindings.filter((f) => f.group === 'Validity');
-  const verificationFindings = mockFindings.filter((f) => f.group === 'Verification');
-  const forensicFindings = mockFindings.filter((f) => f.group === 'Document forensics');
+  const validityFindings = allFindings.filter((f) => f.group === 'Validity');
+  const verificationFindings = allFindings.filter((f) => f.group === 'Verification');
+  const forensicFindings = allFindings.filter((f) => f.group === 'Document forensics');
 
   const handleShowOnPage = (docName: string, pageNum: number) => {
     setActiveDocPage(pageNum);

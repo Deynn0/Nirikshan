@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText,
@@ -13,10 +13,48 @@ import {
   ChevronRight,
   Sparkles,
   CheckCircle2,
+  RefreshCw,
+  UploadCloud,
 } from 'lucide-react';
 import { mockApplications, ApplicationItem } from '../../data/mockScrutinyData';
 import { PillBadge } from '../../components/common/PillBadge';
 import { LinkedApplicationsGraph } from '../../components/workspace/LinkedApplicationsGraph';
+import { useReviewQueueDossiers } from '../../api/hooks';
+import type { Dossier } from '../../api/types';
+import { getAnalysedApplications } from '../../data/reviewQueueStore';
+
+/** Map a real backend Dossier to the ApplicationItem shape used by this page */
+function dossierToApplicationItem(d: Dossier): ApplicationItem {
+  const statusMap: Record<string, ApplicationItem['status']> = {
+    PASS: 'E5 Verified',
+    FAIL: 'Needs attention',
+    FLAGGED_TAMPER: 'High Risk',
+    MANUAL_REVIEW_REQUIRED: 'Under review',
+    INCONCLUSIVE: 'Under review',
+  };
+  const statusTypeMap: Record<string, ApplicationItem['statusType']> = {
+    PASS: 'verified',
+    FAIL: 'warning',
+    FLAGGED_TAMPER: 'critical',
+    MANUAL_REVIEW_REQUIRED: 'neutral',
+    INCONCLUSIVE: 'neutral',
+  };
+  const overall = d.overall_status ?? 'INCONCLUSIVE';
+  return {
+    id: d.dossier_id,
+    name: d.institution_name,
+    category: 'Engineering',
+    status: statusMap[overall] ?? 'Under review',
+    statusType: statusTypeMap[overall] ?? 'neutral',
+    openFindings: (d.findings ?? []).filter(
+      (f) => f.status === 'FAIL' || f.status === 'FLAGGED_TAMPER'
+    ).length,
+    riskScore: Math.round(d.risk_score ?? 0),
+    location: d.location_type ?? 'Unknown',
+    submittedAt: d.created_at ? new Date(d.created_at).toLocaleDateString('en-IN') : '',
+    strongestProof: d.documents?.length ? `${d.documents.length} document(s) uploaded` : 'No documents yet',
+  };
+}
 
 export const ReviewQueuePage: React.FC = () => {
   const navigate = useNavigate();
@@ -25,8 +63,74 @@ export const ReviewQueuePage: React.FC = () => {
   const [selectedAppId, setSelectedAppId] = useState<string>('APP-2026-AICTE-4891');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
 
+  // Track analysed applications from Tools -> Analyse a Document
+  const [analysedApps, setAnalysedApps] = useState<ApplicationItem[]>(() => getAnalysedApplications());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setAnalysedApps(getAnalysedApplications());
+    };
+    window.addEventListener('reviewQueueUpdated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('reviewQueueUpdated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
+  // Fetch real dossiers from backend
+  const { data: liveDossiers = [], isLoading: dossierLoading, refetch } = useReviewQueueDossiers();
+
+  // Convert real dossiers and merge with analysed and mocks (deduplicated by id)
+  const allApplications = useMemo(() => {
+    const liveItems: ApplicationItem[] = liveDossiers.map(dossierToApplicationItem);
+    const usedIds = new Set<string>();
+
+    // 1. Newly analysed items (top priority)
+    const customList = analysedApps.map((a) => {
+      usedIds.add(a.id);
+      return a;
+    });
+
+    // 2. Real backend dossiers
+    const liveList = liveItems
+      .filter((l) => !usedIds.has(l.id))
+      .map((l) => {
+        usedIds.add(l.id);
+        return l;
+      });
+
+    // 3. Mock dataset
+    const mockList = mockApplications.filter((m) => !usedIds.has(m.id));
+
+    return [...customList, ...liveList, ...mockList];
+  }, [liveDossiers, analysedApps]);
+
+  // Live dossiers that are freshly uploaded or analysed (Under review, awaiting hearing)
+  const newlySubmitted = useMemo(() => {
+    const liveNew = liveDossiers
+      .filter(
+        (d) =>
+          (d.overall_status === 'INCONCLUSIVE' || d.overall_status === 'MANUAL_REVIEW_REQUIRED') &&
+          (d.documents?.length ?? 0) > 0
+      )
+      .map((d) => ({
+        dossier_id: d.dossier_id,
+        institution_name: d.institution_name,
+        documents: d.documents || [],
+      }));
+
+    const customNew = analysedApps.map((a) => ({
+      dossier_id: a.id,
+      institution_name: a.name,
+      documents: [{ document_id: 'doc-1', title: a.name }],
+    }));
+
+    return [...customNew, ...liveNew];
+  }, [liveDossiers, analysedApps]);
+
   // Filter applications
-  const filteredApps = mockApplications.filter((app) => {
+  const filteredApps = allApplications.filter((app) => {
     if (filterTab === 'NEEDS_ATTENTION' && app.statusType === 'verified') return false;
     if (categoryFilter !== 'ALL' && app.category !== categoryFilter) return false;
     if (
@@ -50,17 +154,56 @@ export const ReviewQueuePage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-          Scrutiny Directorate · Western Regional Office
-        </span>
-        <h2 className="text-2xl font-bold text-stone-900 dark:text-white tracking-tight mt-0.5">
-          Review Queue
-        </h2>
-        <p className="text-xs text-stone-500 mt-1">
-          Monitor incoming institutional compliance dossiers, cross-institution anomaly flags, and forensic discrepancies.
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            Scrutiny Directorate · Western Regional Office
+          </span>
+          <h2 className="text-2xl font-bold text-stone-900 dark:text-white tracking-tight mt-0.5">
+            Review Queue
+          </h2>
+          <p className="text-xs text-stone-500 mt-1">
+            Monitor incoming institutional compliance dossiers, cross-institution anomaly flags, and forensic discrepancies.
+          </p>
+        </div>
+        <button
+          onClick={() => refetch()}
+          disabled={dossierLoading}
+          className="shrink-0 mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-100 dark:bg-slate-800 text-xs font-semibold text-stone-600 dark:text-slate-300 hover:bg-stone-200 dark:hover:bg-slate-700 transition-colors"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${dossierLoading ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
       </div>
+
+      {/* Newly Submitted Documents Banner */}
+      {newlySubmitted.length > 0 && (
+        <div className="rounded-xl border border-indigo-300 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-950/40 p-4 flex items-start gap-3">
+          <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 flex items-center justify-center shrink-0">
+            <UploadCloud className="w-4 h-4 text-indigo-600 dark:text-indigo-300" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold text-indigo-800 dark:text-indigo-200">
+              {newlySubmitted.length} new dossier{newlySubmitted.length > 1 ? 's' : ''} entered the review queue
+            </p>
+            <p className="text-[11px] text-indigo-600 dark:text-indigo-400 mt-0.5">
+              Recently uploaded documents are awaiting officer scrutiny:
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {newlySubmitted.map((d) => (
+                <span
+                  key={d.dossier_id}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold border border-indigo-200 dark:border-indigo-700"
+                >
+                  <FileText className="w-3 h-3" />
+                  {d.institution_name}
+                  <span className="font-mono opacity-70">· {d.documents?.length} doc{(d.documents?.length ?? 0) !== 1 ? 's' : ''}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 1. Four KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -75,10 +218,12 @@ export const ReviewQueuePage: React.FC = () => {
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-stone-900 dark:text-white">142</span>
-            <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded-full">
-              +12% vs 2025
-            </span>
+            <span className="text-3xl font-extrabold text-stone-900 dark:text-white">{allApplications.length}</span>
+            {liveDossiers.length > 0 && (
+              <span className="text-[11px] font-medium text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40 px-1.5 py-0.5 rounded-full">
+                +{liveDossiers.length} live
+              </span>
+            )}
           </div>
           <p className="text-[11px] text-stone-400 mt-1">Active regulatory cycle dossiers</p>
         </div>
@@ -94,9 +239,11 @@ export const ReviewQueuePage: React.FC = () => {
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-stone-900 dark:text-white">38</span>
+            <span className="text-3xl font-extrabold text-stone-900 dark:text-white">
+              {allApplications.reduce((s, a) => s + a.openFindings, 0)}
+            </span>
             <span className="text-[11px] font-medium text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded-full">
-              29 actionable
+              actionable
             </span>
           </div>
           <p className="text-[11px] text-stone-400 mt-1">Deficiencies pending rectification</p>
@@ -113,12 +260,14 @@ export const ReviewQueuePage: React.FC = () => {
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-rose-600 dark:text-rose-400">9</span>
+            <span className="text-3xl font-extrabold text-rose-600 dark:text-rose-400">
+              {allApplications.filter((a) => a.statusType === 'critical').length}
+            </span>
             <span className="text-[11px] font-medium text-rose-700 bg-rose-50 dark:bg-rose-950/40 px-1.5 py-0.5 rounded-full">
               Requires Hearing
             </span>
           </div>
-          <p className="text-[11px] text-stone-400 mt-1">Tampered PDFs & ghost faculty</p>
+          <p className="text-[11px] text-stone-400 mt-1">Tampered PDFs &amp; ghost faculty</p>
         </div>
 
         {/* KPI 4: Awaiting Manual Confirmation */}
@@ -132,7 +281,9 @@ export const ReviewQueuePage: React.FC = () => {
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-stone-900 dark:text-white">14</span>
+            <span className="text-3xl font-extrabold text-stone-900 dark:text-white">
+              {allApplications.filter((a) => a.statusType === 'neutral').length}
+            </span>
             <span className="text-[11px] font-medium text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40 px-1.5 py-0.5 rounded-full">
               Field Photos
             </span>
@@ -157,7 +308,7 @@ export const ReviewQueuePage: React.FC = () => {
                     : 'text-stone-500 hover:text-stone-900 dark:hover:text-slate-200'
                 }`}
               >
-                Needs attention ({mockApplications.filter((a) => a.statusType !== 'verified').length})
+                Needs attention ({allApplications.filter((a) => a.statusType !== 'verified').length})
               </button>
               <button
                 onClick={() => setFilterTab('ALL')}
@@ -167,7 +318,7 @@ export const ReviewQueuePage: React.FC = () => {
                     : 'text-stone-500 hover:text-stone-900 dark:hover:text-slate-200'
                 }`}
               >
-                All Applications ({mockApplications.length})
+                All Applications ({allApplications.length})
               </button>
             </div>
 
@@ -340,8 +491,9 @@ export const ReviewQueuePage: React.FC = () => {
             </div>
 
             <div className="space-y-3">
-              {mockApplications
+              {allApplications
                 .filter((a) => a.riskScore > 70)
+                .slice(0, 6)
                 .map((app) => (
                   <div
                     key={app.id}
