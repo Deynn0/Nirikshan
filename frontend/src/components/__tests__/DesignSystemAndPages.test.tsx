@@ -8,6 +8,7 @@ import { LandingPage } from '../../pages/LandingPage';
 import { ReviewQueuePage } from '../../pages/workspace/ReviewQueuePage';
 import { ApplicationDetailPage } from '../../pages/workspace/ApplicationDetailPage';
 import { ThemeProvider } from '../../context/ThemeContext';
+import { AuthProvider } from '../../context/AuthContext';
 
 const createTestQueryClient = () =>
   new QueryClient({
@@ -23,7 +24,9 @@ const renderWithRouter = (ui: React.ReactElement) => {
   return render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <BrowserRouter>{ui}</BrowserRouter>
+        <AuthProvider>
+          <BrowserRouter>{ui}</BrowserRouter>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

@@ -32,20 +32,36 @@ export function setCsrfToken(token: string | null): void {
   csrfToken = token;
 }
 
+export const VALID_USERNAMES = [
+  "officer",
+  "verifier",
+  "admin",
+  "inst1",
+  "inst2",
+  "inst3",
+  "inst4",
+  "inst5",
+  "inst6",
+  "inst7",
+  "inst8",
+  "inst9",
+  "inst10",
+  "inst11",
+] as const;
+
+export function isValidUsername(username: string): boolean {
+  const norm = username.trim().toLowerCase();
+  return (VALID_USERNAMES as readonly string[]).includes(norm);
+}
+
 function inferRole(username: string, roleHint?: Role): Role {
   if (roleHint && VALID_ROLES.has(roleHint)) return roleHint;
-  const lower = username.toLowerCase();
-  if (
-    lower.includes("inst") ||
-    lower.includes("iit") ||
-    lower.includes("bits") ||
-    lower.includes("dtu") ||
-    lower.includes("nit")
-  ) {
+  const lower = username.toLowerCase().trim();
+  if (lower.startsWith("inst") || lower === "applicant") {
     return "institution";
   }
-  if (lower.includes("admin")) return "admin";
-  if (lower.includes("verifier")) return "verifier";
+  if (lower === "admin") return "admin";
+  if (lower === "verifier") return "verifier";
   return "officer";
 }
 
@@ -200,7 +216,7 @@ const DEFAULT_DEMO: DemoAccounts = {
       username: "officer",
       role: "officer",
       display_name: "Dr. Arvind Sharma (Scrutiny Officer)",
-      role_label: "Scrutiny officer",
+      role_label: "AICTE scrutiny officer",
     },
     {
       id: "ver-1",
@@ -214,46 +230,88 @@ const DEFAULT_DEMO: DemoAccounts = {
       username: "admin",
       role: "admin",
       display_name: "Chief Auditor (Admin)",
-      role_label: "Administrator and auditor",
+      role_label: "Administrator / auditor",
     },
     {
       id: "inst-1",
-      username: "iitdelhi",
+      username: "inst1",
       role: "institution",
-      institution: "IIT Delhi",
-      display_name: "Prof. R. Mehta (Registrar)",
+      institution: "Apex Institute of Technology & Management (A1)",
+      display_name: "Apex Institute Registrar (A1)",
     },
     {
       id: "inst-2",
-      username: "bitspilani",
+      username: "inst2",
       role: "institution",
-      institution: "BITS Pilani",
-      display_name: "Col. S. Rao (Director)",
+      institution: "Trinity Polytechnic Institute (A2)",
+      display_name: "Trinity Polytechnic Principal (A2)",
     },
     {
       id: "inst-3",
-      username: "nittrichy",
+      username: "inst3",
       role: "institution",
-      institution: "NIT Trichy",
-      display_name: "Dr. K. Swaminathan (Dean)",
+      institution: "Pioneer College of Pharmacy (A3)",
+      display_name: "Pioneer Pharmacy Dean (A3)",
     },
     {
       id: "inst-4",
-      username: "dtu",
+      username: "inst4",
       role: "institution",
-      institution: "Delhi Technological University",
-      display_name: "Dr. P. Bansal (Registrar)",
+      institution: "Saraswati School of Management (A4)",
+      display_name: "Saraswati Management Director (A4)",
     },
     {
       id: "inst-5",
-      username: "iitbombay",
+      username: "inst5",
       role: "institution",
-      institution: "IIT Bombay",
-      display_name: "Prof. S. Joshi (Registrar)",
+      institution: "Deccan College of Engineering & Research (A5)",
+      display_name: "Deccan College Registrar (A5)",
+    },
+    {
+      id: "inst-6",
+      username: "inst6",
+      role: "institution",
+      institution: "Sterling Global Institute (A6)",
+      display_name: "Sterling Global Director (A6)",
+    },
+    {
+      id: "inst-7",
+      username: "inst7",
+      role: "institution",
+      institution: "Vardhaman Institute of Technology (A7)",
+      display_name: "Vardhaman Tech Dean (A7)",
+    },
+    {
+      id: "inst-8",
+      username: "inst8",
+      role: "institution",
+      institution: "National Institute of Engineering & Technology (A8)",
+      display_name: "NIET Nanded Registrar (A8)",
+    },
+    {
+      id: "inst-9",
+      username: "inst9",
+      role: "institution",
+      institution: "Vidya Bharati Institute of Pharmaceutical Sciences (A9)",
+      display_name: "Vidya Bharati Principal (A9)",
+    },
+    {
+      id: "inst-10",
+      username: "inst10",
+      role: "institution",
+      institution: "Rajiv Gandhi College of Computer Applications (A10)",
+      display_name: "RGCCA Director (A10)",
+    },
+    {
+      id: "inst-11",
+      username: "inst11",
+      role: "institution",
+      institution: "K. J. Somaiya Polytechnic & Engineering Academy (A11)",
+      display_name: "K.J. Somaiya Principal (A11)",
     },
   ],
   password: "demo-password",
-  notice: "Pre-configured synthetic profiles for regulatory testing",
+  notice: "Valid usernames: officer, verifier, admin, or inst1 to inst11 (Applications A1 to A11)",
 };
 
 export async function request<T>(
@@ -299,43 +357,54 @@ export async function request<T>(
 
 export const api = {
   login: async (username: string, password: string, roleHint?: Role): Promise<SessionInfo> => {
-    const appRole = inferRole(username, roleHint);
+    const cleanUser = username.trim().toLowerCase();
+    if (!isValidUsername(cleanUser)) {
+      throw new ApiError(
+        400,
+        "Invalid username. Allowed logins are: 'officer', 'verifier', 'admin', or institution accounts 'inst1' through 'inst11'.",
+        null
+      );
+    }
+    const appRole = inferRole(cleanUser, roleHint);
     const backendRole = toBackendRole(appRole);
+    const demoMatch = DEFAULT_DEMO.accounts.find((a) => a.username.toLowerCase() === cleanUser);
+    const defaultDisplayName = demoMatch?.display_name || cleanUser;
+
     try {
       const res = await request<{
         access_token?: string;
         username?: string;
         role?: string;
       }>("POST", "/auth/token", {
-        username,
+        username: cleanUser,
         role: backendRole,
         password,
       });
       if (!res?.access_token) {
         throw new ApiError(500, "Invalid token response", res);
       }
-      const resolvedUsername = res.username || username;
+      const resolvedUsername = res.username || cleanUser;
       const stored: StoredSession = {
         token: res.access_token,
         username: resolvedUsername,
         role: backendRole,
         appRole,
-        displayName: resolvedUsername,
+        displayName: defaultDisplayName,
         offline: false,
       };
       writeStoredSession(stored);
       return buildSessionInfo(stored);
     } catch (err) {
-      if (err instanceof ApiError && (err.status === 401 || err.status === 403 || err.status === 422)) {
+      if (err instanceof ApiError && (err.status === 400 || err.status === 401 || err.status === 403 || err.status === 422)) {
         throw err;
       }
       // Fallback mock session for local / offline sandbox when backend is unreachable
       const stored: StoredSession = {
         token: `offline-session-${Date.now()}`,
-        username,
+        username: cleanUser,
         role: backendRole,
         appRole,
-        displayName: username,
+        displayName: defaultDisplayName,
         offline: true,
       };
       writeStoredSession(stored);

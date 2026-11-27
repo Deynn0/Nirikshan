@@ -25,7 +25,9 @@ const renderLogin = (initialEntries = ['/login']) => {
           <MemoryRouter initialEntries={initialEntries}>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/dashboard" element={<div>Workspace Queue</div>} />
               <Route path="/workspace/queue" element={<div>Workspace Queue</div>} />
+              <Route path="/portal" element={<div>Applicant Portal</div>} />
               <Route path="/applicant" element={<div>Applicant Portal</div>} />
             </Routes>
           </MemoryRouter>
@@ -66,7 +68,7 @@ describe('LoginPage Component', () => {
 
     const officerCard = await screen.findByText(/Dr. Arvind Sharma/i);
     expect(officerCard).toBeInTheDocument();
-    expect(screen.getByText(/IIT Delhi/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Apex Institute/i)[0]).toBeInTheDocument();
   });
 
   it('does not go blank or redirect when /api/auth/me returns default unauthenticated principal', async () => {
@@ -149,5 +151,21 @@ describe('LoginPage Component', () => {
 
     expect(screen.getByRole('heading', { name: /Sign in to review/i })).toBeInTheDocument();
     expect(localStorage.getItem('nirikshan_session')).toBeNull();
+  });
+
+  it('rejects invalid usernames not matching officer, verifier, admin, or inst1..inst11', async () => {
+    renderLogin();
+
+    const usernameInput = screen.getByPlaceholderText('officer');
+    const passwordInput = screen.getByPlaceholderText('••••••••');
+    const submitBtn = screen.getByRole('button', { name: /Sign in/i });
+
+    fireEvent.change(usernameInput, { target: { value: 'unauthorized_user' } });
+    fireEvent.change(passwordInput, { target: { value: 'somepass' } });
+    fireEvent.click(submitBtn);
+
+    expect(
+      await screen.findByText(/Invalid username\. Allowed logins are/i)
+    ).toBeInTheDocument();
   });
 });

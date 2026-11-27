@@ -19,7 +19,12 @@ import {
 import { LoginPage } from './pages/LoginPage';
 import { ApplicantPage } from './pages/ApplicantPage';
 import { OfficerPage } from './pages/OfficerPage';
+import { InstitutionPortalLayout } from './components/portal/InstitutionPortalLayout';
+import { MyApplicationsPage } from './pages/portal/MyApplicationsPage';
+import { NewApplicationPage } from './pages/portal/NewApplicationPage';
+import { InstitutionWorkspacePage } from './pages/portal/InstitutionWorkspacePage';
 import { useSession } from './auth/session';
+import type { Role } from './types';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,7 +75,10 @@ class AppErrorBoundary extends Component<
  * Shows a loading indicator while an existing session check is in-flight so we
  * never flash-redirect or show a blank screen before we know the real auth state.
  */
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ProtectedRoute: React.FC<{
+  children: React.ReactNode;
+  allowedRoles?: Role[];
+}> = ({ children, allowedRoles }) => {
   const session = useSession();
   const location = useLocation();
   if (session.isPending) {
@@ -80,11 +88,15 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
       </div>
     );
   }
-  return session.data?.user?.role ? (
-    <>{children}</>
-  ) : (
-    <Navigate to="/login" replace state={{ from: location.pathname }} />
-  );
+  const role = session.data?.user?.role;
+  if (!role) {
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  }
+  if (allowedRoles && !allowedRoles.includes(role)) {
+    const target = role === 'institution' ? '/portal' : '/dashboard';
+    return <Navigate to={target} replace />;
+  }
+  return <>{children}</>;
 };
 
 export const App: React.FC = () => {
@@ -95,113 +107,183 @@ export const App: React.FC = () => {
           <AuthProvider>
             <BrowserRouter>
               <Routes>
-              {/* Landing Page */}
-              <Route path="/" element={<LandingPage />} />
+                {/* Landing Page */}
+                <Route path="/" element={<LandingPage />} />
 
-              {/* Workspace Shell & Sub-routes */}
-              <Route
-                path="/workspace"
-                element={<Navigate to="/workspace/queue" replace />}
-              />
-              <Route
-                path="/workspace/queue"
-                element={
-                  <ProtectedRoute>
-                    <AppShell>
-                      <ReviewQueuePage />
-                    </AppShell>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/workspace/application/:id"
-                element={
-                  <ProtectedRoute>
-                    <AppShell>
-                      <ApplicationDetailPage />
-                    </AppShell>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/workspace/tools/analyse"
-                element={
-                  <ProtectedRoute>
-                    <AppShell>
-                      <AnalyseDocumentView />
-                    </AppShell>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/workspace/tools/integrity"
-                element={
-                  <ProtectedRoute>
-                    <AppShell>
-                      <IntegrityView />
-                    </AppShell>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/workspace/tools/issuer-simulator"
-                element={
-                  <ProtectedRoute>
-                    <AppShell>
-                      <IssuerSimulatorView />
-                    </AppShell>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/workspace/governance/rules"
-                element={
-                  <ProtectedRoute>
-                    <AppShell>
-                      <RulesView />
-                    </AppShell>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/workspace/governance/audit"
-                element={
-                  <ProtectedRoute>
-                    <AppShell>
-                      <AuditLogView />
-                    </AppShell>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/workspace/governance/platform"
-                element={
-                  <ProtectedRoute>
-                    <AppShell>
-                      <PlatformView />
-                    </AppShell>
-                  </ProtectedRoute>
-                }
-              />
+                {/* Login Page */}
+                <Route path="/login" element={<LoginPage />} />
 
-              {/* Existing legacy routes for backwards compatibility */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/applicant" element={<ApplicantPage />} />
-              <Route path="/officer" element={<OfficerPage />} />
+                {/* Official Scrutiny Console: officer, verifier, admin */}
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={['officer', 'verifier', 'admin']}>
+                      <AppShell>
+                        <ReviewQueuePage />
+                      </AppShell>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workspace"
+                  element={<Navigate to="/dashboard" replace />}
+                />
+                <Route
+                  path="/workspace/queue"
+                  element={<Navigate to="/dashboard" replace />}
+                />
+                <Route
+                  path="/dashboard/application/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={['officer', 'verifier', 'admin']}>
+                      <AppShell>
+                        <ApplicationDetailPage />
+                      </AppShell>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workspace/application/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={['officer', 'verifier', 'admin']}>
+                      <AppShell>
+                        <ApplicationDetailPage />
+                      </AppShell>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/analyse"
+                  element={
+                    <ProtectedRoute allowedRoles={['officer', 'verifier', 'admin']}>
+                      <AppShell>
+                        <AnalyseDocumentView />
+                      </AppShell>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workspace/tools/analyse"
+                  element={<Navigate to="/analyse" replace />}
+                />
+                <Route
+                  path="/integrity"
+                  element={
+                    <ProtectedRoute allowedRoles={['officer', 'verifier', 'admin']}>
+                      <AppShell>
+                        <IntegrityView />
+                      </AppShell>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workspace/tools/integrity"
+                  element={<Navigate to="/integrity" replace />}
+                />
+                <Route
+                  path="/issuers"
+                  element={
+                    <ProtectedRoute allowedRoles={['officer', 'verifier', 'admin']}>
+                      <AppShell>
+                        <IssuerSimulatorView />
+                      </AppShell>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workspace/tools/issuer-simulator"
+                  element={<Navigate to="/issuers" replace />}
+                />
+                <Route
+                  path="/rules"
+                  element={
+                    <ProtectedRoute allowedRoles={['officer', 'verifier', 'admin']}>
+                      <AppShell>
+                        <RulesView />
+                      </AppShell>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workspace/governance/rules"
+                  element={<Navigate to="/rules" replace />}
+                />
 
-              {/* Pramana alias routes */}
-              <Route path="/scan" element={<Navigate to="/workspace/tools/analyse" replace />} />
-              <Route path="/portal" element={<Navigate to="/applicant" replace />} />
-              <Route path="/dashboard" element={<Navigate to="/workspace/queue" replace />} />
+                {/* Governance: Audit & Platform (Restricted from Verifiers, Allowed for Officer & Admin) */}
+                <Route
+                  path="/audit"
+                  element={
+                    <ProtectedRoute allowedRoles={['officer', 'admin']}>
+                      <AppShell>
+                        <AuditLogView />
+                      </AppShell>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workspace/governance/audit"
+                  element={<Navigate to="/audit" replace />}
+                />
+                <Route
+                  path="/platform"
+                  element={
+                    <ProtectedRoute allowedRoles={['officer', 'admin']}>
+                      <AppShell>
+                        <PlatformView />
+                      </AppShell>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/workspace/governance/platform"
+                  element={<Navigate to="/platform" replace />}
+                />
 
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
-        </AuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  </AppErrorBoundary>
+                {/* Institutional Applicant Portal: inst1 ... inst11 (Topbar Only Layout) */}
+                <Route
+                  path="/portal"
+                  element={
+                    <ProtectedRoute allowedRoles={['institution']}>
+                      <InstitutionPortalLayout>
+                        <MyApplicationsPage />
+                      </InstitutionPortalLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/portal/new"
+                  element={
+                    <ProtectedRoute allowedRoles={['institution']}>
+                      <InstitutionPortalLayout>
+                        <NewApplicationPage />
+                      </InstitutionPortalLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/portal/applications/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={['institution']}>
+                      <InstitutionPortalLayout>
+                        <InstitutionWorkspacePage />
+                      </InstitutionPortalLayout>
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Legacy Aliases & Redirections */}
+                <Route path="/applicant" element={<Navigate to="/portal" replace />} />
+                <Route path="/officer" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/scan" element={<Navigate to="/analyse" replace />} />
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </AppErrorBoundary>
   );
 };
 

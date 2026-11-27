@@ -21,12 +21,14 @@ export type AskWhyResponse = paths['/api/advisory/ask-why']['post']['responses']
 
 export type Rule = paths['/api/rules']['get']['responses']['200']['content']['application/json'][number];
 
-export type UserRole = 'applicant' | 'officer' | 'admin' | 'scrutiny_officer';
+export type UserRole = 'applicant' | 'officer' | 'verifier' | 'admin' | 'institution' | 'scrutiny_officer';
 
 export interface UserSession {
   token: string;
   username: string;
-  role: 'applicant' | 'officer';
+  role: 'applicant' | 'officer' | 'verifier' | 'admin' | 'institution';
+  appRole?: 'officer' | 'verifier' | 'admin' | 'institution';
+  displayName?: string;
   institutionId?: string;
 }
 

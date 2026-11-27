@@ -1,5 +1,7 @@
 export interface ApplicationItem {
   id: string;
+  code?: string;
+  instUser?: string;
   name: string;
   category: 'Engineering' | 'Management' | 'Pharmacy' | 'Polytechnic';
   status: 'Under review' | 'Needs attention' | 'SIMULATED' | 'E5 Verified' | 'High Risk';
@@ -58,6 +60,8 @@ export interface LinkedEdge {
 export const mockApplications: ApplicationItem[] = [
   {
     id: 'APP-2026-AICTE-4891',
+    code: 'A1',
+    instUser: 'inst1',
     name: 'Apex Institute of Technology & Management',
     category: 'Engineering',
     status: 'Under review',
@@ -70,6 +74,8 @@ export const mockApplications: ApplicationItem[] = [
   },
   {
     id: 'APP-2026-AICTE-4892',
+    code: 'A2',
+    instUser: 'inst2',
     name: 'Trinity Polytechnic Institute',
     category: 'Polytechnic',
     status: 'Needs attention',
@@ -82,6 +88,8 @@ export const mockApplications: ApplicationItem[] = [
   },
   {
     id: 'APP-2026-AICTE-4893',
+    code: 'A3',
+    instUser: 'inst3',
     name: 'Pioneer College of Pharmacy',
     category: 'Pharmacy',
     status: 'E5 Verified',
@@ -94,6 +102,8 @@ export const mockApplications: ApplicationItem[] = [
   },
   {
     id: 'APP-2026-AICTE-4894',
+    code: 'A4',
+    instUser: 'inst4',
     name: 'Saraswati School of Management',
     category: 'Management',
     status: 'Under review',
@@ -106,6 +116,8 @@ export const mockApplications: ApplicationItem[] = [
   },
   {
     id: 'APP-2026-AICTE-4895',
+    code: 'A5',
+    instUser: 'inst5',
     name: 'Deccan College of Engineering & Research',
     category: 'Engineering',
     status: 'Needs attention',
@@ -118,6 +130,8 @@ export const mockApplications: ApplicationItem[] = [
   },
   {
     id: 'APP-2026-AICTE-4896',
+    code: 'A6',
+    instUser: 'inst6',
     name: 'Sterling Global Institute',
     category: 'Management',
     status: 'SIMULATED',
@@ -130,6 +144,8 @@ export const mockApplications: ApplicationItem[] = [
   },
   {
     id: 'APP-2026-AICTE-4897',
+    code: 'A7',
+    instUser: 'inst7',
     name: 'Vardhaman Institute of Technology',
     category: 'Polytechnic',
     status: 'High Risk',
@@ -139,6 +155,62 @@ export const mockApplications: ApplicationItem[] = [
     location: 'Solapur, Maharashtra (WRO)',
     submittedAt: '2026-03-15',
     strongestProof: 'E1 Declared only',
+  },
+  {
+    id: 'APP-2026-AICTE-4898',
+    code: 'A8',
+    instUser: 'inst8',
+    name: 'National Institute of Engineering & Technology',
+    category: 'Engineering',
+    status: 'Under review',
+    statusType: 'warning',
+    openFindings: 3,
+    riskScore: 48,
+    location: 'Nanded, Maharashtra (WRO)',
+    submittedAt: '2026-03-14',
+    strongestProof: 'E4 Digilocker',
+  },
+  {
+    id: 'APP-2026-AICTE-4899',
+    code: 'A9',
+    instUser: 'inst9',
+    name: 'Vidya Bharati Institute of Pharmaceutical Sciences',
+    category: 'Pharmacy',
+    status: 'Needs attention',
+    statusType: 'critical',
+    openFindings: 5,
+    riskScore: 68,
+    location: 'Amravati, Maharashtra (WRO)',
+    submittedAt: '2026-03-12',
+    strongestProof: 'E3 Statutory OCR',
+  },
+  {
+    id: 'APP-2026-AICTE-4900',
+    code: 'A10',
+    instUser: 'inst10',
+    name: 'Rajiv Gandhi College of Computer Applications',
+    category: 'Management',
+    status: 'E5 Verified',
+    statusType: 'verified',
+    openFindings: 0,
+    riskScore: 15,
+    location: 'Thane, Maharashtra (WRO)',
+    submittedAt: '2026-03-10',
+    strongestProof: 'E5 Cryptographic PSS',
+  },
+  {
+    id: 'APP-2026-AICTE-4901',
+    code: 'A11',
+    instUser: 'inst11',
+    name: 'K. J. Somaiya Polytechnic & Engineering Academy',
+    category: 'Polytechnic',
+    status: 'Under review',
+    statusType: 'warning',
+    openFindings: 2,
+    riskScore: 35,
+    location: 'Mumbai, Maharashtra (WRO)',
+    submittedAt: '2026-03-08',
+    strongestProof: 'E4 Digilocker',
   },
 ];
 

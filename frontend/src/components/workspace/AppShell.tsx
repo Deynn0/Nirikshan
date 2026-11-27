@@ -40,6 +40,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     navigate('/login');
   };
 
+  const currentRole =
+    session?.appRole ||
+    (session?.role === 'applicant' ? 'institution' : session?.role) ||
+    'officer';
+  const isVerifier = currentRole === 'verifier';
+
   // Derive initials from username
   const initials = session?.username
     ? session.username.slice(0, 2).toUpperCase()
@@ -47,39 +53,50 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   const pathname = location.pathname;
 
-  // Active path checking
+  // Active path checking (supporting both direct routes and /workspace aliases)
   const isReviewQueue =
+    pathname === '/dashboard' ||
     pathname === '/workspace' ||
     pathname === '/workspace/queue' ||
+    pathname.startsWith('/dashboard/application') ||
     pathname.startsWith('/workspace/application');
-  const isAnalyse = pathname === '/workspace/tools/analyse';
-  const isIntegrity = pathname === '/workspace/tools/integrity';
-  const isIssuerSim = pathname === '/workspace/tools/issuer-simulator';
-  const isRules = pathname === '/workspace/governance/rules';
-  const isAudit = pathname === '/workspace/governance/audit';
-  const isPlatform = pathname === '/workspace/governance/platform';
+  const isAnalyse = pathname === '/analyse' || pathname === '/workspace/tools/analyse';
+  const isIntegrity = pathname === '/integrity' || pathname === '/workspace/tools/integrity';
+  const isIssuerSim = pathname === '/issuers' || pathname === '/workspace/tools/issuer-simulator';
+  const isRules = pathname === '/rules' || pathname === '/workspace/governance/rules';
+  const isAudit = pathname === '/audit' || pathname === '/workspace/governance/audit';
+  const isPlatform = pathname === '/platform' || pathname === '/workspace/governance/platform';
 
   // Dynamic Breadcrumb generation
   let currentTitle = 'Review queue';
   if (pathname.includes('/application/')) {
-    currentTitle = 'Apex Institute of Technology & Management';
+    currentTitle = 'Application Details';
   } else if (isAnalyse) {
-    currentTitle = 'Analyse a document';
+    currentTitle = 'Document Forensics & Analysis';
   } else if (isIntegrity) {
-    currentTitle = 'Integrity network';
+    currentTitle = 'Cross-College Integrity Graph';
   } else if (isIssuerSim) {
-    currentTitle = 'Issuer simulator';
+    currentTitle = 'Issuer Registry Simulator';
   } else if (isRules) {
-    currentTitle = 'Rules catalog';
+    currentTitle = 'Regulatory Rules Browser';
   } else if (isAudit) {
-    currentTitle = 'Audit log';
+    currentTitle = 'Audit Log';
   } else if (isPlatform) {
-    currentTitle = 'Platform health';
+    currentTitle = 'Platform Settings & Keys';
   }
 
   const handleSelectApp = (id: string) => {
     navigate(`/workspace/application/${id}`);
   };
+
+  let roleLabel = 'AICTE Scrutiny Officer';
+  if (currentRole === 'verifier') {
+    roleLabel = 'Verification Cell';
+  } else if (currentRole === 'admin') {
+    roleLabel = 'Administrator / Auditor';
+  } else if (currentRole === 'institution') {
+    roleLabel = 'Applicant Institution';
+  }
 
   return (
     <div className="min-h-screen bg-[#FAF8F4] dark:bg-slate-950 text-stone-900 dark:text-slate-100 flex font-sans selection:bg-purple-200 selection:text-purple-900">
@@ -115,11 +132,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
             <div>
               {!collapsed && (
                 <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-stone-400">
-                  Queue
+                  Review
                 </div>
               )}
               <Link
-                to="/workspace/queue"
+                to="/dashboard"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
                   isReviewQueue
                     ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 shadow-xs border border-purple-200 dark:border-purple-800'
@@ -128,7 +145,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                 title={collapsed ? 'Review queue' : undefined}
               >
                 <Inbox className="w-4 h-4 shrink-0" />
-                {!collapsed && <span>Review queue</span>}
+                {!collapsed && <span>Review queue (/dashboard)</span>}
               </Link>
             </div>
 
@@ -141,42 +158,42 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               )}
               <div className="space-y-1">
                 <Link
-                  to="/workspace/tools/analyse"
+                  to="/analyse"
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
                     isAnalyse
                       ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 shadow-xs border border-purple-200 dark:border-purple-800'
                       : 'text-stone-600 dark:text-slate-400 hover:bg-stone-50 dark:hover:bg-slate-800/60 hover:text-stone-900 dark:hover:text-white'
                   }`}
-                  title={collapsed ? 'Analyse a document' : undefined}
+                  title={collapsed ? 'Document Forensics & Analysis' : undefined}
                 >
                   <FileSearch className="w-4 h-4 shrink-0" />
-                  {!collapsed && <span>Analyse a document</span>}
+                  {!collapsed && <span>Document Forensics (/analyse)</span>}
                 </Link>
 
                 <Link
-                  to="/workspace/tools/integrity"
+                  to="/integrity"
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
                     isIntegrity
                       ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 shadow-xs border border-purple-200 dark:border-purple-800'
                       : 'text-stone-600 dark:text-slate-400 hover:bg-stone-50 dark:hover:bg-slate-800/60 hover:text-stone-900 dark:hover:text-white'
                   }`}
-                  title={collapsed ? 'Integrity' : undefined}
+                  title={collapsed ? 'Cross-College Integrity Graph' : undefined}
                 >
                   <Network className="w-4 h-4 shrink-0" />
-                  {!collapsed && <span>Integrity</span>}
+                  {!collapsed && <span>Integrity Graph (/integrity)</span>}
                 </Link>
 
                 <Link
-                  to="/workspace/tools/issuer-simulator"
+                  to="/issuers"
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
                     isIssuerSim
                       ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 shadow-xs border border-purple-200 dark:border-purple-800'
                       : 'text-stone-600 dark:text-slate-400 hover:bg-stone-50 dark:hover:bg-slate-800/60 hover:text-stone-900 dark:hover:text-white'
                   }`}
-                  title={collapsed ? 'Issuer simulator' : undefined}
+                  title={collapsed ? 'Issuer Registry Simulator' : undefined}
                 >
                   <Cpu className="w-4 h-4 shrink-0" />
-                  {!collapsed && <span>Issuer simulator</span>}
+                  {!collapsed && <span>Issuer Simulator (/issuers)</span>}
                 </Link>
               </div>
             </div>
@@ -190,43 +207,48 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               )}
               <div className="space-y-1">
                 <Link
-                  to="/workspace/governance/rules"
+                  to="/rules"
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
                     isRules
                       ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 shadow-xs border border-purple-200 dark:border-purple-800'
                       : 'text-stone-600 dark:text-slate-400 hover:bg-stone-50 dark:hover:bg-slate-800/60 hover:text-stone-900 dark:hover:text-white'
                   }`}
-                  title={collapsed ? 'Rules' : undefined}
+                  title={collapsed ? 'Regulatory Rules Browser' : undefined}
                 >
                   <BookOpen className="w-4 h-4 shrink-0" />
-                  {!collapsed && <span>Rules</span>}
+                  {!collapsed && <span>Regulatory Rules (/rules)</span>}
                 </Link>
 
-                <Link
-                  to="/workspace/governance/audit"
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
-                    isAudit
-                      ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 shadow-xs border border-purple-200 dark:border-purple-800'
-                      : 'text-stone-600 dark:text-slate-400 hover:bg-stone-50 dark:hover:bg-slate-800/60 hover:text-stone-900 dark:hover:text-white'
-                  }`}
-                  title={collapsed ? 'Audit log' : undefined}
-                >
-                  <History className="w-4 h-4 shrink-0" />
-                  {!collapsed && <span>Audit log</span>}
-                </Link>
+                {/* Audit Log and Platform are hidden from Verifiers */}
+                {!isVerifier && (
+                  <>
+                    <Link
+                      to="/audit"
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
+                        isAudit
+                          ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 shadow-xs border border-purple-200 dark:border-purple-800'
+                          : 'text-stone-600 dark:text-slate-400 hover:bg-stone-50 dark:hover:bg-slate-800/60 hover:text-stone-900 dark:hover:text-white'
+                      }`}
+                      title={collapsed ? 'Audit Log' : undefined}
+                    >
+                      <History className="w-4 h-4 shrink-0" />
+                      {!collapsed && <span>Audit Log (/audit)</span>}
+                    </Link>
 
-                <Link
-                  to="/workspace/governance/platform"
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
-                    isPlatform
-                      ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 shadow-xs border border-purple-200 dark:border-purple-800'
-                      : 'text-stone-600 dark:text-slate-400 hover:bg-stone-50 dark:hover:bg-slate-800/60 hover:text-stone-900 dark:hover:text-white'
-                  }`}
-                  title={collapsed ? 'Platform' : undefined}
-                >
-                  <Server className="w-4 h-4 shrink-0" />
-                  {!collapsed && <span>Platform</span>}
-                </Link>
+                    <Link
+                      to="/platform"
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
+                        isPlatform
+                          ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 shadow-xs border border-purple-200 dark:border-purple-800'
+                          : 'text-stone-600 dark:text-slate-400 hover:bg-stone-50 dark:hover:bg-slate-800/60 hover:text-stone-900 dark:hover:text-white'
+                      }`}
+                      title={collapsed ? 'Platform Settings & Keys' : undefined}
+                    >
+                      <Server className="w-4 h-4 shrink-0" />
+                      {!collapsed && <span>Platform Settings (/platform)</span>}
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </nav>
@@ -262,23 +284,23 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 text-xs text-stone-500 overflow-hidden">
             <Link
-              to="/workspace"
+              to="/dashboard"
               className="hover:text-purple-700 dark:hover:text-purple-400 transition-colors shrink-0"
             >
               Workspace
             </Link>
             <ChevronRight className="w-3.5 h-3.5 text-stone-400 shrink-0" />
             <Link
-              to="/workspace/queue"
+              to="/dashboard"
               className="hover:text-purple-700 dark:hover:text-purple-400 transition-colors shrink-0"
             >
-              Review queue
+              {currentTitle}
             </Link>
             {pathname.includes('/application/') && (
               <>
                 <ChevronRight className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                 <span className="font-semibold text-stone-900 dark:text-white truncate">
-                  {currentTitle}
+                  Application Dossier
                 </span>
               </>
             )}
@@ -316,8 +338,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                 <span className="text-xs font-bold text-stone-900 dark:text-white leading-tight">
                   {session?.username ?? 'Guest'}
                 </span>
-                <span className="text-[10px] text-stone-500 font-medium leading-tight capitalize">
-                  {session?.role ?? ''}
+                <span className="text-[10px] text-stone-500 font-medium leading-tight">
+                  {roleLabel}
                 </span>
               </div>
               <button
@@ -332,7 +354,26 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         </header>
 
         {/* Workspace Page Body */}
-        <main className="flex-1 p-6 max-w-7xl w-full mx-auto">{children}</main>
+        <main className="flex-1 p-6 max-w-7xl w-full mx-auto">
+          {isVerifier && (isAudit || isPlatform) ? (
+            <div className="rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/30 p-8 text-center space-y-3">
+              <h2 className="text-base font-bold text-rose-800 dark:text-rose-200">
+                Access Restricted (Verification Cell)
+              </h2>
+              <p className="text-xs text-rose-700 dark:text-rose-300 max-w-md mx-auto">
+                Verification cell operators are restricted from accessing governance audit chains and platform security keys.
+              </p>
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="mt-3 px-4 py-2 rounded-xl bg-purple-700 text-white text-xs font-semibold cursor-pointer"
+              >
+                Return to Review Queue
+              </button>
+            </div>
+          ) : (
+            children
+          )}
+        </main>
 
         {/* Footer Disclaimer */}
         <footer className="border-t border-stone-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/40 py-4 px-6">

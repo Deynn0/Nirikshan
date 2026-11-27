@@ -19,6 +19,9 @@ from nirikshan.config import settings
 class UserRole(StrEnum):
     APPLICANT = "applicant"
     OFFICER = "officer"
+    VERIFIER = "verifier"
+    ADMIN = "admin"
+    INSTITUTION = "institution"
 
 
 class UserPrincipal(BaseModel):

@@ -68,5 +68,5 @@ export function useLogout() {
 }
 
 export function homePath(role: Role | undefined): string {
-  return role === "institution" ? "/applicant" : "/workspace/queue";
+  return role === "institution" ? "/portal" : "/dashboard";
 }

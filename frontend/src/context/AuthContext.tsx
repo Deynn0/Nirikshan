@@ -3,13 +3,16 @@ import { QueryClientContext } from '@tanstack/react-query';
 import { api } from '../api/client';
 import type { UserSession } from '../api/types';
 
+export type AuthRole = 'applicant' | 'officer' | 'verifier' | 'admin' | 'institution';
+
 interface AuthContextType {
   session: UserSession | null;
-  role: 'applicant' | 'officer' | null;
+  role: AuthRole | null;
+  appRole: 'officer' | 'verifier' | 'admin' | 'institution' | null;
   isAuthenticated: boolean;
-  login: (username: string, role: 'applicant' | 'officer', institutionId?: string) => Promise<void>;
+  login: (username: string, role: AuthRole, institutionId?: string) => Promise<void>;
   logout: () => void;
-  switchRole: (newRole: 'applicant' | 'officer') => void;
+  switchRole: (newRole: AuthRole) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -74,19 +77,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     queryClient?.setQueryData(['me'], null);
   };
 
-  const switchRole = (newRole: 'applicant' | 'officer') => {
+  const switchRole = (newRole: AuthRole) => {
     if (session) {
-      const updated = { ...session, role: newRole };
+      const appRole = newRole === 'applicant' ? 'institution' : (newRole as any);
+      const updated = { ...session, role: newRole, appRole };
       api.setSession(updated);
       setSession(updated);
     }
   };
+
+  const computedAppRole: 'officer' | 'verifier' | 'admin' | 'institution' | null =
+    session?.appRole ??
+    (session?.role === 'applicant' ? 'institution' : session?.role ? (session.role as any) : null);
 
   return (
     <AuthContext.Provider
       value={{
         session,
         role: session?.role || null,
+        appRole: computedAppRole,
         isAuthenticated: !!session,
         login,
         logout,

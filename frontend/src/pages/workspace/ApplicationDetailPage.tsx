@@ -20,6 +20,9 @@ import {
   Eye,
   Sparkles,
   Info,
+  RefreshCw,
+  FileWarning,
+  Send,
 } from 'lucide-react';
 import { PillBadge } from '../../components/common/PillBadge';
 import {
@@ -31,18 +34,35 @@ import {
   FindingDetail,
 } from '../../data/mockScrutinyData';
 import { getAnalysedApplications, getAnalysedFindingsForApp } from '../../data/reviewQueueStore';
+import { issueDeficiencyNotice } from '../../data/rectificationStore';
+import { useAuth } from '../../context/AuthContext';
 import { AskWhyDrawer } from '../../components/workspace/AskWhyDrawer';
 import { ExportEvidenceModal } from '../../components/workspace/ExportEvidenceModal';
 
 export const ApplicationDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { session } = useAuth();
+
+  const currentRole =
+    session?.appRole ||
+    (session?.role === 'applicant' ? 'institution' : session?.role) ||
+    'officer';
+  const isOfficer = currentRole === 'officer';
+  const isVerifier = currentRole === 'verifier';
+  const isAdmin = currentRole === 'admin';
 
   const appId = id || 'APP-2026-AICTE-4891';
   const analysedApps = getAnalysedApplications();
   const customApp = analysedApps.find((a) => a.id === appId);
   const appData =
-    customApp || mockApplications.find((a) => a.id === appId) || mockApplications[0];
+    customApp ||
+    mockApplications.find(
+      (a) =>
+        a.id.toLowerCase() === appId.toLowerCase() ||
+        a.code?.toLowerCase() === appId.toLowerCase()
+    ) ||
+    mockApplications[0];
 
   // Active Tab: Summary, Findings, Documents, Comparisons, Activity
   const [activeTab, setActiveTab] = useState<
@@ -53,7 +73,21 @@ export const ApplicationDetailPage: React.FC = () => {
   const [isAskWhyOpen, setIsAskWhyOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isDecideOpen, setIsDecideOpen] = useState(false);
+  const [isRectifyOpen, setIsRectifyOpen] = useState(false);
   const [decisionFeedback, setDecisionFeedback] = useState<string | null>(null);
+
+  // Rectification draft form
+  const [rectifySubject, setRectifySubject] = useState('Statutory Cadre Ratio Compliance Deficit');
+  const [rectifyClause, setRectifyClause] = useState('Rule 2.14 / Cadre Ratio');
+  const [rectifyDetails, setRectifyDetails] = useState(
+    'EPF and Biometric verification detected shortfall in required Professor cadre. Furnish ratified selection committee appointment records.'
+  );
+  const [rectifyDays, setRectifyDays] = useState(15);
+  const [rectifyFeedback, setRectifyFeedback] = useState<string | null>(null);
+
+  // Validation execution state
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationSuccess, setValidationSuccess] = useState<string | null>(null);
 
   // Custom findings for analysed app, if any
   const customFindings = getAnalysedFindingsForApp(appId);
@@ -77,10 +111,38 @@ export const ApplicationDetailPage: React.FC = () => {
   };
 
   const handleDecisionSubmit = (action: string) => {
-    setDecisionFeedback(`Decision recorded: ${action}. Sent to Joint Scrutiny Board.`);
+    setDecisionFeedback(`Outcome officially recorded: ${action}. Certified hash logged in audit chain.`);
     setTimeout(() => {
       setIsDecideOpen(false);
+      setDecisionFeedback(null);
+    }, 1500);
+  };
+
+  const handleRunValidation = () => {
+    setIsValidating(true);
+    setValidationSuccess(null);
+    setTimeout(() => {
+      setIsValidating(false);
+      setValidationSuccess('Validation pipeline executed successfully: Deterministic rules and cryptographic signatures re-checked.');
+      setTimeout(() => setValidationSuccess(null), 5000);
     }, 1200);
+  };
+
+  const handleSendRectification = (e: React.FormEvent) => {
+    e.preventDefault();
+    issueDeficiencyNotice({
+      appId: appData.id,
+      institutionName: appData.name,
+      ruleClause: rectifyClause,
+      subject: rectifySubject,
+      details: rectifyDetails,
+      deadlineDays: rectifyDays,
+    });
+    setRectifyFeedback('Deficiency Rectification Notice dispatched to institution with 15-day compliance window.');
+    setTimeout(() => {
+      setRectifyFeedback(null);
+      setIsRectifyOpen(false);
+    }, 1500);
   };
 
   return (
@@ -129,33 +191,83 @@ export const ApplicationDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Action Buttons: Ask Why, Decide, Export */}
+          {/* Action Buttons with Role-based Access Control */}
           <div className="flex flex-wrap items-center gap-2.5">
+            {/* Run / Replay Validation: officer, verifier, admin */}
             <button
-              onClick={() => setIsAskWhyOpen(true)}
-              className="px-4 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs"
+              onClick={handleRunValidation}
+              disabled={isValidating}
+              className="px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-slate-800 hover:bg-stone-200 dark:hover:bg-slate-700 text-stone-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+              title="Run / Replay Validation Pipeline"
             >
-              <HelpCircle className="w-4 h-4" />
-              Ask why
+              <RefreshCw className={`w-3.5 h-3.5 ${isValidating ? 'animate-spin text-purple-600' : ''}`} />
+              <span>{isVerifier ? 'Validate Evidence' : isAdmin ? 'Replay Pipeline' : 'Run / Replay Validation'}</span>
             </button>
 
-            <button
-              onClick={() => setIsExportOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-slate-800 hover:bg-stone-200 dark:hover:bg-slate-700 text-stone-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all"
-            >
-              <Download className="w-4 h-4" />
-              Evidence pack
-            </button>
+            {/* Exclusive Officer Actions */}
+            {isOfficer && (
+              <>
+                <button
+                  onClick={() => setIsAskWhyOpen(true)}
+                  className="px-3.5 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                  title="Ask Why Explainer Assistant"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                  Ask why
+                </button>
 
-            <button
-              onClick={() => setIsDecideOpen(true)}
-              className="px-5 py-2 rounded-xl bg-[#6D28D9] hover:bg-[#5B21B6] active:bg-[#4C1D95] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:shadow transition-all"
-            >
-              <Gavel className="w-4 h-4" />
-              Decide
-            </button>
+                <button
+                  onClick={() => setIsExportOpen(true)}
+                  className="px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-slate-800 hover:bg-stone-200 dark:hover:bg-slate-700 text-stone-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                  title="Export Official Evidence Pack"
+                >
+                  <Download className="w-4 h-4" />
+                  Evidence pack
+                </button>
+
+                <button
+                  onClick={() => setIsRectifyOpen(true)}
+                  className="px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-850 dark:text-amber-200 border border-amber-200 dark:border-amber-800 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                  title="Issue Rectification Deficiency Letter"
+                >
+                  <FileWarning className="w-4 h-4 text-amber-600" />
+                  Rectify
+                </button>
+
+                <button
+                  onClick={() => setIsDecideOpen(true)}
+                  className="px-4 py-2 rounded-xl bg-[#6D28D9] hover:bg-[#5B21B6] active:bg-[#4C1D95] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm hover:shadow transition-all cursor-pointer"
+                  title="Record Final Outcome (Approve / Reject / Flag)"
+                >
+                  <Gavel className="w-4 h-4" />
+                  Decide / Record Outcome
+                </button>
+              </>
+            )}
+
+            {/* Verifier status badge */}
+            {isVerifier && (
+              <span className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                Verification Cell · Validation Mode (No Outcome Authority)
+              </span>
+            )}
+
+            {/* Admin auditor replay badge */}
+            {isAdmin && (
+              <span className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                Admin Auditor · Pipeline Replay Active
+              </span>
+            )}
           </div>
         </div>
+
+        {/* Validation Feedback Banner */}
+        {validationSuccess && (
+          <div className="mt-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-medium flex items-center gap-2 animate-in fade-in">
+            <Check className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <span>{validationSuccess}</span>
+          </div>
+        )}
 
         {/* 2. Navigation Tabs */}
         <div className="flex items-center gap-2 mt-6 border-t border-stone-200 dark:border-slate-800 pt-3 overflow-x-auto">
@@ -924,47 +1036,65 @@ export const ApplicationDetailPage: React.FC = () => {
         </div>
       )}
 
-      {/* Decide Modal */}
+      {/* Decide / Record Outcome Modal */}
       {isDecideOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 dark:bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-floating border border-stone-200 dark:border-slate-800 p-6 space-y-4">
             <div className="flex items-center gap-2.5 pb-2 border-b border-stone-200 dark:border-slate-800">
               <Gavel className="w-5 h-5 text-purple-600" />
               <h3 className="font-bold text-stone-900 dark:text-white text-base">
-                Record Scrutiny Determination
+                Record Final Regulatory Outcome
               </h3>
             </div>
 
             <p className="text-xs text-stone-600 dark:text-slate-400">
-              Choose the regulatory determination for{' '}
-              <strong className="text-stone-900 dark:text-white">{appData.name}</strong>.
+              Select the scrutiny determination for{' '}
+              <strong className="text-stone-900 dark:text-white">{appData.name}</strong> ({appData.id}).
             </p>
 
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               <button
-                onClick={() => handleDecisionSubmit('Issue Deficiency Letter')}
-                className="w-full p-3 rounded-xl border border-rose-200 bg-rose-50/60 dark:bg-rose-950/30 hover:bg-rose-100 text-left text-xs font-semibold text-rose-900 dark:text-rose-200 transition-colors"
+                onClick={() => handleDecisionSubmit('Officially Approved (Extension of Approval Granted)')}
+                className="w-full p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-left transition-colors cursor-pointer"
               >
-                Issue Deficiency Letter (Mandatory 15-day Rectification)
+                <div className="text-xs font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  Officially Approve
+                </div>
+                <div className="text-[11px] text-emerald-700 dark:text-emerald-300 font-normal mt-0.5">
+                  Grant Full Extension of Approval (EoA) for Academic Year 2026–2027
+                </div>
               </button>
 
               <button
-                onClick={() => handleDecisionSubmit('Recommend Hearing')}
-                className="w-full p-3 rounded-xl border border-amber-200 bg-amber-50/60 dark:bg-amber-950/30 hover:bg-amber-100 text-left text-xs font-semibold text-amber-900 dark:text-amber-200 transition-colors"
+                onClick={() => handleDecisionSubmit('Officially Rejected (Critical Statutory Deficiency)')}
+                className="w-full p-3.5 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50/70 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-left transition-colors cursor-pointer"
               >
-                Escalate to Standing Hearing Committee (SHC)
+                <div className="text-xs font-bold text-rose-900 dark:text-rose-200 flex items-center gap-1.5">
+                  <XCircle className="w-4 h-4 text-rose-600" />
+                  Officially Reject
+                </div>
+                <div className="text-[11px] text-rose-700 dark:text-rose-300 font-normal mt-0.5">
+                  Refuse approval due to unrectified critical defects or forensic tampering
+                </div>
               </button>
 
               <button
-                onClick={() => handleDecisionSubmit('Provisional Approval with Conditions')}
-                className="w-full p-3 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 dark:bg-slate-800 dark:border-slate-700 text-left text-xs font-semibold text-stone-700 dark:text-slate-300 transition-colors"
+                onClick={() => handleDecisionSubmit('Flagged for Review (Escalated to Standing Hearing Committee)')}
+                className="w-full p-3.5 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/70 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-left transition-colors cursor-pointer"
               >
-                Grant Conditional Extension of Approval (EoA)
+                <div className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  Flag for Review
+                </div>
+                <div className="text-[11px] text-amber-700 dark:text-amber-300 font-normal mt-0.5">
+                  Flag and refer to Joint Scrutiny Board & Standing Hearing Committee
+                </div>
               </button>
             </div>
 
             {decisionFeedback && (
-              <div className="p-3 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-semibold">
+              <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 text-emerald-800 dark:text-emerald-200 text-xs font-semibold">
                 {decisionFeedback}
               </div>
             )}
@@ -972,11 +1102,107 @@ export const ApplicationDetailPage: React.FC = () => {
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setIsDecideOpen(false)}
-                className="px-4 py-2 text-xs font-semibold text-stone-500 hover:text-stone-800"
+                className="px-4 py-2 text-xs font-semibold text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 cursor-pointer"
               >
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rectify / Issue Deficiency Notice Modal */}
+      {isRectifyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 dark:bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-floating border border-stone-200 dark:border-slate-800 p-6 space-y-4">
+            <div className="flex items-center gap-2.5 pb-2 border-b border-stone-200 dark:border-slate-800">
+              <FileWarning className="w-5 h-5 text-amber-600" />
+              <div>
+                <h3 className="font-bold text-stone-900 dark:text-white text-base">
+                  Issue Rectification Deficiency Letter
+                </h3>
+                <p className="text-[11px] text-stone-500 font-mono">
+                  Target: {appData.name} ({appData.id})
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSendRectification} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 dark:text-slate-300 mb-1">
+                  Deficiency Category & Regulatory Clause
+                </label>
+                <select
+                  value={rectifyClause}
+                  onChange={(e) => setRectifyClause(e.target.value)}
+                  className="w-full text-xs p-2.5 rounded-xl border border-stone-200 dark:border-slate-700 bg-stone-50 dark:bg-slate-800 text-stone-900 dark:text-white"
+                >
+                  <option value="Rule 2.14 / Cadre Ratio">Rule 2.14 — Faculty Cadre Ratio Deficit</option>
+                  <option value="Rule 4.3 / Fire Safety NOC">Rule 4.3 — Municipal Fire NOC Validity Expired</option>
+                  <option value="Rule 1.7 / Land Title Conversion">Rule 1.7 — Land Non-Agriculture (NA) Order Missing</option>
+                  <option value="Rule 5.1 / Shared Faculty Deduplication">Rule 5.1 — Cross-College Simultaneous Faculty Registration</option>
+                  <option value="Rule 3.2 / Building Plan Approval">Rule 3.2 — Competent Authority Endorsed Blueprint Required</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 dark:text-slate-300 mb-1">
+                  Notice Subject
+                </label>
+                <input
+                  type="text"
+                  value={rectifySubject}
+                  onChange={(e) => setRectifySubject(e.target.value)}
+                  className="w-full text-xs p-2.5 rounded-xl border border-stone-200 dark:border-slate-700 bg-stone-50 dark:bg-slate-800 text-stone-900 dark:text-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 dark:text-slate-300 mb-1">
+                  Deficiency Particulars & Required Rectification Evidence
+                </label>
+                <textarea
+                  rows={4}
+                  value={rectifyDetails}
+                  onChange={(e) => setRectifyDetails(e.target.value)}
+                  className="w-full text-xs p-2.5 rounded-xl border border-stone-200 dark:border-slate-700 bg-stone-50 dark:bg-slate-800 text-stone-900 dark:text-white"
+                  required
+                />
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-stone-600 dark:text-slate-400 p-2.5 rounded-xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60">
+                <span className="font-semibold text-amber-900 dark:text-amber-200">
+                  Mandatory Statutory Rectification Window:
+                </span>
+                <span className="font-bold font-mono text-amber-700 dark:text-amber-300">
+                  {rectifyDays} Days from Dispatch
+                </span>
+              </div>
+
+              {rectifyFeedback && (
+                <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 text-xs font-semibold">
+                  {rectifyFeedback}
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsRectifyOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  Dispatch Deficiency Letter
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
