@@ -177,7 +177,7 @@ export function LoginPage() {
   const t = useT();
 
   useEffect(() => {
-    document.title = `${t("Sign in")} | Pramana Nirikshan`;
+    document.title = `${t("Sign in")} | Nirikshan`;
     return () => {
       document.title = "Nirikshan";
     };
@@ -235,7 +235,7 @@ export function LoginPage() {
           {t("Skip to content")}
         </a>
         <header className="flex items-center justify-between gap-3">
-          <Link to="/" aria-label={t("Pramana home")} className="rounded-full">
+          <Link to="/" aria-label={t("Nirikshan home")} className="rounded-full">
             <Wordmark size={30} />
           </Link>
           <div className="flex items-center gap-2">
@@ -254,7 +254,7 @@ export function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease }}
           >
-            <p className="text-[0.6875rem] font-semibold tracking-[0.12em] text-ink-3 uppercase">{t("Pramana workspace")}</p>
+            <p className="text-[0.6875rem] font-semibold tracking-[0.12em] text-ink-3 uppercase">{t("Nirikshan workspace")}</p>
             <h1 className="mt-2 font-display text-[2.375rem] leading-[1.05] font-semibold tracking-[-0.03em] text-ink sm:text-[2.75rem]">
               {t("Sign in to review")}
             </h1>
@@ -335,14 +335,14 @@ export function LoginPage() {
         <SiteFooter className="px-0 pb-6 sm:px-0 lg:px-0" />
       </div>
 
-      <aside aria-label={t("Pramana eye")} className="relative hidden p-3 lg:block">
+      <aside aria-label={t("Nirikshan eye")} className="relative hidden p-3 lg:block">
         <div className="sticky top-3 h-[calc(100dvh-24px)] overflow-hidden rounded-[28px] shadow-lg">
           <Suspense fallback={<div className="h-full w-full lp-sky" />}>
             <MiniEye closed={closing}>
               <div className="max-w-[270px] text-center select-none px-4">
-                <p className="font-display text-[2rem] font-bold tracking-tight text-ink">Pratyaksha</p>
+                <p className="font-display text-[2rem] font-bold tracking-tight text-ink">Nirikshan</p>
                 <p className="mt-2 text-[0.8438rem] leading-relaxed text-ink-2">
-                  {t("Perception, the first pramana. Every finding points at what was seen.")}
+                  {t("Every finding points at what was seen.")}
                 </p>
               </div>
             </MiniEye>

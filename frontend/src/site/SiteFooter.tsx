@@ -8,7 +8,7 @@ export function SiteFooter({ className = "" }: { className?: string }) {
       <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line pt-4">
         <div className="flex items-center gap-2">
           <ShieldCheck className="size-4 text-brand-600" aria-hidden />
-          <span>Nirikshan / Pramana Regulatory Verification Platform</span>
+          <span>Nirikshan Regulatory Verification Platform</span>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-ink-3">
           <Link to="/" className="hover:text-ink transition-colors">

@@ -21,7 +21,7 @@ export function Wordmark({ size = 28, className = "" }: { size?: number; classNa
         </svg>
       </span>
       <span className="text-[1.1875rem] font-bold tracking-[-0.02em] text-ink">
-        Pramana <span className="text-[0.78rem] font-normal text-ink-3">/ Nirikshan</span>
+        Nirikshan
       </span>
     </div>
   );

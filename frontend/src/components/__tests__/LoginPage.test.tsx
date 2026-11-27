@@ -44,10 +44,10 @@ describe('LoginPage Component', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders Pramana workspace and sign in to review headline', () => {
+  it('renders Nirikshan workspace and sign in to review headline', () => {
     renderLogin();
 
-    expect(screen.getByText(/Pramana workspace/i)).toBeInTheDocument();
+    expect(screen.getByText(/Nirikshan workspace/i)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Sign in to review/i })).toBeInTheDocument();
     expect(screen.getByText(/Demo accounts \(synthetic data\)/i)).toBeInTheDocument();
   });

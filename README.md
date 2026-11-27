@@ -152,6 +152,47 @@ make dev
    ```
    Officer Scrutiny Console available at: `http://localhost:5173`
 
+#### ⚠️ Troubleshooting: Port Conflicts & `[WinError 10013]` on Windows
+
+If Uvicorn fails with `[WinError 10013] An attempt was made to access a socket in a way forbidden by its access permissions`:
+
+- **Cause A: Process already occupying port 8000**
+  ```powershell
+  # Find the PID holding the port
+  netstat -ano | findstr :8000
+  # Kill the process
+  taskkill /F /PID <PID>
+  ```
+
+- **Cause B: Port reserved by Windows NAT / Hyper-V / WSL2**
+  ```powershell
+  # Check if port 8000 falls in an excluded port range
+  netsh interface ipv4 show excludedportrange protocol=tcp
+
+  # Restart WinNAT to release dynamic exclusions (Run PowerShell as Administrator)
+  net stop winnat
+  net start winnat
+  ```
+
+- **Fast Workaround: Use an alternative port (e.g. 8001)**
+  1. Start backend on port `8001`:
+     ```powershell
+     .\.venv\Scripts\uvicorn nirikshan.main:app --reload --port 8001 --host 127.0.0.1
+     ```
+  2. Update `frontend/vite.config.ts` proxy target:
+     ```typescript
+     server: {
+       port: 5173,
+       proxy: {
+         '/api': {
+           target: 'http://127.0.0.1:8001',
+           changeOrigin: true,
+         },
+       },
+     }
+     ```
+  3. Restart the frontend dev server (`npm run dev`).
+
 ---
 
 ## 🧪 Testing & Validation
