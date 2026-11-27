@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSession } from '../auth/session';
 import {
   Eye,
   Users,
@@ -15,10 +16,17 @@ import { LANDING_PALETTE } from '../landing/palette';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const session = useSession();
+  // Only treat as authenticated when a valid session has been confirmed
+  const isAuthenticated = session.isSuccess && !!session.data?.user?.role;
   const [wristY, setWristY] = useState<number | undefined>(undefined);
   const handleWristY = useCallback((y: number) => {
     setWristY(y);
   }, []);
+
+  const goToWorkspace = () => {
+    navigate(isAuthenticated ? '/workspace' : '/login');
+  };
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -59,7 +67,7 @@ export const LandingPage: React.FC = () => {
 
         {/* 3. Navbar: Floating clean white translucent pill with subtle warm shadow */}
         <header className="relative z-50 pt-4 px-4 sm:px-6 w-full flex justify-center">
-          <nav className="w-full max-w-5xl px-6 py-2.5 rounded-full bg-white/92 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)] border border-white/95 flex items-center justify-between gap-4">
+          <nav className="w-full max-w-5xl px-6 py-2.5 rounded-full bg-white shadow-[0_4px_24px_rgba(0,0,0,0.08),0_1px_3px_rgba(0,0,0,0.04)] border border-stone-100 flex items-center justify-between gap-4">
             {/* Logo: Nirikshan eye/iris symbol and title */}
             <Link to="/" className="flex items-center gap-2 group">
               <svg
@@ -115,7 +123,7 @@ export const LandingPage: React.FC = () => {
 
             {/* Right: Purple pill button */}
             <button
-              onClick={() => navigate('/workspace')}
+              onClick={goToWorkspace}
               className="px-5 py-2 rounded-full bg-[#7B24E7] hover:bg-[#6A1BD6] active:bg-[#5815B6] text-white text-xs sm:text-[13px] font-semibold shadow-[0_2px_12px_rgba(123,36,231,0.35)] hover:shadow-[0_4px_16px_rgba(123,36,231,0.45)] active:scale-[0.98] transition-all shrink-0 flex items-center gap-1.5 cursor-pointer"
             >
               <span>Open workspace</span>
@@ -166,7 +174,7 @@ export const LandingPage: React.FC = () => {
               {/* Call to Action: Primary brand violet & Secondary translucent buttons */}
               <div className="mt-6 sm:mt-7 flex flex-wrap items-center gap-3.5">
                 <button
-                  onClick={() => navigate('/workspace')}
+                  onClick={goToWorkspace}
                   className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-[#7B24E7] hover:bg-[#6A1BD6] active:bg-[#5815B6] text-white text-xs sm:text-[13px] font-semibold shadow-[0_4px_18px_rgba(123,36,231,0.35)] hover:shadow-[0_6px_24px_rgba(123,36,231,0.45)] active:scale-[0.98] transition-all flex items-center gap-1.5 group cursor-pointer"
                 >
                   <span>Open the workspace</span>
@@ -371,7 +379,7 @@ export const LandingPage: React.FC = () => {
             Decision support only. Findings are preliminary indicators for review.
           </p>
           <div className="flex items-center gap-4 text-[11px]">
-            <Link to="/workspace" className="text-[#7B24E7] hover:underline">
+            <Link to={isAuthenticated ? '/workspace' : '/login'} className="text-[#7B24E7] hover:underline">
               Enter Workspace
             </Link>
             <span>v2.4.0-audit</span>

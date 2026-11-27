@@ -20,6 +20,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 import { CommandPaletteModal } from './CommandPaletteModal';
 
 interface AppShellProps {
@@ -30,8 +31,19 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { session, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  // Derive initials from username
+  const initials = session?.username
+    ? session.username.slice(0, 2).toUpperCase()
+    : 'U?';
 
   const pathname = location.pathname;
 
@@ -295,19 +307,26 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
 
-            {/* User Chip: Name and Role */}
+            {/* User Chip: Name, Role and Logout */}
             <div className="flex items-center gap-2.5 pl-3 border-l border-stone-200 dark:border-slate-800">
               <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold text-xs ring-2 ring-purple-200 dark:ring-purple-800">
-                SS
+                {initials}
               </div>
               <div className="hidden md:flex flex-col text-left">
                 <span className="text-xs font-bold text-stone-900 dark:text-white leading-tight">
-                  Dr. Sunita Sharma
+                  {session?.username ?? 'Guest'}
                 </span>
-                <span className="text-[10px] text-stone-500 font-medium leading-tight">
-                  Senior Scrutiny Officer
+                <span className="text-[10px] text-stone-500 font-medium leading-tight capitalize">
+                  {session?.role ?? ''}
                 </span>
               </div>
+              <button
+                onClick={handleLogout}
+                title="Log out"
+                className="p-2 rounded-xl text-stone-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </header>

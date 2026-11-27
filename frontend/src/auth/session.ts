@@ -1,10 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiError, api, qk, setCsrfToken } from "../api";
+import { ApiError, api, hasStoredSession, qk, setCsrfToken } from "../api";
 import type { Role, SessionInfo } from "../types";
 
 async function loadSession(): Promise<SessionInfo | null> {
   try {
     const s = await api.me();
+    if (!s?.user?.role) {
+      setCsrfToken(null);
+      return null;
+    }
     setCsrfToken(s.csrf_token);
     return s;
   } catch (e) {
@@ -17,13 +21,19 @@ async function loadSession(): Promise<SessionInfo | null> {
 }
 
 export function useSession() {
-  return useQuery({ queryKey: qk.me, queryFn: loadSession, staleTime: Infinity, retry: false });
+  return useQuery({
+    queryKey: qk.me,
+    queryFn: loadSession,
+    staleTime: Infinity,
+    retry: false,
+    initialData: () => (hasStoredSession() ? undefined : null),
+  });
 }
 
 /** The signed-in session; only call below a guard that has already resolved it. */
 export function useAuth() {
   const { data } = useSession();
-  const role = data?.user.role;
+  const role = data?.user?.role;
   return {
     session: data ?? null,
     user: data?.user ?? null,
@@ -35,7 +45,8 @@ export function useAuth() {
 export function useLogin() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ username, password }: { username: string; password: string }) => api.login(username, password),
+    mutationFn: ({ username, password, role }: { username: string; password: string; role?: Role }) =>
+      api.login(username, password, role),
     onSuccess: (s) => {
       setCsrfToken(s.csrf_token);
       qc.removeQueries({ predicate: (q) => q.queryKey[0] !== "me" && q.queryKey[0] !== "demo-accounts" });

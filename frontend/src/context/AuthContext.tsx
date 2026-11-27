@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { QueryClientContext } from '@tanstack/react-query';
 import { api } from '../api/client';
-import type { UserRole, UserSession } from '../api/types';
+import type { UserSession } from '../api/types';
 
 interface AuthContextType {
   session: UserSession | null;
@@ -13,21 +14,30 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const LEGACY_AUTO_LOGIN_TOKEN = 'offline-jwt-demo-token-12345';
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [session, setSession] = useState<UserSession | null>(() => api.getSession());
+  const queryClient = useContext(QueryClientContext);
+  const [session, setSession] = useState<UserSession | null>(() => {
+    const saved = api.getSession();
+    if (saved?.token === LEGACY_AUTO_LOGIN_TOKEN) {
+      api.setSession(null);
+      return null;
+    }
+    return saved;
+  });
 
   useEffect(() => {
-    // If no session exists initially, initialize demo officer session so app is immediately usable if desired
-    if (!session) {
-      const defaultSession: UserSession = {
-        token: 'offline-jwt-demo-token-12345',
-        username: 'AICTE-Scrutiny-Officer-01',
-        role: 'officer',
-      };
-      api.setSession(defaultSession);
-      setSession(defaultSession);
-    }
+    const sync = () => setSession(api.getSession());
+    window.addEventListener('nirikshan-session-changed', sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener('nirikshan-session-changed', sync);
+      window.removeEventListener('storage', sync);
+    };
   }, []);
+
+  // No auto-login: users must authenticate explicitly via the login page.
 
   const login = async (username: string, role: 'applicant' | 'officer', institutionId?: string) => {
     try {
@@ -48,7 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {
       // Offline fallback: generate mock token if backend auth route is unavailable
       const fallbackSession: UserSession = {
-        token: `mock-offline-token-${Date.now()}`,
+        token: `offline-session-${Date.now()}`,
         username,
         role,
         institutionId,
@@ -61,6 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     api.setSession(null);
     setSession(null);
+    queryClient?.setQueryData(['me'], null);
   };
 
   const switchRole = (newRole: 'applicant' | 'officer') => {

@@ -24,11 +24,15 @@ export default function MiniEye({ closed = false, children }: { closed?: boolean
     const measure = () => {
       const r = el.getBoundingClientRect();
       if (r.width < 10 || r.height < 10) return;
-      const l = computeLayout(r.width, r.height, Math.min(300, r.width * 0.42), Math.min(150, r.height * 0.2), { compact: false });
+      const l = computeLayout(r.width, r.height, Math.min(270, r.width * 0.44), Math.min(120, r.height * 0.22), { compact: false });
       state.layout = l;
       setLayout(l);
     };
     measure();
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", measure);
+      return () => window.removeEventListener("resize", measure);
+    }
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
@@ -99,7 +103,7 @@ export default function MiniEye({ closed = false, children }: { closed?: boolean
 
   return (
     <div ref={boxRef} className="lp-sky relative h-full w-full overflow-hidden" style={landingVars} onPointerDown={onDown}>
-      {layout && failed && <StaticEye layout={layout} />}
+      {layout && !ready && <StaticEye layout={layout} />}
       {layout && !failed && (
         <div className="absolute inset-0 transition-opacity duration-700" style={{ opacity: ready ? 1 : 0 }}>
           <Suspense fallback={null}>

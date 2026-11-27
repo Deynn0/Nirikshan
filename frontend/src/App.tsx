@@ -1,6 +1,7 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { Component } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { LoaderCircle } from 'lucide-react';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { LandingPage } from './pages/LandingPage';
@@ -18,6 +19,7 @@ import {
 import { LoginPage } from './pages/LoginPage';
 import { ApplicantPage } from './pages/ApplicantPage';
 import { OfficerPage } from './pages/OfficerPage';
+import { useSession } from './auth/session';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,13 +30,71 @@ const queryClient = new QueryClient({
   },
 });
 
+class AppErrorBoundary extends Component<
+  { children: React.ReactNode },
+  { error: Error | null }
+> {
+  override state: { error: Error | null } = { error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  override render() {
+    if (this.state.error) {
+      return (
+        <div className="grid min-h-dvh place-items-center bg-[#fbf8f5] px-6 text-center text-[#1c1622]">
+          <div className="max-w-md space-y-4 rounded-2xl border border-[#ece4e5] bg-white p-6 shadow-sm">
+            <h1 className="text-lg font-semibold">Something went wrong</h1>
+            <p className="text-sm text-[#4a4252]">{this.state.error.message}</p>
+            <button
+              type="button"
+              onClick={() => {
+                this.setState({ error: null });
+                window.location.assign('/login');
+              }}
+              className="rounded-xl bg-[#7428ea] px-4 py-2 text-sm font-semibold text-white hover:bg-[#5d1fc2] cursor-pointer"
+            >
+              Return to sign in
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+/**
+ * Renders children only when the verified session confirms authentication.
+ * Shows a loading indicator while an existing session check is in-flight so we
+ * never flash-redirect or show a blank screen before we know the real auth state.
+ */
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const session = useSession();
+  const location = useLocation();
+  if (session.isPending) {
+    return (
+      <div className="grid min-h-dvh place-items-center bg-canvas">
+        <LoaderCircle className="size-8 animate-spin text-brand-500" aria-label="Loading…" />
+      </div>
+    );
+  }
+  return session.data?.user?.role ? (
+    <>{children}</>
+  ) : (
+    <Navigate to="/login" replace state={{ from: location.pathname }} />
+  );
+};
+
 export const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AuthProvider>
-          <BrowserRouter>
-            <Routes>
+    <AppErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <Routes>
               {/* Landing Page */}
               <Route path="/" element={<LandingPage />} />
 
@@ -46,65 +106,81 @@ export const App: React.FC = () => {
               <Route
                 path="/workspace/queue"
                 element={
-                  <AppShell>
-                    <ReviewQueuePage />
-                  </AppShell>
+                  <ProtectedRoute>
+                    <AppShell>
+                      <ReviewQueuePage />
+                    </AppShell>
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/workspace/application/:id"
                 element={
-                  <AppShell>
-                    <ApplicationDetailPage />
-                  </AppShell>
+                  <ProtectedRoute>
+                    <AppShell>
+                      <ApplicationDetailPage />
+                    </AppShell>
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/workspace/tools/analyse"
                 element={
-                  <AppShell>
-                    <AnalyseDocumentView />
-                  </AppShell>
+                  <ProtectedRoute>
+                    <AppShell>
+                      <AnalyseDocumentView />
+                    </AppShell>
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/workspace/tools/integrity"
                 element={
-                  <AppShell>
-                    <IntegrityView />
-                  </AppShell>
+                  <ProtectedRoute>
+                    <AppShell>
+                      <IntegrityView />
+                    </AppShell>
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/workspace/tools/issuer-simulator"
                 element={
-                  <AppShell>
-                    <IssuerSimulatorView />
-                  </AppShell>
+                  <ProtectedRoute>
+                    <AppShell>
+                      <IssuerSimulatorView />
+                    </AppShell>
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/workspace/governance/rules"
                 element={
-                  <AppShell>
-                    <RulesView />
-                  </AppShell>
+                  <ProtectedRoute>
+                    <AppShell>
+                      <RulesView />
+                    </AppShell>
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/workspace/governance/audit"
                 element={
-                  <AppShell>
-                    <AuditLogView />
-                  </AppShell>
+                  <ProtectedRoute>
+                    <AppShell>
+                      <AuditLogView />
+                    </AppShell>
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="/workspace/governance/platform"
                 element={
-                  <AppShell>
-                    <PlatformView />
-                  </AppShell>
+                  <ProtectedRoute>
+                    <AppShell>
+                      <PlatformView />
+                    </AppShell>
+                  </ProtectedRoute>
                 }
               />
 
@@ -125,6 +201,7 @@ export const App: React.FC = () => {
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
+  </AppErrorBoundary>
   );
 };
 

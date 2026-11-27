@@ -60,20 +60,28 @@ export default function StaticEye({ layout }: { layout: EyeLayout }) {
         ))}
         <circle cx={cx} cy={cy} r={rp} fill={`url(#${id}-lens)`} stroke={palette.voxel.limbal} strokeOpacity={0.35} strokeWidth={2} />
       </g>
-      {blocks.map((b, i) => (
-        <g key={i}>
-          <rect x={b.x - c / 2} y={b.y - c / 2 + 6} width={c - 2} height={c - 2} rx={3} fill={palette.voxel.sideDeep} />
-          <rect
-            x={b.x - c / 2}
-            y={b.y - c / 2}
-            width={c - 2}
-            height={c - 2}
-            rx={3}
-            fill={b.d < c * 1.5 ? palette.voxel.rim : palette.voxel.top}
-            opacity={0.88 + 0.12 * b.k}
-          />
-        </g>
-      ))}
+      {blocks.map((b, i) => {
+        const isRim = b.d < c * 1.5;
+        const topColor = isRim ? palette.voxel.rim : palette.voxel.top;
+        return (
+          <g key={i}>
+            {/* Cube Deep Shadow: #5f43b3 */}
+            <rect x={b.x - c / 2} y={b.y - c / 2 + 7} width={c - 2} height={c - 2} rx={3} fill={palette.voxel.sideDeep} />
+            {/* Cube Side Face: #8f6fd8 */}
+            <rect x={b.x - c / 2} y={b.y - c / 2 + 3.5} width={c - 2} height={c - 2} rx={3} fill={palette.voxel.side} />
+            {/* Cube Top Face: #c8b6f5 or Rim Reflection: #ffd9bf */}
+            <rect
+              x={b.x - c / 2}
+              y={b.y - c / 2}
+              width={c - 2}
+              height={c - 2}
+              rx={3}
+              fill={topColor}
+              opacity={0.92 + 0.08 * b.k}
+            />
+          </g>
+        );
+      })}
     </svg>
   );
 }

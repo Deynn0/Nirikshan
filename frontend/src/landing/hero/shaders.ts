@@ -158,19 +158,20 @@ void main() {
   if (vNormal.z > 0.75) {
     // Cube Top Face: #c8b6f5 (soft lavender)
     // Rim Reflection: #ffd9bf (peach highlight) on edge voxels
-    col = vIsRim > 0.5 ? mix(uTop, uRim, 0.55) : uTop;
+    col = vIsRim > 0.5 ? mix(uTop, uRim, 0.65) : uTop;
     col *= (0.95 + 0.10 * vSeed);
-  } else if (vNormal.y < -0.35 || vNormal.x > 0.35) {
-    // Cube Side Face: #8f6fd8 (mid purple)
-    col = uSide * (0.95 + 0.10 * vSeed);
   } else {
-    // Cube Deep Shadow: #5f43b3 (deep purple)
-    col = uSideDeep * (0.95 + 0.10 * vSeed);
-  }
+    // Side faces of the 3D voxel cubes
+    // Direct side lighting vs deep crevices
+    float light = clamp(dot(vNormal.xy, normalize(vec2(0.6, -0.8))), 0.0, 1.0);
+    // Cube Side Face: #8f6fd8 (mid purple) vs Cube Deep Shadow: #5f43b3 (deep purple)
+    col = mix(uSideDeep, uSide, 0.40 + 0.60 * light);
+    col *= (0.95 + 0.10 * vSeed);
 
-  // Subtle peach rim reflection on edge side faces towards the opening
-  if (vIsRim > 0.5 && vNormal.z < 0.75) {
-    col = mix(col, uRim, 0.28);
+    // Rim reflection: #ffd9bf (peach highlight) on edge side faces towards the opening
+    if (vIsRim > 0.5) {
+      col = mix(col, uRim, 0.35);
+    }
   }
 
   gl_FragColor = vec4(col, 1.0);

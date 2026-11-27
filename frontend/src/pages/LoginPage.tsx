@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Building2, KeyRound, LoaderCircle, QrCode, ShieldCheck, User } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { type FormEvent, lazy, Suspense, useEffect, useState } from "react";
+import { type FormEvent, lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { AccessibilityMenu } from "../a11y/AccessibilityMenu";
 import { api, qk } from "../api";
@@ -10,7 +10,7 @@ import { Wordmark } from "../brand";
 import { LanguageToggle, useLang, useT } from "../i18n";
 import { SiteFooter } from "../site/SiteFooter";
 import type { AppNavState, DemoAccount, Role, SessionInfo } from "../types";
-import { palette } from "../landing/palette";
+import { landingVars } from "../landing/palette";
 import { Button, Field, Input, Tag } from "../ui";
 
 const MiniEye = lazy(() => import("../landing/hero/MiniEye"));
@@ -172,6 +172,7 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState<string | null>(null);
   const [closing, setClosing] = useState(false);
+  const redirectTimerRef = useRef<number | null>(null);
   const from = (location.state as AppNavState | null)?.from;
   const t = useT();
 
@@ -182,12 +183,30 @@ export function LoginPage() {
     };
   }, [t]);
 
-  if (session.data && !closing) return <Navigate to={homePath(session.data.user.role)} replace />;
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current !== null) {
+        window.clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
+
+  // While session check is in-flight, show a neutral loading screen (not blank)
+  if (session.isPending)
+    return (
+      <div className="grid min-h-dvh place-items-center bg-canvas" style={landingVars}>
+        <LoaderCircle className="size-8 animate-spin text-brand-500" aria-label="Loading…" />
+      </div>
+    );
+
+  // Only redirect when session is fully resolved (not still loading)
+  const sessionRole = session.data?.user?.role;
+  if (sessionRole && !closing) return <Navigate to={homePath(sessionRole)} replace />;
 
   function done(s: SessionInfo) {
     const target = from && from !== "/login" ? from : homePath(s.user.role);
     setClosing(true);
-    window.setTimeout(() => navigate(target, { replace: true }), 420);
+    redirectTimerRef.current = window.setTimeout(() => navigate(target, { replace: true }), 420);
   }
 
   function submit(e: FormEvent) {
@@ -200,14 +219,14 @@ export function LoginPage() {
     setPending(a.username);
     setUsername(a.username);
     setPassword(pw);
-    login.mutate({ username: a.username, password: pw }, { onSuccess: done, onError: () => setPending(null) });
+    login.mutate({ username: a.username, password: pw, role: a.role }, { onSuccess: done, onError: () => setPending(null) });
   }
 
   const formBusy = login.isPending && !pending;
   const error = login.error instanceof Error ? login.error.message : login.error ? t("Sign in failed") : null;
 
   return (
-    <div className="grid min-h-dvh bg-canvas lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] selection:bg-brand-200">
+    <div className="grid min-h-dvh bg-canvas lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] selection:bg-brand-200" style={landingVars}>
       <div className="flex min-w-0 flex-col px-5 pt-6 sm:px-10 lg:px-14">
         <a
           href="#main"
